@@ -35,9 +35,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 /* filter tabs */
 .filter-bar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 12px}
-.filter-tab{flex:1;text-align:center;padding:12px 0;font-size:14px;color:#666;position:relative;cursor:pointer}
+.filter-tab{flex:1;text-align:center;padding:12px 0;font-size:14px;color:#666;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px}
 .filter-tab.active{color:#c9302c;font-weight:500}
 .filter-tab.active::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:#c9302c;border-radius:2px}
+.filter-tab .arrow{display:inline-flex;flex-direction:column;align-items:center;gap:1px;width:8px;height:10px;position:relative}
+.filter-tab .arrow i{display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent}
+.filter-tab .arrow .up{border-bottom:4px solid #bbb}
+.filter-tab .arrow .down{border-top:4px solid #bbb;margin-top:-1px}
+.filter-tab.active .arrow .up{border-bottom-color:#c9302c}
+.filter-tab.active .arrow .down{border-top-color:#c9302c}
+.filter-tab.asc .arrow .up{border-bottom-color:#c9302c}
+.filter-tab.asc .arrow .down{border-top-color:#ddd}
+.filter-tab.desc .arrow .up{border-bottom-color:#ddd}
+.filter-tab.desc .arrow .down{border-top-color:#c9302c}
 
 /* result list */
 .result-list{padding:12px}
@@ -80,9 +90,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <!-- search results (hidden by default) -->
     <div class="result-wrap" id="resultWrap" style="display:none">
       <div class="filter-bar">
-        <div class="filter-tab active" onclick="setFilter('all')">综合</div>
-        <div class="filter-tab" onclick="setFilter('sales')">销量</div>
-        <div class="filter-tab" onclick="setFilter('price')">价格</div>
+        <div class="filter-tab active" data-mode="all" onclick="setFilter(this,'all')">综合</div>
+        <div class="filter-tab" data-mode="sales" onclick="setFilter(this,'sales')">销量<span class="arrow"><i class="up"></i><i class="down"></i></span></div>
+        <div class="filter-tab" data-mode="price" onclick="setFilter(this,'price')">价格<span class="arrow"><i class="up"></i><i class="down"></i></span></div>
       </div>
       <div class="result-list" id="resultList"></div>
     </div>
@@ -103,6 +113,7 @@ const goods=[
   {name:'迈极炫电动牙刷',points:1800,ex:210,cat:'家居日用'}
 ];
 let filterMode='all';
+let sortDir={sales:'desc',price:'asc'}; // default: sales high→low, price low→high
 
 const hotTags=document.getElementById('hotTags');
 hotWords.forEach(w=>{
@@ -122,10 +133,18 @@ function doSearch(keyword){
   renderResults(kw);
 }
 
-function setFilter(mode){
+function setFilter(el,mode){
+  if(filterMode===mode && mode!=='all'){
+    sortDir[mode]=sortDir[mode]==='desc'?'asc':'desc';
+  }
   filterMode=mode;
-  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.filter-tab').forEach(t=>{
+    t.classList.remove('active','asc','desc');
+    if(t.dataset.mode===mode){
+      t.classList.add('active');
+      if(mode!=='all')t.classList.add(sortDir[mode]);
+    }
+  });
   const kw=document.getElementById('searchInput').value.trim();
   renderResults(kw);
 }
@@ -136,8 +155,8 @@ function renderResults(kw){
     document.getElementById('resultList').innerHTML=`<div class="empty-state"><div class="ic">🔍</div><h3>未找到相关商品</h3><p>换个关键词试试吧</p></div>`;
     return;
   }
-  if(filterMode==='sales')list.sort((a,b)=>b.ex-a.ex);
-  else if(filterMode==='price')list.sort((a,b)=>a.points-b.points);
+  if(filterMode==='sales')list.sort((a,b)=>sortDir.sales==='desc'?b.ex-a.ex:a.ex-b.ex);
+  else if(filterMode==='price')list.sort((a,b)=>sortDir.price==='asc'?a.points-b.points:b.points-a.points);
   document.getElementById('resultList').innerHTML=list.map((g,i)=>`
     <div class="result-card" onclick="location.href='goods-detail.html?id=${i}'">
       <div class="img">商品图</div>
