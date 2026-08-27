@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 产品激活</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.search-box svg{width:18px;height:18px;color:#999;flex-shrink:0}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent}
+.search-box input::placeholder{color:#bbb}
+
+.store-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer}
+.store-card .img{width:60px;height:60px;border-radius:8px;background:#f5f6f7;border:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.store-card .info{flex:1;min-width:0}
+.store-card .name{font-size:15px;font-weight:500;margin-bottom:5px}
+.store-card .addr{font-size:13px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.store-card .arrow{color:#ccc;font-size:16px}
+.empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
+
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.scan-panel{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:24px 20px 28px;display:flex;flex-direction:column;align-items:center;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.scan-hd{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.scan-hd h3{font-size:16px;font-weight:500}
+.scan-hd .close{font-size:24px;color:#999;cursor:pointer}
+.scan-frame{width:220px;height:220px;border:.5px solid rgba(0,0,0,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;background:#f5f6f7;margin-bottom:20px;overflow:hidden}
+.scan-frame::before{content:'';position:absolute;left:15px;top:15px;right:15px;bottom:15px;border:2px solid #c9302c;border-radius:8px}
+.scan-frame .scan-line{position:absolute;left:20px;right:20px;height:2px;background:#c9302c;box-shadow:0 0 6px rgba(201,48,44,.5);animation:scan 1.6s linear infinite}
+@keyframes scan{0%{top:20px}50%{top:200px}100%{top:20px}}
+.scan-frame p{position:absolute;bottom:30px;font-size:12px;color:#999}
+.scan-btn{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px}
+.scan-cancel{width:100%;height:40px;background:transparent;color:#666;border:.5px solid rgba(0,0,0,.12);border-radius:999px;font-size:14px;cursor:pointer}
+
+.result-modal{align-items:center;padding:24px}
+.result-panel{width:100%;max-width:300px;background:#fff;border-radius:12px;padding:24px;text-align:center;animation:pop .2s ease}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.result-panel .icon{font-size:42px;margin-bottom:12px}
+.result-panel h3{font-size:16px;font-weight:500;margin-bottom:8px}
+.result-panel p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.result-panel .btn{width:100%;height:42px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.result-panel .btn.gray{background:#f5f6f7;color:#666}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">产品激活</span>
+  </div>
+
+  <div class="content" id="content">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+      <input type="text" id="searchInput" placeholder="输入门店名称搜索" oninput="doSearch()">
+    </div>
+    <div id="storeList"></div>
+  </div>
+
+  <div class="modal" id="scanModal" onclick="closeScan(event)">
+    <div class="scan-panel" onclick="event.stopPropagation()">
+      <div class="scan-hd">
+        <h3>扫码激活</h3>
+        <span class="close" onclick="hideScan()">×</span>
+      </div>
+      <div class="scan-frame">
+        <div class="scan-line"></div>
+        <p>将外包装袋二维码放入框内</p>
+      </div>
+      <button class="scan-btn" onclick="doScan()">模拟扫码</button>
+      <button class="scan-cancel" onclick="hideScan()">结束扫码</button>
+    </div>
+  </div>
+
+  <div class="modal result-modal" id="resultModal" onclick="closeResult(event)">
+    <div class="result-panel" onclick="event.stopPropagation()">
+      <div class="icon" id="resultIcon">✅</div>
+      <h3 id="resultTitle">激活成功</h3>
+      <p id="resultText">产品已成功激活并归属至所选门店</p>
+      <button class="btn" id="resultBtn" onclick="continueScan()">继续扫码</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const allStores=[
+  {name:'湘江东路店',addr:'长沙市开福区湘江东路一段 88 号'},
+  {name:'五一广场店',addr:'长沙市芙蓉区五一大道 168 号'},
+  {name:'岳麓山北店',addr:'长沙市岳麓区麓山南路 66 号'},
+  {name:'雨花亭店',addr:'长沙市雨花区韶山中路 420 号'},
+  {name:'星沙万象汇店',addr:'长沙市长沙县星沙大道 178 号'}
+];
+let currentStore=null;
+let activatedCodes=new Set();
+
+function render(list){
+  const box=document.getElementById('storeList');
+  if(!list.length){box.innerHTML='<div class="empty">未找到相关门店</div>';return;}
+  box.innerHTML=list.map((s,i)=>`<div class="store-card" onclick="selectStore(${allStores.indexOf(s)})"><div class="img">🏪</div><div class="info"><div class="name">${s.name}</div><div class="addr">${s.addr}</div></div><div class="arrow">›</div></div>`).join('');
+}
+function doSearch(){
+  const kw=document.getElementById('searchInput').value.trim().toLowerCase();
+  render(allStores.filter(s=>s.name.toLowerCase().includes(kw)||s.addr.toLowerCase().includes(kw)));
+}
+function selectStore(idx){
+  currentStore=allStores[idx];
+  document.getElementById('scanModal').classList.add('show');
+}
+function hideScan(){document.getElementById('scanModal').classList.remove('show');}
+function closeScan(e){if(e.target.id==='scanModal')hideScan();}
+
+let scanResult='success';
+function doScan(){
+  const r=Math.random();
+  if(r<0.15){scanResult='fail';}
+  else if(r<0.35){scanResult='repeat';}
+  else{scanResult='success';}
+  hideScan();
+  showResult();
+}
+function showResult(){
+  const icon=document.getElementById('resultIcon');
+  const title=document.getElementById('resultTitle');
+  const text=document.getElementById('resultText');
+  const btn=document.getElementById('resultBtn');
+  if(scanResult==='success'){
+    icon.textContent='✅';title.textContent='激活成功';text.textContent='产品已成功激活并归属至「'+currentStore.name+'」，门店库存 +1';btn.textContent='继续扫码';btn.className='btn';
+  }else if(scanResult==='repeat'){
+    icon.textContent='⚠️';title.textContent='重复激活';text.textContent='产品已激活请勿重复扫码，激活门店：'+currentStore.name;btn.textContent='继续扫码';btn.className='btn gray';
+  }else{
+    icon.textContent='❌';title.textContent='激活失败';text.textContent='扫码激活失败，请检查二维码后重试';btn.textContent='重试';btn.className='btn';
+  }
+  document.getElementById('resultModal').classList.add('show');
+}
+function closeResult(e){if(e.target.id==='resultModal')document.getElementById('resultModal').classList.remove('show');}
+function continueScan(){
+  document.getElementById('resultModal').classList.remove('show');
+  if(scanResult==='fail'){setTimeout(()=>document.getElementById('scanModal').classList.add('show'),200);}
+  else{setTimeout(()=>document.getElementById('scanModal').classList.add('show'),200);}
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+
+doSearch();
+</script>
+</body>
+</html>

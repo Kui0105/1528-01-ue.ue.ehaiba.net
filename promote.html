@@ -132,7 +132,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="card menu-card">
       <div class="menu-title">功能入口</div>
       <div class="menu-grid">
-        <div class="menu-item" onclick="activate()">
+        <div class="menu-item" onclick="location.href='activate.html'">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="6" width="18" height="14" rx="2"></rect>
@@ -142,7 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           </div>
           <div class="label">产品激活</div>
         </div>
-        <div class="menu-item" onclick="recycle()">
+        <div class="menu-item" onclick="location.href='recycle.html'">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 12a8 8 0 1 1-16 0"></path>
@@ -152,7 +152,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           </div>
           <div class="label">产品回收</div>
         </div>
-        <div class="menu-item" onclick="verify()">
+        <div class="menu-item" onclick="location.href='verify-prize.html'">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 6L9 17l-5-5"></path>
@@ -170,7 +170,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           </div>
           <div class="label">门店管理</div>
         </div>
-        <div class="menu-item" onclick="productDetail()">
+        <div class="menu-item" onclick="location.href='product-detail.html'">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"></path>
@@ -212,27 +212,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
-  <div class="modal" id="storeModal" onclick="closeStoreModal(event)">
-    <div class="modal-panel" onclick="event.stopPropagation()">
-      <div class="modal-hd">
-        <h3>选择门店</h3>
-        <span class="close" onclick="hideStoreModal()">×</span>
-      </div>
-      <div class="store-list" id="storeList"></div>
-    </div>
-  </div>
-
-  <div class="modal" id="scanModal" onclick="closeScanModal(event)">
-    <div class="scan-panel" onclick="event.stopPropagation()">
-      <div class="scan-frame">
-        <div class="scan-line"></div>
-        <p>将条码/二维码放入框内</p>
-      </div>
-      <button class="scan-btn" onclick="completeScan()">模拟扫码成功</button>
-      <button class="scan-cancel" onclick="hideScanModal()">取消</button>
-    </div>
-  </div>
-
   <div class="toast" id="toast"></div>
 </div>
 
@@ -243,15 +222,6 @@ const statData={
   week:{put:856,verify:612,store:96},
   month:{put:3520,verify:2846,store:128}
 };
-const stores=[
-  {name:'湘江东路店',addr:'长沙市开福区湘江东路一段 88 号'},
-  {name:'五一广场店',addr:'长沙市芙蓉区五一大道 168 号'},
-  {name:'岳麓山北店',addr:'长沙市岳麓区麓山南路 66 号'},
-  {name:'雨花亭店',addr:'长沙市雨花区韶山中路 420 号'},
-  {name:'星沙万象汇店',addr:'长沙市长沙县星沙大道 178 号'}
-];
-let scanMode='';
-
 function showFilterSheet(){document.getElementById('filterModal').classList.add('show');}
 function hideFilterSheet(){document.getElementById('filterModal').classList.remove('show');}
 function closeFilterModal(e){if(e.target.id==='filterModal')hideFilterSheet();}
@@ -265,35 +235,6 @@ function selectFilter(type,label){
   document.getElementById('statStore').textContent=d.store;
   hideFilterSheet();
 }
-
-function activate(){
-  const list=document.getElementById('storeList');
-  list.innerHTML=stores.map((s,i)=>`<div class="store-item" onclick="selectStore(${i})"><div class="store-name">${s.name}</div><div class="store-addr">${s.addr}</div></div>`).join('');
-  document.getElementById('storeModal').classList.add('show');
-}
-function selectStore(idx){
-  hideStoreModal();
-  scanMode='activate';
-  document.getElementById('scanModal').classList.add('show');
-}
-function hideStoreModal(){document.getElementById('storeModal').classList.remove('show');}
-function closeStoreModal(e){if(e.target.id==='storeModal')hideStoreModal();}
-
-function verify(){
-  scanMode='verify';
-  document.getElementById('scanModal').classList.add('show');
-}
-function hideScanModal(){document.getElementById('scanModal').classList.remove('show');}
-function closeScanModal(e){if(e.target.id==='scanModal')hideScanModal();}
-function completeScan(){
-  hideScanModal();
-  if(scanMode==='activate')toast('产品激活成功');
-  else if(scanMode==='verify')toast('兑奖核销成功');
-  else toast('扫码完成');
-}
-
-function recycle(){toast('产品回收功能开发中');}
-function productDetail(){toast('产品明细功能开发中');}
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
