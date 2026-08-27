@@ -25,6 +25,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
 .subbar{height:38px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 14px;font-size:13px;color:#666;flex-shrink:0}
+.search{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.search input{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
+.search input:focus{border-color:#c9302c}
+.search button{width:60px;height:36px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
 .card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
@@ -47,6 +51,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
   <div class="subbar" id="subbar">经销商</div>
+  <div class="search">
+    <input type="text" id="kw" placeholder="搜索门店名称/联系人/电话" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">搜索</button>
+  </div>
   <div class="content" id="content"></div>
 </div>
 
@@ -147,22 +155,42 @@ const allStores={
   ]
 };
 
-function render(){
+const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏','李娜','王芳','张涛','杨光','郑凯','冯雪'];
+function genSalesman(i){return salesmen[i%salesmen.length];}
+function genCtime(seed){
+  const base=new Date(2024,0,1).getTime();
+  const off=((seed*37)%520)*86400000;
+  const d=new Date(base+off);
+  const p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+
+function render(kw){
+  kw=(kw||'').trim().toLowerCase();
   const box=document.getElementById('content');
   const dname=dealerName[id]||'该经销商';
   document.getElementById('subbar').textContent=dname+' · 门店列表';
-  const list=allStores[id]||[];
-  if(list.length===0){box.innerHTML='<div class="empty">暂无门店数据</div>';return;}
-  box.innerHTML=list.map(s=>`
+  let list=allStores[id]||[];
+  if(kw){
+    list=list.filter(s=>(s.name+s.contact+s.phone).toLowerCase().includes(kw));
+  }
+  if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的门店</div>';return;}
+  box.innerHTML=list.map((s,i)=>`
     <div class="card">
-      <div class="name">${s.name}<span class="status ${s.status}">${s.status==='open'?'营业中':'已停业'}</span></div>
+      <div class="name">${s.name}<span class="status ${s.status}">${s.status==='open'?'营业中':'停业中'}</span></div>
       <div class="info">
-        <div><span class="label">地址</span>${s.addr}</div>
         <div><span class="label">联系人</span>${s.contact}</div>
-        <div><span class="label">电话</span>${s.phone}</div>
+        <div><span class="label">联系电话</span>${s.phone}</div>
+        <div><span class="label">业务员</span>${genSalesman(i)}</div>
+        <div><span class="label">详细地址</span>${s.addr}</div>
+        <div><span class="label">创建时间</span>${genCtime(id*200+i)}</div>
       </div>
     </div>
   `).join('');
+}
+
+function doSearch(){
+  render(document.getElementById('kw').value);
 }
 
 render();

@@ -41,6 +41,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .entry .ic{width:34px;height:34px;border-radius:8px;background:#fff7f7;display:flex;align-items:center;justify-content:center}
 .entry .arrow{color:#999;font-size:18px}
 
+.stats{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.stats .block{margin-bottom:12px}
+.stats .block:last-child{margin-bottom:0}
+.stats .block .bhead{font-size:13px;color:#999;margin-bottom:8px}
+.stats .block .nums{display:flex;background:#fafafa;border:.5px solid rgba(0,0,0,.06);border-radius:8px;overflow:hidden}
+.stats .block .nums .n{flex:1;text-align:center;padding:10px 0}
+.stats .block .nums .n+.n{border-left:.5px solid rgba(0,0,0,.06)}
+.stats .block .nums .n .v{font-size:17px;font-weight:600;color:#c9302c}
+.stats .block .nums .n .k{font-size:12px;color:#999;margin-top:2px}
+
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
 </head>
@@ -114,7 +124,24 @@ function render(){
   const d=allDealers.find(x=>x.id===id);
   const box=document.getElementById('content');
   if(!d){box.innerHTML='<div class="empty">经销商不存在</div>';return;}
+  const storeAct=d.stores*18, storeDyn=d.stores*16, storePrize=d.stores*5;
+  const salesAct=d.sales*30, salesDyn=d.sales*27, salesPrize=d.sales*8;
+  const dealerAct=storeAct+salesAct, dealerDyn=storeDyn+salesDyn, dealerPrize=storePrize+salesPrize;
+  const statBlock=(title,act,dyn,prize)=>`
+    <div class="block">
+      <div class="bhead">${title}</div>
+      <div class="nums">
+        <div class="n"><div class="v">${act}</div><div class="k">激活量</div></div>
+        <div class="n"><div class="v">${dyn}</div><div class="k">动销量</div></div>
+        <div class="n"><div class="v">${prize}</div><div class="k">中奖量</div></div>
+      </div>
+    </div>`;
   box.innerHTML=`
+    <div class="stats">
+      ${statBlock('门店数据',storeAct,storeDyn,storePrize)}
+      ${statBlock('业务员数据',salesAct,salesDyn,salesPrize)}
+      ${statBlock('经销商数据',dealerAct,dealerDyn,dealerPrize)}
+    </div>
     <div class="section">
       <div class="head">
         <div class="title">${d.name}</div>
