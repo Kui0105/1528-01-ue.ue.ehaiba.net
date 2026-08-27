@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
 /* status bar */
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
@@ -36,7 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .lottery-btn{display:inline-block;background:#d4a843;color:#fff;padding:14px 64px;border-radius:999px;font-size:18px;font-weight:500;cursor:pointer;border:none;transition:transform .12s}
 .lottery-btn:active{transform:scale(.96)}
 /* auth modal */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
 .overlay.show{display:flex}
 .modal{background:#fff;border-radius:20px;padding:28px 24px;width:84%;max-width:320px;text-align:center}
 .modal h3{font-size:16px;font-weight:500;margin-bottom:8px}
@@ -75,21 +75,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       </div>
     </div>
   </div>
-</div>
-
-<div class="overlay" id="authOverlay">
-  
-
-<div class="toast" id="toast">
-<div class="modal">
-    <h3>需要登录</h3>
-    <p>检测到您尚未登录，请授权微信手机号后继续抽奖</p>
-    <button class="btn" onclick="doAuth()">微信手机号一键登录</button>
-    <button class="cancel" onclick="closeAuth()">暂不登录</button>
+  <div class="overlay" id="authOverlay">
+    <div class="modal">
+      <h3>需要登录</h3>
+      <p>检测到您尚未登录，请授权微信手机号后继续抽奖</p>
+      <button class="btn" onclick="doAuth()">微信手机号一键登录</button>
+      <button class="cancel" onclick="closeAuth()">暂不登录</button>
+    </div>
   </div>
+  <div class="toast" id="toast"></div>
 </div>
-</div>
-
 
 <script>
 let loggedIn=false;
