@@ -7,7 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;position:relative}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
 .statusbar{height:28px;background:#c9302c;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0;color:#fff}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
@@ -183,14 +183,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="tab-item active" onclick="toast('当前在积分商城首页')">
       <div class="ic">🏠</div>
       <div class="txt">首页</div>
-    </div>
-    <div class="tab-item" onclick="location.href='category.html'">
-      <div class="ic">📦</div>
-      <div class="txt">分类</div>
-    </div>
-    <div class="tab-item" onclick="location.href='records.html'">
-      <div class="ic">🎁</div>
-      <div class="txt">中奖</div>
     </div>
     <div class="tab-item" onclick="toast('我的页面待生成')">
       <div class="ic">👤</div>
