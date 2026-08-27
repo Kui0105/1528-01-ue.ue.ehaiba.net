@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 经销商列表</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.dealer-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.dealer-card .name{font-size:15px;font-weight:500;margin-bottom:10px}
+.dealer-card .info{font-size:13px;color:#666;line-height:1.8}
+.dealer-card .info .row{display:flex;justify-content:space-between;margin-bottom:4px}
+.dealer-card .info .label{color:#999}
+.dealer-card .stats{display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:.5px solid rgba(0,0,0,.06)}
+.dealer-card .stats .item{font-size:12px;color:#666}
+.dealer-card .stats .item b{color:#c9302c;margin-right:2px}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title" id="pageTitle">经销商列表</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const regionId=parseInt(params.get('regionId')||'0');
+const regionName=decodeURIComponent(params.get('regionName')||'该区域');
+document.getElementById('pageTitle').textContent=regionName+' · 经销商';
+
+const allDealers={
+  11:[{name:'长沙兴盛商贸有限公司',contact:'刘经理',phone:'138****1234',area:'湖南省长沙市天心区',sales:6,stores:18},{name:'长沙锦程贸易有限公司',contact:'陈经理',phone:'139****5678',area:'湖南省长沙市岳麓区',sales:5,stores:15},{name:'长沙联华批发部',contact:'张老板',phone:'137****9012',area:'湖南省长沙市开福区',sales:4,stores:12}],
+  12:[{name:'株洲宏达商贸',contact:'王经理',phone:'138****2345',area:'湖南省株洲市天元区',sales:5,stores:14},{name:'株洲金叶贸易',contact:'李经理',phone:'139****6789',area:'湖南省株洲市荷塘区',sales:4,stores:11}],
+  21:[{name:'武汉恒信商贸有限公司',contact:'赵经理',phone:'138****3456',area:'湖北省武汉市江汉区',sales:8,stores:22},{name:'武汉百川批发',contact:'孙经理',phone:'139****7890',area:'湖北省武汉市武昌区',sales:6,stores:18},{name:'武汉惠民贸易',contact:'周经理',phone:'137****1357',area:'湖北省武汉市洪山区',sales:5,stores:15}],
+  31:[{name:'广州粤海商贸',contact:'吴经理',phone:'138****4567',area:'广东省广州市天河区',sales:10,stores:28},{name:'广州南沙批发部',contact:'郑经理',phone:'139****8901',area:'广东省广州市南沙区',sales:7,stores:20}]
+};
+
+const dealers=allDealers[regionId]||[
+  {name:'示例经销商 A',contact:'张经理',phone:'138****0001',area:'示例省示例市示例区',sales:5,stores:12},
+  {name:'示例经销商 B',contact:'李经理',phone:'139****0002',area:'示例省示例市示例区',sales:3,stores:8}
+];
+
+function render(){
+  const box=document.getElementById('content');
+  if(dealers.length===0){box.innerHTML='<div class="empty">暂无经销商数据</div>';return;}
+  box.innerHTML=dealers.map(d=>`
+    <div class="dealer-card">
+      <div class="name">${d.name}</div>
+      <div class="info">
+        <div class="row"><span class="label">联系人</span><span>${d.contact}</span></div>
+        <div class="row"><span class="label">联系电话</span><span>${d.phone}</span></div>
+        <div class="row"><span class="label">省市区</span><span>${d.area}</span></div>
+      </div>
+      <div class="stats">
+        <div class="item"><b>${d.sales}</b>业务员</div>
+        <div class="item"><b>${d.stores}</b>门店</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

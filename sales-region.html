@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>迈极炫 · 销售数据</title>
+<title>迈极炫 · 区域详情</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
@@ -45,23 +45,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
     <span class="back" onclick="history.back()">‹</span>
-    <span class="title">销售数据</span>
+    <span class="title" id="pageTitle">区域详情</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
   <div class="content" id="content"></div>
 </div>
 
 <script>
-const regions=[
-  {id:1,name:'湖南省',level:1,dealers:28,sales:156,stores:482},
-  {id:2,name:'湖北省',level:1,dealers:22,sales:134,stores:396},
-  {id:3,name:'广东省',level:1,dealers:35,sales:201,stores:623},
-  {id:4,name:'江西省',level:1,dealers:18,sales:98,stores:287},
-  {id:5,name:'四川省',level:1,dealers:25,sales:167,stores:412}
-];
+const params=new URLSearchParams(location.search);
+const parentId=parseInt(params.get('pid')||'0');
+const parentName=decodeURIComponent(params.get('name')||'区域详情');
+document.getElementById('pageTitle').textContent=parentName;
+
+const allRegions={
+  1:[{id:11,name:'长沙市',dealers:8,sales:45,stores:142},{id:12,name:'株洲市',dealers:5,sales:28,stores:86},{id:13,name:'湘潭市',dealers:4,sales:22,stores:68},{id:14,name:'衡阳市',dealers:6,sales:34,stores:98},{id:15,name:'岳阳市',dealers:5,sales:27,stores:88}],
+  2:[{id:21,name:'武汉市',dealers:10,sales:58,stores:168},{id:22,name:'宜昌市',dealers:4,sales:24,stores:62},{id:23,name:'襄阳市',dealers:5,sales:31,stores:89},{id:24,name:'荆州市',dealers:3,sales:21,stores:77}],
+  3:[{id:31,name:'广州市',dealers:12,sales:72,stores:215},{id:32,name:'深圳市',dealers:10,sales:65,stores:198},{id:33,name:'东莞市',dealers:7,sales:38,stores:112},{id:34,name:'佛山市',dealers:6,sales:26,stores:98}],
+  4:[{id:41,name:'南昌市',dealers:7,sales:38,stores:112},{id:42,name:'赣州市',dealers:5,sales:28,stores:78},{id:43,name:'九江市',dealers:3,sales:18,stores:52},{id:44,name:'上饶市',dealers:3,sales:14,stores:45}],
+  5:[{id:51,name:'成都市',dealers:9,sales:52,stores:148},{id:52,name:'绵阳市',dealers:5,sales:29,stores:76},{id:53,name:'德阳市',dealers:4,sales:24,stores:68},{id:54,name:'南充市',dealers:4,sales:26,stores:72},{id:55,name:'乐山市',dealers:3,sales:18,stores:48}]
+};
+
+const regions=allRegions[parentId]||[];
 
 function render(){
   const box=document.getElementById('content');
+  if(regions.length===0){box.innerHTML='<div class="empty">暂无下级区域数据</div>';return;}
   box.innerHTML=regions.map(r=>`
     <div class="region-card" onclick="goRegion(${r.id},'${r.name}')">
       <div class="name">${r.name}<span class="arrow">›</span></div>
