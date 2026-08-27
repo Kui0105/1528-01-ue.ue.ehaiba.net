@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 经销商详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.section{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.section .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section .head .title{font-size:15px;font-weight:500}
+.section .head .status{font-size:12px;padding:2px 8px;border-radius:4px}
+.section .head .status.enabled{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.section .head .status.disabled{color:#999;background:#f2f2f2}
+.row{display:flex;padding:10px 0;border-bottom:.5px solid rgba(0,0,0,.06);font-size:14px}
+.row:last-child{border-bottom:none}
+.row .label{color:#999;min-width:80px}
+.row .value{flex:1;color:#333}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:#fff7f7;border:.5px solid rgba(201,48,44,.1);border-radius:10px;padding:14px 0;text-align:center}
+.stat .num{font-size:22px;font-weight:600;color:#c9302c;margin-bottom:4px}
+.stat .txt{font-size:13px;color:#666}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">经销商详情</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const id=parseInt(params.get('id')||'0');
+
+const allDealers=[
+  {id:111,name:'长沙兴盛商贸有限公司',status:'enabled',contact:'刘经理',phone:'138****1234',province:'湖南省',city:'长沙市',area:'天心区',address:'湖南省长沙市天心区劳动西路 188 号',sales:6,stores:18},
+  {id:112,name:'长沙锦程贸易有限公司',status:'disabled',contact:'陈经理',phone:'139****5678',province:'湖南省',city:'长沙市',area:'岳麓区',address:'湖南省长沙市岳麓区麓谷大道 66 号',sales:5,stores:15},
+  {id:113,name:'长沙联华批发部',status:'enabled',contact:'张老板',phone:'137****9012',province:'湖南省',city:'长沙市',area:'开福区',address:'湖南省长沙市开福区湘江北路 120 号',sales:4,stores:12},
+  {id:121,name:'株洲宏达商贸',status:'enabled',contact:'王经理',phone:'138****2345',province:'湖南省',city:'株洲市',area:'天元区',address:'湖南省株洲市天元区长江北路 88 号',sales:5,stores:14},
+  {id:122,name:'株洲金叶贸易',status:'enabled',contact:'李经理',phone:'139****6789',province:'湖南省',city:'株洲市',area:'荷塘区',address:'湖南省株洲市荷塘区新华西路 66 号',sales:4,stores:11},
+  {id:131,name:'湘潭金鹏商贸',status:'enabled',contact:'赵经理',phone:'138****3456',province:'湖南省',city:'湘潭市',area:'雨湖区',address:'湖南省湘潭市雨湖区建设北路 99 号',sales:3,stores:9},
+  {id:132,name:'湘潭永辉批发部',status:'disabled',contact:'孙经理',phone:'139****7890',province:'湖南省',city:'湘潭市',area:'岳塘区',address:'湖南省湘潭市岳塘区芙蓉中路 22 号',sales:2,stores:6},
+  {id:141,name:'衡阳天信商贸',status:'enabled',contact:'周经理',phone:'138****4567',province:'湖南省',city:'衡阳市',area:'蒸湘区',address:'湖南省衡阳市蒸湘区解放大道 168 号',sales:7,stores:20},
+  {id:142,name:'衡阳鹏程贸易',status:'enabled',contact:'吴经理',phone:'139****8901',province:'湖南省',city:'衡阳市',area:'珠晖区',address:'湖南省衡阳市珠晖区东风南路 77 号',sales:5,stores:13},
+  {id:151,name:'岳阳宏发商贸',status:'enabled',contact:'郑经理',phone:'138****5678',province:'湖南省',city:'岳阳市',area:'岳阳楼区',address:'湖南省岳阳市岳阳楼区南湖大道 55 号',sales:4,stores:10},
+  {id:152,name:'岳阳联盛批发部',status:'enabled',contact:'钱老板',phone:'139****0123',province:'湖南省',city:'岳阳市',area:'云溪区',address:'湖南省岳阳市云溪区云中北路 33 号',sales:3,stores:8},
+  {id:211,name:'武汉恒信商贸有限公司',status:'enabled',contact:'赵经理',phone:'138****3456',province:'湖北省',city:'武汉市',area:'江汉区',address:'湖北省武汉市江汉区建设大道 888 号',sales:8,stores:22},
+  {id:212,name:'武汉百川批发',status:'disabled',contact:'孙经理',phone:'139****7890',province:'湖北省',city:'武汉市',area:'武昌区',address:'湖北省武汉市武昌区中南路 66 号',sales:6,stores:18},
+  {id:213,name:'武汉惠民贸易',status:'enabled',contact:'周经理',phone:'137****1357',province:'湖北省',city:'武汉市',area:'洪山区',address:'湖北省武汉市洪山区珞喻路 288 号',sales:5,stores:15},
+  {id:221,name:'宜昌顺达商贸',status:'enabled',contact:'吴经理',phone:'138****4567',province:'湖北省',city:'宜昌市',area:'西陵区',address:'湖北省宜昌市西陵区东山大道 128 号',sales:4,stores:10},
+  {id:222,name:'宜昌长江批发部',status:'enabled',contact:'郑经理',phone:'139****8901',province:'湖北省',city:'宜昌市',area:'伍家岗区',address:'湖北省宜昌市伍家岗区沿江大道 88 号',sales:3,stores:8},
+  {id:231,name:'襄阳金穗商贸',status:'enabled',contact:'王经理',phone:'138****5678',province:'湖北省',city:'襄阳市',area:'襄城区',address:'湖北省襄阳市襄城区檀溪路 77 号',sales:5,stores:12},
+  {id:232,name:'襄阳汉水贸易',status:'enabled',contact:'冯经理',phone:'139****1234',province:'湖北省',city:'襄阳市',area:'樊城区',address:'湖北省襄阳市樊城区长虹路 199 号',sales:4,stores:9},
+  {id:241,name:'荆州宏运商贸',status:'disabled',contact:'陈经理',phone:'138****6789',province:'湖北省',city:'荆州市',area:'沙市区',address:'湖北省荆州市沙市区北京中路 66 号',sales:3,stores:8},
+  {id:242,name:'荆州古城批发部',status:'enabled',contact:'褚老板',phone:'139****2345',province:'湖北省',city:'荆州市',area:'荆州区',address:'湖北省荆州市荆州区屈原路 22 号',sales:3,stores:7},
+  {id:311,name:'广州粤海商贸',status:'enabled',contact:'吴经理',phone:'138****4567',province:'广东省',city:'广州市',area:'天河区',address:'广东省广州市天河区珠江新城华夏路 10 号',sales:10,stores:28},
+  {id:312,name:'广州南沙批发部',status:'enabled',contact:'郑经理',phone:'139****8901',province:'广东省',city:'广州市',area:'南沙区',address:'广东省广州市南沙区进港大道 88 号',sales:7,stores:20},
+  {id:313,name:'广州白云贸易',status:'disabled',contact:'王经理',phone:'137****3456',province:'广东省',city:'广州市',area:'白云区',address:'广东省广州市白云区机场路 288 号',sales:6,stores:16},
+  {id:321,name:'深圳前海商贸',status:'enabled',contact:'李经理',phone:'138****7890',province:'广东省',city:'深圳市',area:'南山区',address:'广东省深圳市南山区前海大道 66 号',sales:12,stores:35},
+  {id:322,name:'深圳福田批发部',status:'enabled',contact:'张老板',phone:'139****1234',province:'广东省',city:'深圳市',area:'福田区',address:'广东省深圳市福田区深南大道 1001 号',sales:8,stores:22},
+  {id:331,name:'东莞东城商贸',status:'enabled',contact:'刘经理',phone:'138****8901',province:'广东省',city:'东莞市',area:'东城区',address:'广东省东莞市东城区东城大道 55 号',sales:6,stores:15},
+  {id:332,name:'东莞虎门贸易',status:'enabled',contact:'陈经理',phone:'139****4567',province:'广东省',city:'东莞市',area:'虎门镇',address:'广东省东莞市虎门镇虎门大道 120 号',sales:5,stores:12},
+  {id:341,name:'佛山禅城商贸',status:'disabled',contact:'杨经理',phone:'138****1234',province:'广东省',city:'佛山市',area:'禅城区',address:'广东省佛山市禅城区季华五路 88 号',sales:5,stores:13},
+  {id:342,name:'佛山顺德批发部',status:'enabled',contact:'黄老板',phone:'139****5678',province:'广东省',city:'佛山市',area:'顺德区',address:'广东省佛山市顺德区大良街道凤山路 33 号',sales:4,stores:10},
+  {id:411,name:'南昌洪城商贸',status:'enabled',contact:'赵经理',phone:'138****2345',province:'江西省',city:'南昌市',area:'东湖区',address:'江西省南昌市东湖区阳明路 88 号',sales:6,stores:16},
+  {id:412,name:'南昌红谷滩贸易',status:'enabled',contact:'钱经理',phone:'139****6789',province:'江西省',city:'南昌市',area:'红谷滩区',address:'江西省南昌市红谷滩区会展路 66 号',sales:5,stores:12},
+  {id:421,name:'赣州赣南商贸',status:'enabled',contact:'孙经理',phone:'138****3456',province:'江西省',city:'赣州市',area:'章贡区',address:'江西省赣州市章贡区长征大道 99 号',sales:4,stores:11},
+  {id:422,name:'赣州开发区批发部',status:'disabled',contact:'李老板',phone:'139****7890',province:'江西省',city:'赣州市',area:'经开区',address:'江西省赣州市经开区金岭西路 22 号',sales:3,stores:8},
+  {id:431,name:'九江浔阳商贸',status:'enabled',contact:'周经理',phone:'138****4567',province:'江西省',city:'九江市',area:'浔阳区',address:'江西省九江市浔阳区浔阳路 66 号',sales:3,stores:8},
+  {id:432,name:'九江濂溪批发部',status:'enabled',contact:'吴老板',phone:'139****8901',province:'江西省',city:'九江市',area:'濂溪区',address:'江西省九江市濂溪区前进东路 44 号',sales:2,stores:6},
+  {id:441,name:'上饶信州商贸',status:'enabled',contact:'郑经理',phone:'138****5678',province:'江西省',city:'上饶市',area:'信州区',address:'江西省上饶市信州区凤凰中大道 88 号',sales:3,stores:8},
+  {id:442,name:'上饶广丰批发部',status:'disabled',contact:'王老板',phone:'139****0123',province:'江西省',city:'上饶市',area:'广丰区',address:'江西省上饶市广丰区永丰大道 33 号',sales:2,stores:5},
+  {id:511,name:'成都蜀信商贸',status:'enabled',contact:'赵经理',phone:'138****6789',province:'四川省',city:'成都市',area:'锦江区',address:'四川省成都市锦江区人民南路 188 号',sales:9,stores:25},
+  {id:512,name:'成都高新批发部',status:'enabled',contact:'钱经理',phone:'139****1234',province:'四川省',city:'成都市',area:'高新区',address:'四川省成都市高新区天府大道 666 号',sales:7,stores:20},
+  {id:513,name:'成都武侯贸易',status:'disabled',contact:'孙老板',phone:'137****4567',province:'四川省',city:'成都市',area:'武侯区',address:'四川省成都市武侯区高升桥路 22 号',sales:6,stores:16},
+  {id:521,name:'绵阳涪城商贸',status:'enabled',contact:'李经理',phone:'138****7890',province:'四川省',city:'绵阳市',area:'涪城区',address:'四川省绵阳市涪城区临园路东段 88 号',sales:5,stores:12},
+  {id:522,name:'绵阳游仙批发部',status:'enabled',contact:'周老板',phone:'139****2345',province:'四川省',city:'绵阳市',area:'游仙区',address:'四川省绵阳市游仙区一环路东段 66 号',sales:4,stores:9},
+  {id:531,name:'德阳旌阳商贸',status:'disabled',contact:'吴经理',phone:'138****8901',province:'四川省',city:'德阳市',area:'旌阳区',address:'四川省德阳市旌阳区长江西路 55 号',sales:4,stores:10},
+  {id:532,name:'德阳广汉批发部',status:'enabled',contact:'郑老板',phone:'139****3456',province:'四川省',city:'德阳市',area:'广汉市',address:'四川省德阳市广汉市中山大道 33 号',sales:3,stores:7},
+  {id:541,name:'南充顺庆商贸',status:'enabled',contact:'王经理',phone:'138****0123',province:'四川省',city:'南充市',area:'顺庆区',address:'四川省南充市顺庆区文化路 88 号',sales:4,stores:11},
+  {id:542,name:'南充高坪批发部',status:'enabled',contact:'冯老板',phone:'139****5678',province:'四川省',city:'南充市',area:'高坪区',address:'四川省南充市高坪区江东中路 66 号',sales:4,stores:10},
+  {id:551,name:'乐山市中商贸',status:'enabled',contact:'陈经理',phone:'138****1234',province:'四川省',city:'乐山市',area:'市中区',address:'四川省乐山市市中区柏杨中路 22 号',sales:3,stores:8},
+  {id:552,name:'乐山市五通桥批发部',status:'disabled',contact:'褚老板',phone:'139****6789',province:'四川省',city:'乐山市',area:'五通桥区',address:'四川省乐山市五通桥区涌江路 11 号',sales:2,stores:5}
+];
+
+function render(){
+  const d=allDealers.find(x=>x.id===id);
+  const box=document.getElementById('content');
+  if(!d){box.innerHTML='<div class="empty">经销商不存在</div>';return;}
+  box.innerHTML=`
+    <div class="section">
+      <div class="head">
+        <div class="title">${d.name}</div>
+        <span class="status ${d.status}">${d.status==='enabled'?'启用':'禁用'}</span>
+      </div>
+      <div class="row"><span class="label">联系人</span><span class="value">${d.contact}</span></div>
+      <div class="row"><span class="label">联系电话</span><span class="value">${d.phone}</span></div>
+      <div class="row"><span class="label">省市区</span><span class="value">${d.province}${d.city}${d.area}</span></div>
+      <div class="row"><span class="label">详细地址</span><span class="value">${d.address}</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">${d.sales}</div><div class="txt">业务员</div></div>
+      <div class="stat"><div class="num">${d.stores}</div><div class="txt">门店</div></div>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
