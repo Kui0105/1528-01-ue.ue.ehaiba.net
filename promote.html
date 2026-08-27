@@ -8,8 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -18,11 +19,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;margin-bottom:12px;overflow:hidden}
+
+.user-card{display:flex;align-items:center;gap:14px;padding:18px 14px}
+.user-card .avatar{width:56px;height:56px;border-radius:50%;background:#f5f6f7;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;border:.5px solid rgba(0,0,0,.06)}
+.user-card .info{flex:1;min-width:0}
+.user-card .info .name{font-size:16px;font-weight:500;margin-bottom:5px}
+.user-card .info .phone{font-size:13px;color:#666;margin-bottom:4px}
+.user-card .info .dealer{font-size:13px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.stat-card{padding:14px}
+.stat-title{font-size:15px;font-weight:500;margin-bottom:12px}
+.filter-tabs{display:flex;gap:8px;margin-bottom:16px}
+.filter-tabs .tab{flex:1;text-align:center;height:32px;line-height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;font-size:13px;color:#666;cursor:pointer}
+.filter-tabs .tab.active{background:#c9302c;color:#fff;border-color:#c9302c}
+.stat-grid{display:flex}
+.stat-item{flex:1;text-align:center;position:relative}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:8px;bottom:8px;width:.5px;background:rgba(0,0,0,.08)}
+.stat-item .num{font-size:22px;font-weight:600;color:#c9302c;margin-bottom:4px}
+.stat-item .label{font-size:12px;color:#666}
+
+.menu-card{padding:14px}
+.menu-title{font-size:15px;font-weight:500;margin-bottom:14px}
+.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px}
+.menu-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.menu-item .icon{width:46px;height:46px;border-radius:12px;background:#fff;border:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:22px}
+.menu-item .label{font-size:12px;color:#333}
+
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.modal-panel{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px;animation:slideUp .22s ease;max-height:70%;display:flex;flex-direction:column}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.modal-hd h3{font-size:16px;font-weight:500}
+.modal-hd .close{font-size:24px;color:#999;cursor:pointer;width:30px;text-align:right}
+.store-list{overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:360px}
+.store-item{padding:14px 0;border-bottom:.5px solid rgba(0,0,0,.06);cursor:pointer}
+.store-item:last-child{border-bottom:none}
+.store-item .store-name{font-size:14px;font-weight:500;margin-bottom:4px}
+.store-item .store-addr{font-size:12px;color:#999}
+.store-item:active{background:#fafafa}
+
+.scan-panel{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:24px 20px 28px;display:flex;flex-direction:column;align-items:center;animation:slideUp .22s ease}
+.scan-frame{width:220px;height:220px;border:.5px solid rgba(0,0,0,.15);border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;background:#f5f6f7;margin-bottom:20px;overflow:hidden}
+.scan-frame::before{content:'';position:absolute;left:15px;top:15px;right:15px;bottom:15px;border:2px solid #c9302c;border-radius:8px}
+.scan-frame .scan-line{position:absolute;left:20px;right:20px;height:2px;background:#c9302c;box-shadow:0 0 6px rgba(201,48,44,.5);animation:scan 1.6s linear infinite}
+@keyframes scan{0%{top:20px}50%{top:200px}100%{top:20px}}
+.scan-frame p{position:absolute;bottom:30px;font-size:12px;color:#999}
+.scan-btn{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px}
+.scan-cancel{width:100%;height:40px;background:transparent;color:#666;border:.5px solid rgba(0,0,0,.12);border-radius:999px;font-size:14px;cursor:pointer}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 <body>
@@ -32,13 +82,148 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">业务推广</span>
   </div>
+
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">📢</div>
-      <h2>业务推广</h2>
-      <p>业务员管理界面<br>该模块占位，后续按权限展示</p>
+    <div class="card user-card">
+      <div class="avatar">👤</div>
+      <div class="info">
+        <div class="name">业务员：张三</div>
+        <div class="phone">138****8888</div>
+        <div class="dealer">经销商：长沙总经销</div>
+      </div>
+    </div>
+
+    <div class="card stat-card">
+      <div class="stat-title">数据统计</div>
+      <div class="filter-tabs">
+        <span class="tab active" data-type="today" onclick="switchTab(this,'today')">今日</span>
+        <span class="tab" data-type="yesterday" onclick="switchTab(this,'yesterday')">昨日</span>
+        <span class="tab" data-type="week" onclick="switchTab(this,'week')">本周</span>
+        <span class="tab" data-type="month" onclick="switchTab(this,'month')">本月</span>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="num" id="statPut">128</div>
+          <div class="label">产品铺货</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="statVerify">86</div>
+          <div class="label">兑奖核销</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="statStore">42</div>
+          <div class="label">铺货门店</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card menu-card">
+      <div class="menu-title">功能入口</div>
+      <div class="menu-grid">
+        <div class="menu-item" onclick="activate()">
+          <div class="icon">📷</div>
+          <div class="label">产品激活</div>
+        </div>
+        <div class="menu-item" onclick="recycle()">
+          <div class="icon">♻️</div>
+          <div class="label">产品回收</div>
+        </div>
+        <div class="menu-item" onclick="verify()">
+          <div class="icon">✅</div>
+          <div class="label">兑奖核销</div>
+        </div>
+        <div class="menu-item" onclick="location.href='store.html'">
+          <div class="icon">🏪</div>
+          <div class="label">门店管理</div>
+        </div>
+        <div class="menu-item" onclick="productDetail()">
+          <div class="icon">📦</div>
+          <div class="label">产品明细</div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div class="modal" id="storeModal" onclick="closeStoreModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <div class="modal-hd">
+        <h3>选择门店</h3>
+        <span class="close" onclick="hideStoreModal()">×</span>
+      </div>
+      <div class="store-list" id="storeList"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="scanModal" onclick="closeScanModal(event)">
+    <div class="scan-panel" onclick="event.stopPropagation()">
+      <div class="scan-frame">
+        <div class="scan-line"></div>
+        <p>将条码/二维码放入框内</p>
+      </div>
+      <button class="scan-btn" onclick="completeScan()">模拟扫码成功</button>
+      <button class="scan-cancel" onclick="hideScanModal()">取消</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 </div>
+
+<script>
+const statData={
+  today:{put:128,verify:86,store:42},
+  yesterday:{put:112,verify:74,store:38},
+  week:{put:856,verify:612,store:96},
+  month:{put:3520,verify:2846,store:128}
+};
+const stores=[
+  {name:'湘江东路店',addr:'长沙市开福区湘江东路一段 88 号'},
+  {name:'五一广场店',addr:'长沙市芙蓉区五一大道 168 号'},
+  {name:'岳麓山北店',addr:'长沙市岳麓区麓山南路 66 号'},
+  {name:'雨花亭店',addr:'长沙市雨花区韶山中路 420 号'},
+  {name:'星沙万象汇店',addr:'长沙市长沙县星沙大道 178 号'}
+];
+let scanMode='';
+
+function switchTab(el,type){
+  document.querySelectorAll('.filter-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const d=statData[type];
+  document.getElementById('statPut').textContent=d.put;
+  document.getElementById('statVerify').textContent=d.verify;
+  document.getElementById('statStore').textContent=d.store;
+}
+
+function activate(){
+  const list=document.getElementById('storeList');
+  list.innerHTML=stores.map((s,i)=>`<div class="store-item" onclick="selectStore(${i})"><div class="store-name">${s.name}</div><div class="store-addr">${s.addr}</div></div>`).join('');
+  document.getElementById('storeModal').classList.add('show');
+}
+function selectStore(idx){
+  hideStoreModal();
+  scanMode='activate';
+  document.getElementById('scanModal').classList.add('show');
+}
+function hideStoreModal(){document.getElementById('storeModal').classList.remove('show');}
+function closeStoreModal(e){if(e.target.id==='storeModal')hideStoreModal();}
+
+function verify(){
+  scanMode='verify';
+  document.getElementById('scanModal').classList.add('show');
+}
+function hideScanModal(){document.getElementById('scanModal').classList.remove('show');}
+function closeScanModal(e){if(e.target.id==='scanModal')hideScanModal();}
+function completeScan(){
+  hideScanModal();
+  if(scanMode==='activate')toast('产品激活成功');
+  else if(scanMode==='verify')toast('兑奖核销成功');
+  else toast('扫码完成');
+}
+
+function recycle(){toast('产品回收功能开发中');}
+function productDetail(){toast('产品明细功能开发中');}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
 </body>
 </html>

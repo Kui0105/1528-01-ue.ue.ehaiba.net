@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 门店管理</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.store-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.store-card .name{font-size:15px;font-weight:500;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.store-card .name .tag{font-size:11px;color:#c9302c;border:.5px solid rgba(201,48,44,.3);padding:1px 6px;border-radius:4px;font-weight:400}
+.store-card .addr{font-size:13px;color:#666;margin-bottom:4px}
+.store-card .contact{font-size:12px;color:#999}
+
+.empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
+
+.fab{position:absolute;right:16px;bottom:24px;width:52px;height:52px;border-radius:50%;background:#c9302c;color:#fff;border:none;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:none;border:.5px solid rgba(0,0,0,.08)}
+
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-panel{width:100%;max-width:320px;background:#fff;border-radius:12px;padding:20px}
+.modal-panel h3{font-size:16px;font-weight:500;margin-bottom:16px;text-align:center}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:13px;color:#666;margin-bottom:6px}
+.form-row input{width:100%;height:40px;border:1px solid rgba(0,0,0,.15);border-radius:8px;padding:0 12px;font-size:14px;outline:none}
+.form-row input:focus{border-color:#c9302c}
+.btns{display:flex;gap:10px;margin-top:20px}
+.btns button{flex:1;height:38px;border-radius:999px;border:none;font-size:14px;cursor:pointer}
+.btns .cancel{background:#f5f6f7;color:#666}
+.btns .confirm{background:#c9302c;color:#fff}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">门店管理</span>
+  </div>
+
+  <div class="content" id="storeContent">
+    <div class="store-card">
+      <div class="name">湘江东路店<span class="tag">默认</span></div>
+      <div class="addr">长沙市开福区湘江东路一段 88 号</div>
+      <div class="contact">联系人：李店长 · 138****6688</div>
+    </div>
+    <div class="store-card">
+      <div class="name">五一广场店</div>
+      <div class="addr">长沙市芙蓉区五一大道 168 号</div>
+      <div class="contact">联系人：王店长 · 139****7766</div>
+    </div>
+    <div class="store-card">
+      <div class="name">岳麓山北店</div>
+      <div class="addr">长沙市岳麓区麓山南路 66 号</div>
+      <div class="contact">联系人：张店长 · 137****5522</div>
+    </div>
+  </div>
+
+  <button class="fab" onclick="showAdd()">+</button>
+
+  <div class="modal" id="addModal" onclick="closeAdd(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <h3>新增门店</h3>
+      <div class="form-row">
+        <label>门店名称</label>
+        <input type="text" id="addName" placeholder="请输入门店名称">
+      </div>
+      <div class="form-row">
+        <label>详细地址</label>
+        <input type="text" id="addAddr" placeholder="请输入详细地址">
+      </div>
+      <div class="form-row">
+        <label>联系电话</label>
+        <input type="text" id="addPhone" placeholder="请输入联系电话">
+      </div>
+      <div class="btns">
+        <button class="cancel" onclick="hideAdd()">取消</button>
+        <button class="confirm" onclick="confirmAdd()">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function showAdd(){document.getElementById('addModal').classList.add('show');}
+function hideAdd(){document.getElementById('addModal').classList.remove('show');}
+function closeAdd(e){if(e.target.id==='addModal')hideAdd();}
+function confirmAdd(){
+  const name=document.getElementById('addName').value.trim();
+  const addr=document.getElementById('addAddr').value.trim();
+  const phone=document.getElementById('addPhone').value.trim();
+  if(!name||!addr||!phone){toast('请填写完整信息');return;}
+  const card=document.createElement('div');
+  card.className='store-card';
+  card.innerHTML=`<div class="name">${name}</div><div class="addr">${addr}</div><div class="contact">联系人：${phone}</div>`;
+  document.getElementById('storeContent').appendChild(card);
+  document.getElementById('addName').value='';
+  document.getElementById('addAddr').value='';
+  document.getElementById('addPhone').value='';
+  hideAdd();
+  toast('门店新增成功');
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>
