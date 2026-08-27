@@ -6,23 +6,56 @@
 <title>迈极炫 · 商品搜索</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#f5f6f7;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
-.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;position:relative;overflow:hidden}
+.statusbar{height:28px;background:#c9302c;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0;color:#fff}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
-.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
-.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
-.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
-.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
-.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
-.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
-.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
-.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
+.sb-ico{width:15px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#fff;border-radius:1px}
+.navbar{height:44px;background:#c9302c;display:flex;align-items:center;position:relative;flex-shrink:0;padding:0 8px;gap:6px}
+.navbar .back{font-size:22px;color:#fff;width:32px;height:44px;display:flex;align-items:center;cursor:pointer;flex-shrink:0}
+.search-box{flex:1;height:32px;background:#fff;border-radius:16px;display:flex;align-items:center;padding:0 10px;gap:6px}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;color:#1a1a1a;background:transparent}
+.search-box input::placeholder{color:#bbb}
+.search-box .ic{width:14px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") center/contain no-repeat;flex-shrink:0}
+.search-btn{padding:0 8px;font-size:14px;color:#fff;cursor:pointer;white-space:nowrap}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7}
+
+/* hot search */
+.hot-section{padding:16px 12px;background:#fff;margin-bottom:8px}
+.hot-title{font-size:14px;font-weight:500;color:#333;margin-bottom:12px}
+.hot-tags{display:flex;flex-wrap:wrap;gap:10px}
+.hot-tag{padding:7px 14px;background:#f5f6f7;border:.5px solid rgba(0,0,0,.08);border-radius:999px;font-size:13px;color:#666;cursor:pointer}
+.hot-tag:active{opacity:.75}
+
+/* filter tabs */
+.filter-bar{position:sticky;top:0;z-index:10;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 12px}
+.filter-tab{flex:1;text-align:center;padding:12px 0;font-size:14px;color:#666;position:relative;cursor:pointer}
+.filter-tab.active{color:#c9302c;font-weight:500}
+.filter-tab.active::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:#c9302c;border-radius:2px}
+
+/* result list */
+.result-list{padding:12px}
+.result-card{display:flex;align-items:center;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:10px;margin-bottom:10px;cursor:pointer}
+.result-card .img{width:88px;flex-shrink:0;aspect-ratio:1/1;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;margin-right:12px;overflow:hidden}
+.result-card .info{flex:1;min-width:0}
+.result-card .name{font-size:14px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.result-card .meta{display:flex;justify-content:space-between;align-items:center}
+.result-card .points{font-size:15px;font-weight:600;color:#c9302c}
+.result-card .ex{font-size:12px;color:#999}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center}
+.empty-state .ic{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:15px;font-weight:500;color:#666;margin-bottom:6px}
+.empty-state p{font-size:13px;color:#999}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 <body>
@@ -30,15 +63,101 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
     <span class="back" onclick="history.back()">‹</span>
-    <span class="title">商品搜索</span>
+    <div class="search-box">
+      <span class="ic"></span>
+      <input type="search" id="searchInput" placeholder="搜索积分商品" autocomplete="off">
+    </div>
+    <span class="search-btn" onclick="doSearch()">搜索</span>
   </div>
-  <div class="content">
-    <div class="placeholder">
-      <div class="ic">🔍</div>
-      <h2>商品搜索</h2>
-      <p>输入关键词搜索积分商品<br>该模块占位，后续补全搜索逻辑与结果列表</p>
+
+  <div class="content" id="content">
+    <!-- initial hot search -->
+    <div class="hot-section" id="hotSection">
+      <div class="hot-title">热门搜索</div>
+      <div class="hot-tags" id="hotTags"></div>
+    </div>
+
+    <!-- search results (hidden by default) -->
+    <div class="result-wrap" id="resultWrap" style="display:none">
+      <div class="filter-bar">
+        <div class="filter-tab active" onclick="setFilter('all')">综合</div>
+        <div class="filter-tab" onclick="setFilter('sales')">销量</div>
+        <div class="filter-tab" onclick="setFilter('price')">价格</div>
+      </div>
+      <div class="result-list" id="resultList"></div>
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
+<script>
+const hotWords=['迈极炫','槟榔','打火机','数据线','零食礼包','保温杯','充电宝','T恤'];
+const goods=[
+  {name:'迈极炫定制打火机',points:500,ex:1280,cat:'数码家电'},
+  {name:'迈极炫品牌数据线',points:300,ex:2560,cat:'数码家电'},
+  {name:'迈极炫零食大礼包',points:800,ex:890,cat:'食品生鲜'},
+  {name:'迈极炫保温杯',points:1200,ex:560,cat:'家居日用'},
+  {name:'迈极炫充电宝',points:2500,ex:320,cat:'数码家电'},
+  {name:'迈极炫品牌T恤',points:1500,ex:430,cat:'服饰箱包'},
+  {name:'迈极炫棒球帽',points:900,ex:670,cat:'服饰箱包'},
+  {name:'迈极炫电动牙刷',points:1800,ex:210,cat:'家居日用'}
+];
+let filterMode='all';
+
+const hotTags=document.getElementById('hotTags');
+hotWords.forEach(w=>{
+  const span=document.createElement('span');
+  span.className='hot-tag';
+  span.textContent=w;
+  span.onclick=()=>{document.getElementById('searchInput').value=w;doSearch(w);};
+  hotTags.appendChild(span);
+});
+
+function doSearch(keyword){
+  const kw=keyword||document.getElementById('searchInput').value.trim();
+  if(!kw){toast('请输入搜索关键词');return;}
+  document.getElementById('searchInput').value=kw;
+  document.getElementById('hotSection').style.display='none';
+  document.getElementById('resultWrap').style.display='block';
+  renderResults(kw);
+}
+
+function setFilter(mode){
+  filterMode=mode;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  const kw=document.getElementById('searchInput').value.trim();
+  renderResults(kw);
+}
+
+function renderResults(kw){
+  let list=goods.filter(g=>g.name.toLowerCase().includes(kw.toLowerCase()));
+  if(!list.length){
+    document.getElementById('resultList').innerHTML=`<div class="empty-state"><div class="ic">🔍</div><h3>未找到相关商品</h3><p>换个关键词试试吧</p></div>`;
+    return;
+  }
+  if(filterMode==='sales')list.sort((a,b)=>b.ex-a.ex);
+  else if(filterMode==='price')list.sort((a,b)=>a.points-b.points);
+  document.getElementById('resultList').innerHTML=list.map((g,i)=>`
+    <div class="result-card" onclick="location.href='goods-detail.html?id=${i}'">
+      <div class="img">商品图</div>
+      <div class="info">
+        <div class="name">${g.name}</div>
+        <div class="meta">
+          <span class="points">${g.points} 积分</span>
+          <span class="ex">已兑 ${g.ex}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('searchInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')doSearch();
+});
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
 </body>
 </html>
