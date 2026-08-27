@@ -44,6 +44,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .stores{text-align:center;flex-shrink:0;margin-left:12px}
 .card .stores .num{font-size:18px;font-weight:600;color:#c9302c}
 .card .stores .txt{font-size:12px;color:#999}
+.stats-line{display:flex;margin-top:9px;padding-top:9px;border-top:.5px solid rgba(0,0,0,.06)}
+.stats-line .col{flex:1;text-align:center}
+.stats-line .col+.col{border-left:.5px solid rgba(0,0,0,.06)}
+.stats-line .col .v{font-size:16px;font-weight:600;color:#c9302c}
+.stats-line .col .t{font-size:12px;color:#999;margin-top:2px}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
@@ -170,6 +175,13 @@ function genCtime(seed){
   const p=n=>String(n).padStart(2,'0');
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
 }
+function genStats(i){
+  return {
+    act:(id*3+i*7)%240+30,
+    dyn:(id*5+i*3)%200+20,
+    win:(id+i*2)%60+5
+  };
+}
 
 function render(kw){
   kw=(kw||'').trim().toLowerCase();
@@ -181,7 +193,9 @@ function render(kw){
     list=list.filter(s=>(s.name+s.phone+s.area).toLowerCase().includes(kw));
   }
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的业务员</div>';return;}
-  box.innerHTML=list.map((s,i)=>`
+  box.innerHTML=list.map((s,i)=>{
+    const st=genStats(i);
+    return `
     <div class="card">
       <div class="avatar">${s.name.charAt(0)}</div>
       <div class="main">
@@ -195,9 +209,14 @@ function render(kw){
           <div><span class="label">门店数</span>${s.stores}</div>
           <div><span class="label">创建时间</span>${genCtime(id*100+i)}</div>
         </div>
+        <div class="stats-line">
+          <div class="col"><div class="v">${st.act}</div><div class="t">激活量</div></div>
+          <div class="col"><div class="v">${st.dyn}</div><div class="t">动销量</div></div>
+          <div class="col"><div class="v">${st.win}</div><div class="t">中奖量</div></div>
+        </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function doSearch(){

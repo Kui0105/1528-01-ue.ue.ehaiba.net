@@ -42,6 +42,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .stock-row .label{color:#999}
 .card .stock-row .stval{display:flex;align-items:center;gap:6px;color:#c9302c;font-weight:600}
 .card .stock-row .arrow{color:#999;font-size:16px}
+.stats-line{display:flex;margin-top:9px;padding-top:9px;border-top:.5px solid rgba(0,0,0,.06)}
+.stats-line .col{flex:1;text-align:center}
+.stats-line .col+.col{border-left:.5px solid rgba(0,0,0,.06)}
+.stats-line .col .v{font-size:16px;font-weight:600;color:#c9302c}
+.stats-line .col .t{font-size:12px;color:#999;margin-top:2px}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
@@ -179,7 +184,9 @@ function render(kw){
     list=list.filter(s=>(s.name+s.contact+s.phone).toLowerCase().includes(kw));
   }
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的门店</div>';return;}
-  box.innerHTML=list.map((s,i)=>`
+  box.innerHTML=list.map((s,i)=>{
+    const st=genStats(i);
+    return `
     <div class="card">
       <div class="name">${s.name}<span class="status ${s.status}">${s.status==='open'?'营业中':'停业中'}</span></div>
       <div class="info">
@@ -189,16 +196,28 @@ function render(kw){
         <div><span class="label">详细地址</span>${s.addr}</div>
         <div><span class="label">创建时间</span>${genCtime(id*200+i)}</div>
       </div>
+      <div class="stats-line">
+        <div class="col"><div class="v">${st.act}</div><div class="t">激活量</div></div>
+        <div class="col"><div class="v">${st.dyn}</div><div class="t">动销量</div></div>
+        <div class="col"><div class="v">${st.win}</div><div class="t">中奖量</div></div>
+      </div>
       <div class="stock-row" onclick="goStock(${i})">
         <span class="label">库存总数</span>
         <span class="stval">${genTotal(i)} 件<span class="arrow">›</span></span>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function genTotal(i){
   return (id%7+i*13)%180+42;
+}
+function genStats(i){
+  return {
+    act:(id%5+i*11)%260+25,
+    dyn:(id%4+i*6)%210+18,
+    win:(id%3+i*3)%55+4
+  };
 }
 
 function goStock(i){
