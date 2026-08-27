@@ -8,27 +8,27 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
 .mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;position:relative}
-.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar{height:28px;background:#c9302c;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0;color:#fff}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
-.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
-.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
-.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
-.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
-.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
-.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
-.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.sb-ico{width:15px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#fff;border-radius:1px}
+.navbar{height:44px;background:#c9302c;display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500;color:#fff}
+.navbar .user-points{position:absolute;left:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px;color:#fff}
+.user-points .avatar{width:28px;height:28px;border-radius:50%;background:#fff;border:.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:12px;color:#c9302c;overflow:hidden}
+.user-points .meta{display:flex;flex-direction:column;line-height:1.2}
+.user-points .meta .label{font-size:10px;opacity:.9}
+.user-points .meta .num{font-size:13px;font-weight:600}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(255,255,255,.35);border-radius:15px;display:flex;align-items:center;background:rgba(255,255,255,.15)}
 .capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
-.capsule .c-left{font-size:11px;letter-spacing:-1px}
-.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
-.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#fff}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #fff;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(255,255,255,.35)}
 
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
-
-/* points card */
-.points-card{margin:12px;background:linear-gradient(135deg,#c9302c,#e8645f);border-radius:14px;padding:16px;color:#fff}
-.points-card .label{font-size:13px;opacity:.9;margin-bottom:6px}
-.points-card .num{font-size:32px;font-weight:600;letter-spacing:1px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-top:12px;padding-bottom:80px}
 
 /* search */
 .search-bar{margin:0 12px 12px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px}
@@ -106,16 +106,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 <div class="mp">
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
+    <div class="user-points">
+      <div class="avatar">👤</div>
+      <div class="meta">
+        <span class="label">我的积分</span>
+        <span class="num" id="headerPoints">1,280</span>
+      </div>
+    </div>
     <span class="title">积分商城</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
 
   <div class="content">
-    <div class="points-card">
-      <div class="label">我的积分</div>
-      <div class="num">1,280</div>
-    </div>
-
     <div class="search-bar" onclick="location.href='search.html'">
       <span class="ic"></span>
       <span class="txt">搜索积分商品</span>
@@ -200,6 +202,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 </div>
 
 <script>
+const myPoints=1280;
+document.getElementById('headerPoints').textContent=myPoints.toLocaleString();
+
 const goods=[
   {name:'迈极炫定制打火机',points:500,orig:'¥39.90',ex:128},
   {name:'便携收纳盒',points:300,orig:'¥19.90',ex:86},
