@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · P2 抽奖验证页</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;color:#1a1a1a;border-bottom:.5px solid rgba(0,0,0,.06)}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;display:flex;align-items:center;position:relative;flex-shrink:0;z-index:10;border-bottom:.5px solid rgba(0,0,0,.08)}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500;color:#1a1a1a}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#1a1a1a}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;position:relative;overflow:hidden}
+/* full screen poster */
+.poster{position:absolute;inset:0;background:linear-gradient(155deg,#c9302c,#e8645f)}
+.poster-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:0 20px 260px;text-align:center}
+.poster-brand{font-size:30px;font-weight:600;letter-spacing:4px;margin-bottom:10px;text-align:center;padding-left:4px}
+.poster-sub{font-size:13px;opacity:.9;text-align:center}
+/* verify panel */
+.verify-panel{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#e3f2fd,#ffffff);border-radius:20px 20px 0 0;padding:24px 16px calc(20px + env(safe-area-inset-bottom));z-index:20}
+.panel-title{font-size:15px;color:#c9302c;text-align:center;font-weight:500}
+.codeboxes{display:flex;gap:12px;justify-content:center;margin:18px 0 22px}
+.codebox{width:56px;height:56px;background:#fff;border:1px solid rgba(0,0,0,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:500;color:#1a1a1a;position:relative}
+.codebox.active{border-color:#c9302c}
+.codebox.active::after{content:'|';position:absolute;font-size:22px;font-weight:300;color:#c9302c;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:320px;margin:0 auto}
+.key{border:none;background:#c9302c;color:#fff;height:48px;border-radius:8px;font-size:22px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.key:active{opacity:.85}
+.key.txt{font-size:15px}
+.key.ok{background:#d4a843}
+.rule-btn{position:absolute;right:0;top:96px;background:#d4a843;color:#fff;padding:10px 5px;border-radius:8px 0 0 8px;font-size:12px;cursor:pointer;writing-mode:vertical-rl;letter-spacing:2px;z-index:15;text-decoration:none}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="location.href='p1-scan.html'">‹</span>
+    <span class="title">抽奖验证</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="content">
+    <a class="rule-btn" href="rule.html">活动规则</a>
+    <div class="poster">
+      <div class="poster-inner">
+        <div class="poster-brand">迈极炫</div>
+        <div class="poster-sub">扫码赢好礼 · 即刻开抽</div>
+      </div>
+    </div>
+
+    <div class="verify-panel">
+      <div class="panel-title">输入包装内侧验证码：</div>
+      <div class="codeboxes">
+        <div class="codebox active" data-index="0"></div>
+        <div class="codebox" data-index="1"></div>
+        <div class="codebox" data-index="2"></div>
+        <div class="codebox" data-index="3"></div>
+      </div>
+      <div class="keypad">
+        <button class="key" onclick="typeDigit(1)">1</button>
+        <button class="key" onclick="typeDigit(2)">2</button>
+        <button class="key" onclick="typeDigit(3)">3</button>
+        <button class="key" onclick="typeDigit(4)">4</button>
+        <button class="key" onclick="typeDigit(5)">5</button>
+        <button class="key" onclick="typeDigit(6)">6</button>
+        <button class="key" onclick="typeDigit(7)">7</button>
+        <button class="key" onclick="typeDigit(8)">8</button>
+        <button class="key" onclick="typeDigit(9)">9</button>
+        <button class="key txt" onclick="delDigit()">删除</button>
+        <button class="key" onclick="typeDigit(0)">0</button>
+        <button class="key ok txt" onclick="confirmCode()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const boxes=document.querySelectorAll('.codebox');
+let idx=0;
+function updateCursor(){
+  boxes.forEach((b,i)=>b.classList.toggle('active',i===idx));
+}
+function typeDigit(n){
+  if(idx>=4)return;
+  boxes[idx].textContent=n;
+  idx++;
+  updateCursor();
+  if(idx===4){
+    setTimeout(()=>confirmCode(),150);
+  }
+}
+function delDigit(){
+  if(idx>0){
+    idx--;
+    boxes[idx].textContent='';
+  }
+  updateCursor();
+}
+function getCode(){return Array.from(boxes).map(b=>b.textContent).join('');}
+function confirmCode(){
+  const code=getCode();
+  if(code.length<4){toast('请输入4位验证码');return;}
+  toast('验证中...');
+  setTimeout(()=>{location.href='p3-select.html';},600);
+}
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>

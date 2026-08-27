@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · P3 抽奖选取页</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;touch-action:pan-y}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;border-bottom:.5px solid rgba(0,0,0,.06)}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;display:flex;align-items:center;position:relative;flex-shrink:0;z-index:10;border-bottom:.5px solid rgba(0,0,0,.08)}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500;color:#1a1a1a}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#1a1a1a}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;position:relative;overflow:hidden}
+/* poster */
+.poster{position:absolute;inset:0;background:linear-gradient(155deg,#c9302c,#e8645f)}
+.poster-inner{position:relative;width:100%;height:100%;color:#fff;text-align:center}
+.poster-brand{position:absolute;top:11%;left:0;right:0;font-size:26px;font-weight:600;letter-spacing:4px}
+.poster-sub{position:absolute;top:16.5%;left:0;right:0;font-size:13px;opacity:.9}
+/* coverflow */
+.stage{position:absolute;left:0;right:0;top:50%;transform:translateY(-55%);height:260px;perspective:800px;z-index:5}
+.stage-track{position:relative;width:100%;height:100%}
+.cover-item{position:absolute;left:50%;top:50%;width:140px;height:190px;margin-left:-70px;margin-top:-95px;transition:all .35s cubic-bezier(.25,.8,.25,1);cursor:pointer;user-select:none;-webkit-user-select:none}
+/* package card */
+.package-wrap{position:relative;width:100%;height:100%;border-radius:12px;overflow:hidden;border:.5px solid rgba(255,255,255,.2)}
+.package-face{position:absolute;inset:0;background:linear-gradient(145deg,#e8645f,#c9302c);display:flex;align-items:center;justify-content:center;z-index:2;border-radius:12px}
+.pkg-half{position:absolute;top:0;bottom:0;width:50%;background:linear-gradient(145deg,#e8645f,#c9302c);z-index:3}
+.pkg-half.l{left:0;border-radius:12px 0 0 12px;transform-origin:left center}
+.pkg-half.r{right:0;border-radius:0 12px 12px 0;transform-origin:right center}
+.tear-edge{position:absolute;left:-4px;top:-4px;bottom:-4px;width:8px;transform:translateX(-50%) scaleY(0);z-index:4;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.95) 3px,rgba(255,255,255,.95) 6px);border-radius:1px;opacity:0}
+.pkg-text{position:absolute;z-index:5;font-size:22px;font-weight:600;color:#fff;letter-spacing:3px}
+/* prize reveal behind package */
+.prize-reveal{position:absolute;inset:0;background:#fff;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;border:.5px solid rgba(0,0,0,.08)}
+.prize-reveal .p-icon{font-size:42px;margin-bottom:6px}
+.prize-reveal .p-name{font-size:13px;font-weight:500;color:#1a1a1a;text-align:center;padding:0 10px;line-height:1.4}
+.prize-reveal .p-type{font-size:11px;color:#999;margin-top:4px}
+/* zoomed state */
+.cover-item.zoomed{z-index:50}
+.cover-item.zoomed .package-wrap{box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.cover-item.zoomed .tear-edge{opacity:1;transform:translateX(-50%) scaleY(1)}
+.cover-item.zoomed .pkg-half{transition:none}
+/* tear state - fully torn */
+.cover-item.tear .pkg-half.l,.cover-item.tear .pkg-half.r{opacity:0}
+.cover-item.tear .tear-edge{opacity:0}
+.cover-item.tear .package-face{opacity:0;pointer-events:none}
+/* right floating entries */
+.float-btns{position:absolute;right:0;top:96px;z-index:15;display:flex;flex-direction:column;gap:8px}
+.float-btn{display:block;background:#d4a843;color:#fff;padding:10px 5px;border-radius:8px 0 0 8px;font-size:12px;writing-mode:vertical-rl;letter-spacing:2px;text-decoration:none;cursor:pointer}
+/* hint */
+.hint{position:absolute;left:0;right:0;bottom:32px;text-align:center;color:#fff;font-size:13px;opacity:.9;z-index:10;padding:0 20px;transition:opacity .25s}
+.hint.hide{opacity:0}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="location.href='p2-verify.html'">‹</span>
+    <span class="title">抽奖</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="content">
+    <div class="float-btns">
+      <a class="float-btn" href="rule.html">活动规则</a>
+      <a class="float-btn" href="records.html">中奖记录</a>
+    </div>
+    <div class="poster">
+      <div class="poster-inner">
+        <div class="poster-brand">迈极炫</div>
+        <div class="poster-sub">扫码赢好礼 · 即刻开抽</div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="stage-track" id="track"></div>
+    </div>
+
+    <div class="hint" id="hint">左右滑动选择奖项，点击选中项放大，从左向右撕开奖品</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let prizes=[
+  {type:'product',name:'加5元兑换50元迈极炫槟榔一包',typeLabel:'实物奖品'},
+  {type:'points',name:'+50 积分',typeLabel:'积分奖励'},
+  {type:'product',name:'加5元兑换50元迈极炫槟榔一包',typeLabel:'实物奖品'},
+  {type:'points',name:'+20 积分',typeLabel:'积分奖励'},
+  {type:'thanks',name:'谢谢参与',typeLabel:'未中奖'},
+  {type:'product',name:'加5元兑换50元迈极炫槟榔一包',typeLabel:'实物奖品'}
+];
+let active=2; // start center
+let state='normal'; // normal | zoomed | tearing
+const track=document.getElementById('track');
+const hint=document.getElementById('hint');
+const stage=document.getElementById('stage');
+
+function iconFor(t){return t==='product'?'🎁':t==='points'?'⭐':t==='coupon'?'🎫':'😊';}
+
+function createItems(){
+  prizes.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='cover-item';
+    el.dataset.index=i;
+    el.innerHTML=`
+      <div class="package-wrap">
+        <div class="prize-reveal">
+          <div class="p-icon">${iconFor(p.type)}</div>
+          <div class="p-name">${p.name}</div>
+          <div class="p-type">${p.typeLabel}</div>
+        </div>
+      <div class="package-face">
+        <div class="pkg-half l"></div>
+        <div class="pkg-half r"></div>
+        <div class="tear-edge"></div>
+        <div class="pkg-text">迈极炫</div>
+      </div>
+      </div>
+    `;
+    el.addEventListener('click',()=>onItemClick(i));
+    track.appendChild(el);
+  });
+}
+
+function layout(){
+  const items=document.querySelectorAll('.cover-item');
+  const gap=86, baseScale=.72, rot=38;
+  items.forEach((el,i)=>{
+    const dist=i-active;
+    const abs=Math.abs(dist);
+    let x,y,scale,rotateY,zIndex,opacity;
+    if((state==='zoomed' || state==='tearing') && i===active){
+      x=0; y=-20; scale=1.18; rotateY=0; zIndex=50; opacity=1;
+    }else{
+      x=dist*gap; y=0;
+      scale=abs===0?1:Math.max(.55,baseScale-abs*.08);
+      rotateY=dist===0?0:(dist<0?rot:-rot);
+      zIndex=10-abs;
+      opacity=abs===0?1:Math.max(.45,.75-abs*.15);
+    }
+    el.style.transform=`translateX(${x}px) translateY(${y}px) scale(${scale}) rotateY(${rotateY}deg)`;
+    el.style.zIndex=zIndex;
+    el.style.opacity=opacity;
+    el.classList.toggle('zoomed', state!=='normal' && i===active);
+  });
+}
+
+function zoomIn(){
+  if(state!=='normal')return;
+  state='zoomed';
+  tearProgress=0;
+  hint.textContent='从左向右滑动撕开奖品';
+  layout();
+  updateTearVisuals(0);
+}
+function resetZoom(){
+  if(state!=='zoomed')return;
+  state='normal';
+  tearProgress=0;
+  hint.textContent='左右滑动选择奖项，点击选中项放大，从左向右撕开奖品';
+  layout();
+}
+function completeTear(){
+  if(state!=='zoomed')return;
+  state='tearing';
+  hint.classList.add('hide');
+  const items=document.querySelectorAll('.cover-item');
+  const activeEl=items[active];
+  animateTearProgress(tearProgress,1,400,()=>{
+    activeEl.classList.add('tear');
+    setTimeout(()=>{
+      const p=prizes[active];
+      location.href='p4-result.html?p='+encodeURIComponent(JSON.stringify(p))+'&t='+Date.now();
+    },1100);
+  });
+}
+
+let tearProgress=0; // 0~1
+function updateTearVisuals(p){
+  const items=document.querySelectorAll('.cover-item');
+  const activeEl=items[active];
+  if(!activeEl)return;
+  const edge=activeEl.querySelector('.tear-edge');
+  const left=activeEl.querySelector('.pkg-half.l');
+  const right=activeEl.querySelector('.pkg-half.r');
+  const text=activeEl.querySelector('.pkg-text');
+  const reveal=activeEl.querySelector('.prize-reveal');
+  const clamped=Math.max(0,Math.min(1,p));
+
+  // tear edge follows finger left to right
+  if(edge) edge.style.left=`calc(${clamped*100}% - 4px)`;
+
+  // left half peels first
+  const lp=Math.min(1,clamped/0.55);
+  if(left){
+    left.style.transform=`translateX(${-lp*110}%) rotateY(${-lp*55}deg) rotate(${-lp*14}deg)`;
+    left.style.opacity=String(1-lp);
+  }
+  // right half follows with slight delay
+  const rp=Math.max(0,(clamped-0.25)/0.75);
+  if(right){
+    right.style.transform=`translateX(${rp*110}%) rotateY(${rp*55}deg) rotate(${rp*14}deg)`;
+    right.style.opacity=String(1-rp);
+  }
+  // text fades as tear progresses
+  if(text) text.style.opacity=String(Math.max(0,1-clamped*1.5));
+  // prize reveal slightly scales up
+  if(reveal) reveal.style.transform=`scale(${0.92+clamped*0.08})`;
+}
+function animateTearProgress(from,to,duration,onDone){
+  const start=performance.now();
+  function step(now){
+    const t=Math.min(1,(now-start)/duration);
+    const eased=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    tearProgress=from+(to-from)*eased;
+    updateTearVisuals(tearProgress);
+    if(t<1) requestAnimationFrame(step);
+    else if(onDone) onDone();
+  }
+  requestAnimationFrame(step);
+}
+
+function onItemClick(i){
+  if(state==='tearing')return;
+  if(i!==active){resetZoom(); active=i; layout(); return;}
+  if(state==='normal'){zoomIn(); return;}
+  // in zoomed state, click does not tear; only horizontal drag tears
+}
+
+// unified drag/swipe handling for both mouse and touch
+let dragStartX=0, dragStartY=0, dragEndX=0, dragEndY=0, dragStartTime=0, isDragging=false;
+let tearDragStartX=0;
+
+function startDrag(x,y){
+  if(state==='tearing')return;
+  isDragging=true;
+  dragStartX=dragEndX=x;
+  dragStartY=dragEndY=y;
+  dragStartTime=Date.now();
+  if(state==='zoomed'){
+    const items=document.querySelectorAll('.cover-item');
+    const r=items[active].getBoundingClientRect();
+    tearDragStartX=r.left;
+  }
+}
+function moveDrag(x,y){
+  if(!isDragging || state==='tearing')return;
+  dragEndX=x; dragEndY=y;
+  if(state==='zoomed'){
+    const items=document.querySelectorAll('.cover-item');
+    const r=items[active].getBoundingClientRect();
+    const width=r.width;
+    const progress=(x-tearDragStartX)/width;
+    tearProgress=Math.max(0,Math.min(1,progress));
+    updateTearVisuals(tearProgress);
+  }
+}
+function endDrag(){
+  if(!isDragging || state==='tearing')return;
+  isDragging=false;
+  const dx=dragEndX-dragStartX;
+  const dy=dragEndY-dragStartY;
+  const adx=Math.abs(dx), ady=Math.abs(dy);
+  const dt=Date.now()-dragStartTime;
+
+  if(state==='zoomed'){
+    // if dragged far enough left-to-right, complete tear
+    if(dx>55 && tearProgress>0.45){
+      completeTear();
+    }else{
+      // snap back
+      animateTearProgress(tearProgress,0,220);
+      tearProgress=0;
+    }
+    return;
+  }
+
+  // treat as click if barely moved and fast
+  if(adx<8 && ady<8 && dt<260) return;
+
+  // normal state: horizontal swipe switches
+  if(adx>ady && adx>45){
+    if(dx>0 && active>0){active--; layout();}
+    else if(dx<0 && active<prizes.length-1){active++; layout();}
+  }
+}
+
+// touch events
+stage.addEventListener('touchstart',e=>{
+  const t=e.touches[0];
+  startDrag(t.clientX,t.clientY);
+},{passive:true});
+stage.addEventListener('touchmove',e=>{
+  const t=e.touches[0];
+  moveDrag(t.clientX,t.clientY);
+},{passive:true});
+stage.addEventListener('touchend',()=>endDrag(),{passive:true});
+stage.addEventListener('touchcancel',()=>{isDragging=false;},{passive:true});
+
+// mouse events (for desktop preview)
+stage.addEventListener('mousedown',e=>{
+  startDrag(e.clientX,e.clientY);
+});
+window.addEventListener('mousemove',e=>{
+  moveDrag(e.clientX,e.clientY);
+});
+window.addEventListener('mouseup',()=>{
+  endDrag();
+});
+
+// keyboard support for desktop testing
+window.addEventListener('keydown',e=>{
+  if(state==='tearing')return;
+  if(state==='normal'){
+    if(e.key==='ArrowLeft' && active>0){active--; layout();}
+    if(e.key==='ArrowRight' && active<prizes.length-1){active++; layout();}
+    if(e.key==='Enter' || e.key===' '){zoomIn();}
+  }else if(state==='zoomed'){
+    if(e.key==='ArrowRight'){completeTear();}
+    if(e.key==='Escape'){resetZoom();}
+  }
+});
+
+createItems();
+layout();
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>

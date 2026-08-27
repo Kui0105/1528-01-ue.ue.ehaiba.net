@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 扫码抽奖原型总览</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;background:#fff;min-height:100vh;padding:28px 22px}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#999;margin-bottom:28px}
+.brand{display:inline-block;background:#c9302c;color:#fff;font-size:12px;padding:3px 10px;border-radius:6px;margin-bottom:18px}
+.flow{display:flex;align-items:stretch;gap:0;margin-bottom:32px;flex-wrap:wrap}
+.flow-step{flex:1;min-width:90px;border:.5px solid rgba(0,0,0,.12);border-radius:10px;padding:14px 10px;text-align:center;background:#fff}
+.flow-step .num{width:24px;height:24px;border-radius:50%;background:#fbeae9;color:#c9302c;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.flow-step .t{font-size:13px;font-weight:500}
+.flow-step .d{font-size:11px;color:#999;margin-top:2px}
+.flow-arrow{display:flex;align-items:center;color:#ccc;font-size:18px;padding:0 4px}
+.list{display:flex;flex-direction:column;gap:12px}
+.card{display:flex;align-items:center;gap:14px;border:.5px solid rgba(0,0,0,.12);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit;transition:border-color .15s;background:#fff}
+.card:hover{border-color:#c9302c}
+.card .ic{width:42px;height:42px;border-radius:10px;background:#f5f6f7;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.card .meta{flex:1}
+.card .meta .t{font-size:14px;font-weight:500}
+.card .meta .p{font-size:12px;color:#999;margin-top:1px}
+.card .arrow{color:#ccc;font-size:16px}
+.foot{margin-top:28px;font-size:11px;color:#bbb;text-align:center;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="brand">迈极炫</span>
+  <h1>扫码抽奖 · 交互原型</h1>
+  <div class="sub">微信小程序端口 · 浅色简洁风格 · 槟榔线下购买抽奖流程</div>
+
+  <div class="flow">
+    <div class="flow-step"><div class="num">1</div><div class="t">扫码结果</div><div class="d">活动海报+抽奖入口</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="num">2</div><div class="t">抽奖验证</div><div class="d">输入内袋码</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="num">3</div><div class="t">抽奖选取</div><div class="d">红包翻牌</div></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><div class="num">4</div><div class="t">抽奖结果</div><div class="d">中奖/积分</div></div>
+  </div>
+
+  <div class="list">
+    <a class="card" href="p1-scan.html"><div class="ic">📱</div><div class="meta"><div class="t">P1 扫码结果页</div><div class="p">微信扫码进入 · 全屏海报 + 立即抽奖</div></div><div class="arrow">›</div></a>
+    <a class="card" href="p2-verify.html"><div class="ic">🔑</div><div class="meta"><div class="t">P2 抽奖验证页</div><div class="p">输入内袋验证码 · 重复扫码拦截</div></div><div class="arrow">›</div></a>
+    <a class="card" href="p3-select.html"><div class="ic">🎁</div><div class="meta"><div class="t">P3 抽奖选取页</div><div class="p">Coverflow 轮播 · 撕开包装袋抽奖</div></div><div class="arrow">›</div></a>
+    <a class="card" href="p4-result.html"><div class="ic">🏆</div><div class="meta"><div class="t">P4 抽奖结果页</div><div class="p">中奖/积分/未中奖 · 结果态预览</div></div><div class="arrow">›</div></a>
+  </div>
+
+  <div class="foot">原型版本 v0.1.0 · 单文件独立页面 · 微信小程序框架<br>所有页面可在浏览器中预览交互，真实开发请按计划转为 WXML/WXSS/JS</div>
+</div>
+</body>
+</html>

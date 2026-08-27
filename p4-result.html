@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · P4 抽奖结果页</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;padding:20px 16px}
+/* preview tab */
+.prev{display:flex;gap:8px;margin-bottom:16px}
+.prev button{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);background:#fff;border-radius:8px;font-size:13px;color:#666;cursor:pointer}
+.prev button.on{background:#c9302c;color:#fff;border-color:#c9302c}
+/* result card */
+.rc{background:#fff;border-radius:14px;padding:28px 20px;text-align:center;border:.5px solid rgba(0,0,0,.08);margin-bottom:14px}
+.ric{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.ric.win{background:#fdf6e8}.ric.points{background:#eaf4ed}.ric.no{background:#f5f6f7}
+.rt{font-size:19px;font-weight:500;margin-bottom:4px}
+.rs{font-size:13px;color:#999;margin-bottom:20px}
+.pd2{background:#f5f6f7;border-radius:10px;padding:16px;margin-bottom:20px}
+.pd2 .pv{font-size:26px;font-weight:500;color:#c9302c}
+.pd2 .pl{font-size:12px;color:#999;margin-top:2px}
+.ra{display:flex;gap:10px;margin-bottom:20px}
+.ra button{flex:1;height:40px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none}
+.ra .p{background:#c9302c;color:#fff}
+.ra .o{background:#fff;color:#666;border:.5px solid rgba(0,0,0,.12)!important}
+.sec{background:#fff;border-radius:14px;padding:16px 18px;margin-bottom:12px;border:.5px solid rgba(0,0,0,.08)}
+.sec h3{font-size:14px;font-weight:500;margin-bottom:10px}
+.sec p,.sec li{font-size:12px;color:#666;line-height:1.8}
+.sec ul{padding-left:16px}
+.mini{display:flex;gap:10px;align-items:center}
+.mini .t{width:48px;height:48px;border-radius:8px;background:#e2e4e7;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:10px}
+.mini .info h4{font-size:13px;font-weight:500}
+.mini .info p{font-size:11px;color:#999}
+.fn{background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 16px;display:flex;gap:8px}
+.fn a{flex:1;text-align:center;padding:10px 4px;border-radius:8px;font-size:12px;color:#666;text-decoration:none;border:.5px solid rgba(0,0,0,.10);display:block}
+.fn a.on{color:#c9302c;border-color:#c9302c;background:#fcebeb}
+.meta-line{display:flex;justify-content:center;gap:16px;margin-bottom:18px;font-size:12px;color:#999}
+.meta-line span{display:flex;align-items:center;gap:4px}
+.link-row{display:flex;justify-content:center;gap:24px;margin-top:14px}
+.rule-link{font-size:12px;color:#c9302c;text-decoration:underline;cursor:pointer}
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="location.href='p1-scan.html'">‹</span>
+    <span class="title">抽奖结果</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="content">
+    <div class="prev">
+      <button id="pv-win" onclick="setMode('win')">中奖态</button>
+      <button id="pv-points" onclick="setMode('points')">积分态</button>
+      <button id="pv-no" onclick="setMode('no')">未中奖态</button>
+    </div>
+
+    <div class="rc" id="rc"></div>
+
+    <div class="sec">
+      <h3>📦 商品信息</h3>
+      <div class="mini"><div class="t">商品</div><div class="info"><h4>迈极炫·槟榔</h4><p>规格：15颗/袋 · 批次：XJM20260827001</p></div></div>
+    </div>
+    <div class="fn">
+      <a href="#" class="on" onclick="toast('跳转积分商城');return false;">点击进入积分商城</a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const params=new URLSearchParams(location.search);
+let chosen=null;
+try{chosen=JSON.parse(decodeURIComponent(params.get('p')||'null'));}catch(e){}
+const scanTime=params.get('t')?new Date(parseInt(params.get('t'),10)):new Date();
+const nickname=params.get('n')||'微信用户_abc123';
+let mode=null;
+if(chosen){
+  mode = chosen.type==='product'?'win' : chosen.type==='points'?'points' : 'no';
+}
+function fmtTime(d){
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+function setMode(m){
+  mode=m;render();
+  document.querySelectorAll('.prev button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pv-'+m).classList.add('on');
+}
+function metaHtml(){
+  return `<div class="meta-line"><span>🕐 ${fmtTime(scanTime)}</span><span>👤 ${nickname}</span></div><div class="link-row"><a class="rule-link" href="rule.html">活动规则 &gt;</a><a class="rule-link" href="records.html">中奖记录 &gt;</a></div>`;
+}
+function render(){
+  const rc=document.getElementById('rc');
+  let html='';
+  if(mode==='win'){
+    html=`<div class="ric win">🎁</div><div class="rt">恭喜中奖！</div><div class="rs">加5元兑换50元迈极炫槟榔一包</div>
+    <div class="pd2"><div class="pv">加5元兑换</div><div class="pl">50元迈极炫槟榔一包 · 线下门店兑换</div></div>
+    ${metaHtml()}`;
+  }else if(mode==='points'){
+    const pts=chosen&&chosen.name.match(/\d+/)?chosen.name.match(/\d+/)[0]:'50';
+    html=`<div class="ric points">⭐</div><div class="rt">获得积分</div><div class="rs">积分已发放至您的账户</div>
+    <div class="pd2"><div class="pv">+${pts} 积分</div><div class="pl">前往积分商城兑换好礼</div></div>
+    ${metaHtml()}`;
+  }else{
+    html=`<div class="ric no">😊</div><div class="rt">谢谢参与</div><div class="rs">很遗憾本次未中奖，再接再厉</div>
+    <div class="pd2"><div class="pv" style="color:#666;font-size:18px">下次一定中</div><div class="pl">继续购买扫码参与吧</div></div>
+    ${metaHtml()}`;
+  }
+  rc.innerHTML=html;
+}
+// init
+if(mode){document.getElementById('pv-'+mode).classList.add('on');}
+render();
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>
