@@ -38,6 +38,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status.stop{color:#999;background:#f2f2f2}
 .card .info{font-size:13px;color:#666;line-height:1.8}
 .card .info .label{color:#999;min-width:56px;display:inline-block}
+.card .stock-row{display:flex;align-items:center;justify-content:space-between;padding-top:8px;margin-top:6px;border-top:.5px solid rgba(0,0,0,.06);cursor:pointer}
+.card .stock-row .label{color:#999}
+.card .stock-row .stval{display:flex;align-items:center;gap:6px;color:#c9302c;font-weight:600}
+.card .stock-row .arrow{color:#999;font-size:16px}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
@@ -185,8 +189,20 @@ function render(kw){
         <div><span class="label">详细地址</span>${s.addr}</div>
         <div><span class="label">创建时间</span>${genCtime(id*200+i)}</div>
       </div>
+      <div class="stock-row" onclick="goStock(${i})">
+        <span class="label">库存总数</span>
+        <span class="stval">${genTotal(i)} 件<span class="arrow">›</span></span>
+      </div>
     </div>
   `).join('');
+}
+
+function genTotal(i){
+  return (id%7+i*13)%180+42;
+}
+
+function goStock(i){
+  location.href='dealer-store-stock.html?dealerId='+id+'&idx='+i+'&name='+encodeURIComponent((allStores[id]||[])[i].name);
 }
 
 function doSearch(){
