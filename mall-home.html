@@ -73,7 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .rec-card .meta .pt{color:#c9302c;font-weight:600;font-size:13px}
 
 /* exchange modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
 .modal.show{display:flex}
 .modal-panel{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -98,7 +98,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .tab-item .txt{font-size:11px;color:#999}
 .tab-item.active .ic,.tab-item.active .txt{color:#c9302c}
 
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -169,7 +169,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  
 </div>
 
 <script>
@@ -190,7 +190,9 @@ goods.forEach((g,i)=>{
   const el=document.createElement('div');
   el.className='rec-card';
   el.onclick=()=>location.href='goods-detail.html?id='+i;
-  el.innerHTML=`<div class="img">商品图</div><div class="info"><div class="name">${g.name}</div><div class="meta"><span class="pt">${g.points} 积分</span><span>已兑 ${g.ex}</span></div></div>`;
+  el.innerHTML=`<div class="img">商品图</div><div class="info"><div class="name">${g.name}</div><div class="meta"><span class="pt">${g.points} 积分</span><span>已兑 ${g.ex}</span></div>
+<div class="toast" id="toast"></div>
+</div>`;
   grid.appendChild(el);
 });
 

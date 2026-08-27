@@ -56,7 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .meta-line span{display:flex;align-items:center;gap:4px}
 .link-row{display:flex;justify-content:center;gap:24px;margin-top:14px}
 .rule-link{font-size:12px;color:#c9302c;text-decoration:underline;cursor:pointer}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -86,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+
 
 <script>
 const params=new URLSearchParams(location.search);
@@ -124,7 +124,9 @@ function render(){
     ${metaHtml()}`;
   }else{
     html=`<div class="ric no">😊</div><div class="rt">谢谢参与</div><div class="rs">很遗憾本次未中奖，再接再厉</div>
-    <div class="pd2"><div class="pv" style="color:#666;font-size:18px">下次一定中</div><div class="pl">继续购买扫码参与吧</div></div>
+    <div class="pd2"><div class="pv" style="color:#666;font-size:18px">下次一定中</div><div class="pl">继续购买扫码参与吧</div>
+<div class="toast" id="toast"></div>
+</div>
     ${metaHtml()}`;
   }
   rc.innerHTML=html;

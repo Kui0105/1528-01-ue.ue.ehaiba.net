@@ -62,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .footer .pay{flex-shrink:0;background:#c9302c;color:#fff;border:none;border-radius:999px;padding:11px 28px;font-size:15px;font-weight:500;cursor:pointer}
 .footer .pay:active{opacity:.9}
 
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -126,9 +126,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
     <button class="pay" onclick="doPay()">立即支付</button>
   </div>
-</div>
 
 <div class="toast" id="toast"></div>
+</div>
+
+
 <script>
 const goods=[
   {name:'迈极炫定制打火机',points:500,ex:1280,cat:'数码家电'},

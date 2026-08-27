@@ -44,7 +44,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .modal .btn{width:100%;height:42px;background:#d4a843;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer}
 .modal .cancel{margin-top:10px;width:100%;height:38px;background:transparent;color:#999;border:.5px solid rgba(0,0,0,.12);border-radius:10px;font-size:13px;cursor:pointer}
 /* toast */
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -78,14 +78,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 </div>
 
 <div class="overlay" id="authOverlay">
-  <div class="modal">
+  
+
+<div class="toast" id="toast">
+<div class="modal">
     <h3>需要登录</h3>
     <p>检测到您尚未登录，请授权微信手机号后继续抽奖</p>
     <button class="btn" onclick="doAuth()">微信手机号一键登录</button>
     <button class="cancel" onclick="closeAuth()">暂不登录</button>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+</div>
+
 
 <script>
 let loggedIn=false;

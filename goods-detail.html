@@ -36,7 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .footer button{flex:2;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;padding:12px}
 
 /* exchange modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center}
 .modal.show{display:flex}
 .modal-panel{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px;animation:slideUp .25s ease;position:relative}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -78,9 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="points"><span>所需积分</span><span id="footerPoints">500</span></div>
     <button id="exchangeBtn">立即兑换</button>
   </div>
-</div>
 
-<!-- exchange quantity modal -->
 <div class="modal" id="modal" onclick="closeModal(event)">
   <div class="modal-panel">
     <div class="close" onclick="hideModal()">×</div>
@@ -102,6 +100,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <button class="modal-btn" onclick="toOrder()">立即兑换</button>
   </div>
 </div>
+</div>
+
+<!-- exchange quantity modal -->
+
 
 <script>
 const goods=[

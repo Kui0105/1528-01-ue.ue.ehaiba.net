@@ -56,7 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .empty-state p{font-size:13px;color:#999}
 
 /* confirm modal */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
 .modal.show{display:flex}
 .modal-panel{width:100%;max-width:280px;background:#fff;border-radius:12px;padding:20px;text-align:center}
 .modal-panel h3{font-size:16px;font-weight:500;margin-bottom:10px}
@@ -66,7 +66,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .modal-panel .btns .cancel{background:#f5f6f7;color:#666}
 .modal-panel .btns .confirm{background:#c9302c;color:#fff}
 
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -89,18 +89,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="content" id="content"></div>
 </div>
 
-<div class="modal" id="modal" onclick="closeModal(event)">
-  <div class="modal-panel" onclick="event.stopPropagation()">
-    <h3 id="modalTitle">提示</h3>
-    <p id="modalText">确认操作？</p>
-    <div class="btns">
-      <button class="cancel" onclick="hideModal()">取消</button>
-      <button class="confirm" id="modalConfirm" onclick="confirmAction()">确定</button>
-    </div>
-  </div>
-</div>
 
-<div class="toast" id="toast"></div>
+
+
 <script>
 const statusMap={
   pending:{label:'待付款',cls:''},
@@ -157,7 +148,20 @@ function render(){
       <div class="actions" onclick="event.stopPropagation()">
         ${actionButtons(o)}
       </div>
+    
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="modal-panel" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">提示</h3>
+    <p id="modalText">确认操作？</p>
+    <div class="btns">
+      <button class="cancel" onclick="hideModal()">取消</button>
+      <button class="confirm" id="modalConfirm" onclick="confirmAction()">确定</button>
     </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
   `).join('');
 }
 

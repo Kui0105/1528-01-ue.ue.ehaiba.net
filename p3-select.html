@@ -62,7 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 /* hint */
 .hint{position:absolute;left:0;right:0;bottom:32px;text-align:center;color:#fff;font-size:13px;opacity:.9;z-index:10;padding:0 20px;transition:opacity .25s}
 .hint.hide{opacity:0}
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -93,7 +93,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="hint" id="hint">左右滑动选择奖项，点击选中项放大，从左向右撕开奖品</div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+
 
 <script>
 let prizes=[
@@ -130,7 +130,9 @@ function createItems(){
         <div class="tear-edge"></div>
         <div class="pkg-text">迈极炫</div>
       </div>
-      </div>
+      
+<div class="toast" id="toast"></div>
+</div>
     `;
     el.addEventListener('click',()=>onItemClick(i));
     track.appendChild(el);
