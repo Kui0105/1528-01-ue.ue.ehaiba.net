@@ -70,6 +70,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .scan-frame p{position:absolute;bottom:30px;font-size:12px;color:#999}
 .scan-btn{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px}
 .scan-cancel{width:100%;height:40px;background:transparent;color:#666;border:.5px solid rgba(0,0,0,.12);border-radius:999px;font-size:14px;cursor:pointer}
+.scan-hd{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.scan-hd h3{font-size:16px;font-weight:500}
+.scan-hd .close{font-size:24px;color:#999;cursor:pointer}
+
+.result-modal{align-items:center;padding:24px}
+.result-panel{width:100%;max-width:300px;background:#fff;border-radius:12px;padding:24px;text-align:center;animation:pop .2s ease}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.result-panel .icon{font-size:42px;margin-bottom:12px}
+.result-panel h3{font-size:16px;font-weight:500;margin-bottom:8px}
+.result-panel p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.result-panel .result-btn{width:100%;height:42px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.result-panel .result-btn.gray{background:#f5f6f7;color:#666}
 
 .filter-sheet{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px 0;animation:slideUp .22s ease}
 .sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;border-bottom:.5px solid rgba(0,0,0,.08)}
@@ -142,7 +154,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           </div>
           <div class="label">产品激活</div>
         </div>
-        <div class="menu-item" onclick="location.href='recycle.html'">
+        <div class="menu-item" onclick="recycle()">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 12a8 8 0 1 1-16 0"></path>
@@ -152,7 +164,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           </div>
           <div class="label">产品回收</div>
         </div>
-        <div class="menu-item" onclick="location.href='verify-prize.html'">
+        <div class="menu-item" onclick="verify()">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 6L9 17l-5-5"></path>
@@ -212,6 +224,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
+  <div class="modal" id="scanModal" onclick="closeScanModal(event)">
+    <div class="scan-panel" onclick="event.stopPropagation()">
+      <div class="scan-hd">
+        <h3 id="scanTitle">扫码</h3>
+        <span class="close" onclick="hideScanModal()">×</span>
+      </div>
+      <div class="scan-frame">
+        <div class="scan-line"></div>
+        <p>将二维码放入框内</p>
+      </div>
+      <button class="scan-btn" onclick="doScan()">模拟扫码</button>
+      <button class="scan-cancel" onclick="hideScanModal()">结束扫码</button>
+    </div>
+  </div>
+
+  <div class="modal result-modal" id="resultModal" onclick="closeResultModal(event)">
+    <div class="result-panel" onclick="event.stopPropagation()">
+      <div class="icon" id="resultIcon">✅</div>
+      <h3 id="resultTitle">处理成功</h3>
+      <p id="resultText">操作已完成</p>
+      <button class="result-btn" id="resultBtn" onclick="continueScan()">继续扫码</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -234,6 +270,46 @@ function selectFilter(type,label){
   document.getElementById('statVerify').textContent=d.verify;
   document.getElementById('statStore').textContent=d.store;
   hideFilterSheet();
+}
+
+let scanMode='';
+const PRIZE_NAME='加5元兑换50元迈极炫槟榔一包';
+
+function recycle(){
+  scanMode='recycle';
+  document.getElementById('scanTitle').textContent='扫码回收';
+  document.getElementById('scanModal').classList.add('show');
+}
+function verify(){
+  scanMode='verify';
+  document.getElementById('scanTitle').textContent='扫码核销';
+  document.getElementById('scanModal').classList.add('show');
+}
+function hideScanModal(){document.getElementById('scanModal').classList.remove('show');}
+function closeScanModal(e){if(e.target.id==='scanModal')hideScanModal();}
+function doScan(){
+  hideScanModal();
+  let icon,title,text,btnClass='result-btn';
+  if(scanMode==='recycle'){
+    const r=Math.random();
+    if(r<0.3){icon='⚠️';title='无法回收';text='产品未激活，无法进行回收';btnClass='result-btn gray';}
+    else if(r<0.5){icon='⚠️';title='无法回收';text='该产品已被用户扫码抽奖，不可回收';btnClass='result-btn gray';}
+    else{icon='♻️';title='回收成功';text='产品已变更为待激活状态，归属门店数据已清除';}
+  }else if(scanMode==='verify'){
+    const r=Math.random();
+    if(r<0.3){icon='⚠️';title='重复核销';text='产品已核销请勿重复核销，核销奖品：'+PRIZE_NAME;btnClass='result-btn gray';}
+    else{icon='✅';title='核销成功';text='奖品「'+PRIZE_NAME+'」已核销成功';}
+  }
+  document.getElementById('resultIcon').textContent=icon;
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('resultText').textContent=text;
+  document.getElementById('resultBtn').className=btnClass;
+  document.getElementById('resultModal').classList.add('show');
+}
+function closeResultModal(e){if(e.target.id==='resultModal')document.getElementById('resultModal').classList.remove('show');}
+function continueScan(){
+  document.getElementById('resultModal').classList.remove('show');
+  setTimeout(()=>document.getElementById('scanModal').classList.add('show'),200);
 }
 
 let tt=null;

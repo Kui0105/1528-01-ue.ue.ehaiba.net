@@ -128,22 +128,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 </div>
 
 <script>
-const prizes=['加5元兑换50元迈极炫槟榔一包','迈极炫定制打火机','品牌毛巾套装','100积分'];
+const PRIZE_NAME='加5元兑换50元迈极炫槟榔一包';
 let scanResult='confirm';
-let currentPrize='';
 let verifiedCodes=new Set();
 
 function startScan(){document.getElementById('scanModal').classList.add('show');}
 function hideScan(){document.getElementById('scanModal').classList.remove('show');}
 function closeScan(e){if(e.target.id==='scanModal')hideScan();}
 function doScan(){
-  currentPrize=prizes[Math.floor(Math.random()*prizes.length)];
   const r=Math.random();
   if(r<0.3){scanResult='repeat';}
   else{scanResult='confirm';}
   hideScan();
   if(scanResult==='confirm'){
-    document.getElementById('prizeName').textContent=currentPrize;
+    document.getElementById('prizeName').textContent=PRIZE_NAME;
     document.getElementById('confirmModal').classList.add('show');
   }else{
     showResult();
@@ -162,9 +160,9 @@ function showResult(){
   const title=document.getElementById('resultTitle');
   const text=document.getElementById('resultText');
   if(scanResult==='success'){
-    icon.textContent='✅';title.textContent='核销成功';text.textContent='奖品「'+currentPrize+'」已核销成功';
+    icon.textContent='✅';title.textContent='核销成功';text.textContent='奖品「'+PRIZE_NAME+'」已核销成功';
   }else if(scanResult==='repeat'){
-    icon.textContent='⚠️';title.textContent='重复核销';text.textContent='产品已核销请勿重复核销，核销奖品：'+currentPrize;
+    icon.textContent='⚠️';title.textContent='重复核销';text.textContent='产品已核销请勿重复核销，核销奖品：'+PRIZE_NAME;
   }else{
     icon.textContent='❌';title.textContent='核销失败';text.textContent='扫码失败，请重试';
   }
