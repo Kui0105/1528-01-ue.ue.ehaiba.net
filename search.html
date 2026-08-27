@@ -17,6 +17,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
 .sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#fff;border-radius:1px}
 .navbar{height:44px;background:#c9302c;display:flex;align-items:center;position:relative;flex-shrink:0;padding:0 8px;gap:6px}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(255,255,255,.35);border-radius:15px;display:flex;align-items:center;background:rgba(255,255,255,.15)}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#fff}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #fff;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(255,255,255,.35)}
 .navbar .back{font-size:22px;color:#fff;width:32px;height:44px;display:flex;align-items:center;cursor:pointer;flex-shrink:0}
 .search-box{flex:1;height:32px;background:#fff;border-radius:16px;display:flex;align-items:center;padding:0 10px;gap:6px}
 .search-box input{flex:1;border:none;outline:none;font-size:14px;color:#1a1a1a;background:transparent}
@@ -78,6 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <input type="search" id="searchInput" placeholder="搜索积分商品" autocomplete="off">
     </div>
     <span class="search-btn" onclick="doSearch()">搜索</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
 
   <div class="content" id="content">
