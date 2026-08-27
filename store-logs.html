@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 变动记录</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.log-item{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.log-item .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.log-item .name{font-size:14px;font-weight:500;flex:1;min-width:0;padding-right:10px}
+.log-item .reason{font-size:12px;color:#c9302c;border:.5px solid rgba(201,48,44,.3);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.log-item .reason.recycle{color:#2a9d3c;border-color:rgba(42,157,60,.3)}
+.log-item .reason.verify{color:#f0a030;border-color:rgba(240,160,48,.3)}
+.log-item .reason.add{color:#2a7fd1;border-color:rgba(42,127,209,.3)}
+.log-item .time{font-size:12px;color:#999}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title" id="pageTitle">变动记录</span>
+  </div>
+
+  <div class="content">
+    <div id="logList"></div>
+  </div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const storeId=params.get('id')||1;
+const storeName=['','湘江东路店','五一广场店','岳麓山北店'][storeId]||'门店';
+document.getElementById('pageTitle').textContent=storeName+' · 变动记录';
+
+const logs=[
+  {name:'迈极炫槟榔 50元装',reason:'新增/激活产品',type:'add',time:'2026-08-27 14:32'},
+  {name:'迈极炫槟榔 30元装',reason:'新增/激活产品',type:'add',time:'2026-08-27 11:18'},
+  {name:'加5元兑换50元迈极炫槟榔一包',reason:'兑奖核销',type:'verify',time:'2026-08-26 17:05'},
+  {name:'迈极炫槟榔 50元装',reason:'产品回收',type:'recycle',time:'2026-08-26 09:40'},
+  {name:'迈极炫定制打火机',reason:'新增/激活产品',type:'add',time:'2026-08-25 16:22'},
+  {name:'100积分兑换券',reason:'兑奖核销',type:'verify',time:'2026-08-25 10:11'}
+];
+
+const cls={add:'add',recycle:'recycle',verify:'verify'};
+const box=document.getElementById('logList');
+box.innerHTML=logs.map(l=>`
+  <div class="log-item">
+    <div class="top">
+      <div class="name">${l.name}</div>
+      <div class="reason ${cls[l.type]}">${l.reason}</div>
+    </div>
+    <div class="time">${l.time}</div>
+  </div>
+`).join('');
+</script>
+</body>
+</html>

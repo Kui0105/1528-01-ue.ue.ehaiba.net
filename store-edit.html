@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 门店编辑</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.form-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:16px;margin-bottom:12px}
+.form-row{margin-bottom:16px}
+.form-row:last-child{margin-bottom:0}
+.form-row label{display:block;font-size:13px;color:#666;margin-bottom:8px}
+.form-row input{width:100%;height:42px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff}
+.form-row input:focus{border-color:#c9302c}
+.form-row input::placeholder{color:#bbb}
+.form-row textarea{width:100%;height:80px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none}
+.form-row textarea:focus{border-color:#c9302c}
+.form-row .addr-row{display:flex;gap:8px}
+.form-row .addr-row input{flex:1}
+.form-row .addr-row button{height:42px;padding:0 14px;border:.5px solid rgba(0,0,0,.12);background:#fff;border-radius:8px;font-size:13px;color:#333;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.form-row .addr-row button svg{width:16px;height:16px}
+
+.avatar-upload{width:100%;height:120px;border:1px dashed rgba(0,0,0,.15);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#999;font-size:13px;cursor:pointer;background:#fafafa}
+.avatar-upload.has-img{border-style:solid;border-color:rgba(0,0,0,.08);background:#fff}
+.avatar-upload img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.avatar-upload svg{width:32px;height:32px;color:#ccc}
+
+.status-row{display:flex;gap:12px}
+.status-row .opt{flex:1;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.12);border-radius:8px;font-size:14px;color:#666;cursor:pointer;background:#fff}
+.status-row .opt.active{border-color:#c9302c;color:#c9302c;background:rgba(201,48,44,.04)}
+
+.footer{padding:12px;background:#fff;border-top:.5px solid rgba(0,0,0,.08)}
+.footer button{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;cursor:pointer}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title" id="pageTitle">新增门店</span>
+  </div>
+
+  <div class="content">
+    <div class="form-card">
+      <div class="form-row">
+        <label>门店门头照</label>
+        <div class="avatar-upload" id="avatarBox" onclick="selectAvatar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="12" cy="10" r="3"></circle><path d="M3 19l6-6 4 4 5-5 3 3"></path></svg>
+          <span>点击上传门店门头照</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-row">
+        <label>门店名称</label>
+        <input type="text" id="name" placeholder="请输入门店名称">
+      </div>
+      <div class="form-row">
+        <label>门店状态</label>
+        <div class="status-row">
+          <div class="opt active" data-val="open" onclick="setStatus(this,'open')">营业中</div>
+          <div class="opt" data-val="stop" onclick="setStatus(this,'stop')">已停业</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>联系人</label>
+        <input type="text" id="contact" placeholder="请输入联系人姓名">
+      </div>
+      <div class="form-row">
+        <label>联系电话</label>
+        <input type="text" id="phone" placeholder="请输入联系电话">
+      </div>
+      <div class="form-row">
+        <label>门店地址</label>
+        <div class="addr-row">
+          <input type="text" id="addr" placeholder="请输入门店地址">
+          <button onclick="locate()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            定位
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button onclick="save()">保存</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const editId=params.get('id');
+const demoStore={id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',avatar:''};
+let status='open';
+let avatar='';
+
+if(editId){
+  document.getElementById('pageTitle').textContent='编辑门店';
+  const s=demoStore;
+  document.getElementById('name').value=s.name;
+  document.getElementById('contact').value=s.contact;
+  document.getElementById('phone').value=s.phone;
+  document.getElementById('addr').value=s.addr;
+  status=s.status;
+  avatar=s.avatar;
+  document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.toggle('active',o.dataset.val===status));
+  if(avatar)updateAvatar(avatar);
+}
+
+function setStatus(el,val){
+  status=val;
+  document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectAvatar(){
+  avatar='https://placehold.co/200x120/c9302c/fff?text=门头照';
+  updateAvatar(avatar);
+}
+function updateAvatar(url){
+  const box=document.getElementById('avatarBox');
+  box.classList.add('has-img');
+  box.innerHTML=`<img src="${url}" alt="">`;
+}
+
+function locate(){
+  document.getElementById('addr').value='长沙市天心区黄兴南路步行商业街 188 号';
+  toast('已识别当前定位地址，可手动修改');
+}
+
+function save(){
+  const name=document.getElementById('name').value.trim();
+  const addr=document.getElementById('addr').value.trim();
+  if(!name||!addr){toast('请填写门店名称和地址');return;}
+  toast(editId?'门店修改成功':'门店新增成功');
+  setTimeout(()=>history.back(),800);
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>

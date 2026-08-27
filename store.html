@@ -21,11 +21,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
+.search-box{display:flex;align-items:center;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:999px;padding:0 14px;height:40px;margin-bottom:12px}
+.search-box svg{flex-shrink:0;width:18px;height:18px;color:#999}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;margin-left:8px;background:transparent}
+.search-box input::placeholder{color:#999}
+
 .store-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
-.store-card .name{font-size:15px;font-weight:500;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.store-card .top{display:flex;gap:12px;margin-bottom:10px}
+.store-card .avatar{width:64px;height:64px;border-radius:8px;background:#f5f6f7;border:.5px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.store-card .avatar img{width:100%;height:100%;object-fit:cover}
+.store-card .avatar svg{width:28px;height:28px;color:#ccc}
+.store-card .info{flex:1;min-width:0}
+.store-card .name{font-size:15px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .store-card .name .tag{font-size:11px;color:#c9302c;border:.5px solid rgba(201,48,44,.3);padding:1px 6px;border-radius:4px;font-weight:400}
-.store-card .addr{font-size:13px;color:#666;margin-bottom:4px}
-.store-card .contact{font-size:12px;color:#999}
+.store-card .name .status{font-size:11px;color:#2a9d3c;border:.5px solid rgba(42,157,60,.3);padding:1px 6px;border-radius:4px;font-weight:400}
+.store-card .name .status.stop{color:#999;border-color:rgba(0,0,0,.15)}
+.store-card .addr{font-size:13px;color:#666;line-height:1.5}
+.store-card .contact{font-size:12px;color:#999;margin-top:4px}
+.store-card .actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:.5px solid rgba(0,0,0,.06)}
+.store-card .actions button{flex:1;height:32px;border-radius:6px;border:.5px solid rgba(0,0,0,.12);background:#fff;font-size:12px;color:#333;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+.store-card .actions button.danger{color:#c9302c;border-color:rgba(201,48,44,.3)}
+.store-card .actions button svg{width:14px;height:14px}
 
 .empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
 
@@ -33,13 +49,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 .modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
 .modal.show{display:flex}
-.modal-panel{width:100%;max-width:320px;background:#fff;border-radius:12px;padding:20px}
-.modal-panel h3{font-size:16px;font-weight:500;margin-bottom:16px;text-align:center}
-.form-row{margin-bottom:12px}
-.form-row label{display:block;font-size:13px;color:#666;margin-bottom:6px}
-.form-row input{width:100%;height:40px;border:1px solid rgba(0,0,0,.15);border-radius:8px;padding:0 12px;font-size:14px;outline:none}
-.form-row input:focus{border-color:#c9302c}
-.btns{display:flex;gap:10px;margin-top:20px}
+.modal-panel{width:100%;max-width:300px;background:#fff;border-radius:12px;padding:20px}
+.modal-panel h3{font-size:16px;font-weight:500;margin-bottom:8px;text-align:center}
+.modal-panel p{font-size:13px;color:#666;text-align:center;margin-bottom:20px;line-height:1.5}
+.btns{display:flex;gap:10px}
 .btns button{flex:1;height:38px;border-radius:999px;border:none;font-size:14px;cursor:pointer}
 .btns .cancel{background:#f5f6f7;color:#666}
 .btns .confirm{background:#c9302c;color:#fff}
@@ -56,44 +69,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="title">门店管理</span>
   </div>
 
-  <div class="content" id="storeContent">
-    <div class="store-card">
-      <div class="name">湘江东路店<span class="tag">默认</span></div>
-      <div class="addr">长沙市开福区湘江东路一段 88 号</div>
-      <div class="contact">联系人：李店长 · 138****6688</div>
+  <div class="content">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+      <input type="text" id="searchInput" placeholder="请输入门店名称" oninput="filterStore()">
     </div>
-    <div class="store-card">
-      <div class="name">五一广场店</div>
-      <div class="addr">长沙市芙蓉区五一大道 168 号</div>
-      <div class="contact">联系人：王店长 · 139****7766</div>
-    </div>
-    <div class="store-card">
-      <div class="name">岳麓山北店</div>
-      <div class="addr">长沙市岳麓区麓山南路 66 号</div>
-      <div class="contact">联系人：张店长 · 137****5522</div>
-    </div>
+    <div id="storeContent"></div>
   </div>
 
-  <button class="fab" onclick="showAdd()">+</button>
+  <button class="fab" onclick="addStore()">+</button>
 
-  <div class="modal" id="addModal" onclick="closeAdd(event)">
+  <div class="modal" id="delModal" onclick="closeDel(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
-      <h3>新增门店</h3>
-      <div class="form-row">
-        <label>门店名称</label>
-        <input type="text" id="addName" placeholder="请输入门店名称">
-      </div>
-      <div class="form-row">
-        <label>详细地址</label>
-        <input type="text" id="addAddr" placeholder="请输入详细地址">
-      </div>
-      <div class="form-row">
-        <label>联系电话</label>
-        <input type="text" id="addPhone" placeholder="请输入联系电话">
-      </div>
+      <h3>确认删除</h3>
+      <p id="delText">确定删除该门店吗？</p>
       <div class="btns">
-        <button class="cancel" onclick="hideAdd()">取消</button>
-        <button class="confirm" onclick="confirmAdd()">确定</button>
+        <button class="cancel" onclick="hideDel()">取消</button>
+        <button class="confirm" onclick="confirmDel()">删除</button>
       </div>
     </div>
   </div>
@@ -102,27 +94,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 </div>
 
 <script>
-function showAdd(){document.getElementById('addModal').classList.add('show');}
-function hideAdd(){document.getElementById('addModal').classList.remove('show');}
-function closeAdd(e){if(e.target.id==='addModal')hideAdd();}
-function confirmAdd(){
-  const name=document.getElementById('addName').value.trim();
-  const addr=document.getElementById('addAddr').value.trim();
-  const phone=document.getElementById('addPhone').value.trim();
-  if(!name||!addr||!phone){toast('请填写完整信息');return;}
-  const card=document.createElement('div');
-  card.className='store-card';
-  card.innerHTML=`<div class="name">${name}</div><div class="addr">${addr}</div><div class="contact">联系人：${phone}</div>`;
-  document.getElementById('storeContent').appendChild(card);
-  document.getElementById('addName').value='';
-  document.getElementById('addAddr').value='';
-  document.getElementById('addPhone').value='';
-  hideAdd();
-  toast('门店新增成功');
+const stores=[
+  {id:1,name:'湘江东路店',status:'open',addr:'长沙市开福区湘江东路一段 88 号',contact:'李店长',phone:'138****6688',avatar:'',stock:12},
+  {id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',avatar:'',stock:8},
+  {id:3,name:'岳麓山北店',status:'stop',addr:'长沙市岳麓区麓山南路 66 号',contact:'张店长',phone:'137****5522',avatar:'',stock:0}
+];
+let delId=null;
+
+function render(){
+  const kw=document.getElementById('searchInput').value.trim();
+  const list=stores.filter(s=>s.name.includes(kw));
+  const box=document.getElementById('storeContent');
+  if(list.length===0){box.innerHTML='<div class="empty">暂无门店数据</div>';return;}
+  box.innerHTML=list.map(s=>`
+    <div class="store-card" data-id="${s.id}">
+      <div class="top">
+        <div class="avatar">${s.avatar?`<img src="${s.avatar}" alt="">`:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="12" cy="10" r="3"></circle><path d="M3 19l6-6 4 4 5-5 3 3"></path></svg>`}</div>
+        <div class="info">
+          <div class="name">${s.name}${s.id===1?'<span class="tag">默认</span>':''}<span class="status ${s.status==='stop'?'stop':''}">${s.status==='open'?'营业中':'已停业'}</span></div>
+          <div class="addr">${s.addr}</div>
+          <div class="contact">联系人：${s.contact} · ${s.phone}</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button onclick="goStock(${s.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          查看库存
+        </button>
+        <button onclick="goLogs(${s.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          变动记录
+        </button>
+        <button onclick="editStore(${s.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          编辑
+        </button>
+        <button class="danger" onclick="delStore(${s.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          删除
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterStore(){render();}
+
+function addStore(){location.href='store-edit.html';}
+function editStore(id){location.href='store-edit.html?id='+id;}
+function goStock(id){location.href='store-stock.html?id='+id;}
+function goLogs(id){location.href='store-logs.html?id='+id;}
+
+function delStore(id){
+  const s=stores.find(x=>x.id===id);
+  if(!s)return;
+  if(s.stock>0){toast('门店库存未清空，无法删除');return;}
+  delId=id;
+  document.getElementById('delText').textContent='确定删除「'+s.name+'」吗？删除后不可恢复。';
+  document.getElementById('delModal').classList.add('show');
+}
+function hideDel(){document.getElementById('delModal').classList.remove('show');delId=null;}
+function closeDel(e){if(e.target.id==='delModal')hideDel();}
+function confirmDel(){
+  if(!delId)return;
+  const idx=stores.findIndex(x=>x.id===delId);
+  if(idx>-1)stores.splice(idx,1);
+  hideDel();
+  render();
+  toast('门店删除成功');
 }
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+
+render();
 </script>
 </body>
 </html>
