@@ -1,10 +1,14 @@
 {
   "name": "maijixuan-lottery-prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "迈极炫槟榔扫码抽奖小程序交互原型",
   "private": true,
   "scripts": {},
-  "keywords": ["lottery", "weapp", "prototype"],
+  "keywords": [
+    "lottery",
+    "weapp",
+    "prototype"
+  ],
   "author": "",
   "license": "UNLICENSED"
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 商品详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#f5f6f7;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.gallery{height:260px;background:#f5f6f7;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:14px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.info{padding:16px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08)}
+.info .name{font-size:17px;font-weight:500;margin-bottom:8px}
+.info .price{font-size:15px;color:#c9302c;font-weight:600}
+.info .price .orig{font-size:13px;color:#999;text-decoration:line-through;margin-left:8px;font-weight:400}
+.info .stock{font-size:12px;color:#999;margin-top:6px}
+.detail{padding:16px;background:#fff;margin-top:10px}
+.detail h3{font-size:15px;font-weight:500;margin-bottom:12px}
+.detail p{font-size:13px;color:#666;line-height:1.8}
+.footer{position:sticky;bottom:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 12px;display:flex;gap:10px}
+.footer .points{flex:1;display:flex;flex-direction:column;justify-content:center}
+.footer .points span:first-child{font-size:11px;color:#999}
+.footer .points span:last-child{font-size:16px;color:#c9302c;font-weight:600}
+.footer button{flex:2;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;padding:12px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">商品详情</span>
+  </div>
+  <div class="content">
+    <div class="gallery">商品轮播主图区</div>
+    <div class="info">
+      <div class="name">迈极炫定制打火机</div>
+      <div class="price">500 积分<span class="orig">¥39.90</span></div>
+      <div class="stock">已兑换 128 件 · 库存充足</div>
+    </div>
+    <div class="detail">
+      <h3>商品详情</h3>
+      <p>这里是商品详情描述占位。<br><br>支持展示图文混排内容，包括商品参数、使用说明、注意事项等。后续可替换为真实详情内容。</p>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="points"><span>所需积分</span><span>500</span></div>
+    <button onclick="location.href='order-submit.html?id=0&qty=1'">立即兑换</button>
+  </div>
+</div>
+</body>
+</html>
