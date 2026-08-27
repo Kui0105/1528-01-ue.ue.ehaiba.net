@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 业务员数据</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.subbar{height:38px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 14px;font-size:13px;color:#666;flex-shrink:0}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center}
+.card .avatar{width:40px;height:40px;border-radius:50%;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;flex-shrink:0;margin-right:12px}
+.card .main{flex:1;min-width:0}
+.card .top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.card .name{font-size:15px;font-weight:500}
+.card .status{font-size:12px;padding:1px 7px;border-radius:4px}
+.card .status.on{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.card .status.off{color:#999;background:#f2f2f2}
+.card .info{font-size:13px;color:#666;line-height:1.7}
+.card .info .label{color:#999}
+.card .stores{text-align:center;flex-shrink:0;margin-left:12px}
+.card .stores .num{font-size:18px;font-weight:600;color:#c9302c}
+.card .stores .txt{font-size:12px;color:#999}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">业务员数据</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="subbar" id="subbar">经销商</div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const id=parseInt(params.get('id')||'0');
+
+const dealerName={
+  111:'长沙兴盛商贸有限公司',112:'长沙锦程贸易有限公司',113:'长沙联华批发部',
+  121:'株洲宏达商贸',122:'株洲金叶贸易',131:'湘潭金鹏商贸',132:'湘潭永辉批发部',
+  141:'衡阳天信商贸',142:'衡阳鹏程贸易',151:'岳阳宏发商贸',152:'岳阳联盛批发部',
+  211:'武汉恒信商贸有限公司',212:'武汉百川批发',213:'武汉惠民贸易',
+  221:'宜昌顺达商贸',222:'宜昌长江批发部',231:'襄阳金穗商贸',232:'襄阳汉水贸易',
+  241:'荆州宏运商贸',242:'荆州古城批发部',
+  311:'广州粤海商贸',312:'广州南沙批发部',313:'广州白云贸易',
+  321:'深圳前海商贸',322:'深圳福田批发部',331:'东莞东城商贸',332:'东莞虎门贸易',
+  341:'佛山禅城商贸',342:'佛山顺德批发部',
+  411:'南昌洪城商贸',412:'南昌红谷滩贸易',421:'赣州赣南商贸',422:'赣州开发区批发部',
+  431:'九江浔阳商贸',432:'九江濂溪批发部',441:'上饶信州商贸',442:'上饶广丰批发部',
+  511:'成都蜀信商贸',512:'成都高新批发部',513:'成都武侯贸易',
+  521:'绵阳涪城商贸',522:'绵阳游仙批发部',531:'德阳旌阳商贸',532:'德阳广汉批发部',
+  541:'南充顺庆商贸',542:'南充高坪批发部',551:'乐山市中商贸',552:'乐山市五通桥批发部'
+};
+
+const allSales={
+  111:[
+    {name:'刘伟',phone:'135****2201',area:'天心区',stores:3,status:'on'},
+    {name:'陈静',phone:'135****2202',area:'雨花区',stores:3,status:'on'},
+    {name:'赵磊',phone:'135****2203',area:'芙蓉区',stores:4,status:'off'},
+    {name:'孙倩',phone:'135****2204',area:'开福区',stores:3,status:'on'},
+    {name:'周强',phone:'135****2205',area:'岳麓区',stores:3,status:'on'},
+    {name:'吴敏',phone:'135****2206',area:'望城区',stores:2,status:'on'}
+  ],
+  112:[
+    {name:'李娜',phone:'135****2301',area:'岳麓区',stores:3,status:'on'},
+    {name:'王芳',phone:'135****2302',area:'高新区',stores:3,status:'on'},
+    {name:'张涛',phone:'135****2303',area:'望城区',stores:3,status:'off'},
+    {name:'刘洋',phone:'135****2304',area:'宁乡市',stores:3,status:'on'},
+    {name:'陈晨',phone:'135****2305',area:'浏阳市',stores:3,status:'on'}
+  ],
+  113:[
+    {name:'杨光',phone:'135****2401',area:'开福区',stores:4,status:'on'},
+    {name:'黄磊',phone:'135****2402',area:'芙蓉区',stores:4,status:'on'},
+    {name:'徐丽',phone:'135****2403',area:'天心区',stores:4,status:'on'}
+  ],
+  121:[
+    {name:'郑凯',phone:'135****2501',area:'天元区',stores:3,status:'on'},
+    {name:'冯雪',phone:'135****2502',area:'荷塘区',stores:3,status:'on'},
+    {name:'蒋勇',phone:'135****2503',area:'芦淞区',stores:3,status:'on'},
+    {name:'韩梅',phone:'135****2504',area:'石峰区',stores:3,status:'on'},
+    {name:'曹斌',phone:'135****2505',area:'渌口区',stores:2,status:'off'}
+  ],
+  122:[
+    {name:'邓超',phone:'135****2601',area:'荷塘区',stores:4,status:'on'},
+    {name:'彭丽',phone:'135****2602',area:'芦淞区',stores:4,status:'on'},
+    {name:'萧敬',phone:'135****2603',area:'天元区',stores:3,status:'on'}
+  ],
+  131:[
+    {name:'唐婉',phone:'135****2701',area:'雨湖区',stores:3,status:'on'},
+    {name:'邹军',phone:'135****2702',area:'岳塘区',stores:3,status:'on'},
+    {name:'钟灵',phone:'135****2703',area:'湘潭县',stores:3,status:'on'}
+  ],
+  132:[
+    {name:'范冰',phone:'135****2801',area:'岳塘区',stores:2,status:'on'},
+    {name:'石磊',phone:'135****2802',area:'雨湖区',stores:2,status:'off'},
+    {name:'蔡明',phone:'135****2803',area:'湘潭县',stores:2,status:'on'}
+  ],
+  141:[
+    {name:'汪洋',phone:'135****2901',area:'蒸湘区',stores:4,status:'on'},
+    {name:'田甜',phone:'135****2902',area:'雁峰区',stores:4,status:'on'},
+    {name:'尹航',phone:'135****2903',area:'石鼓区',stores:4,status:'on'},
+    {name:'黎刚',phone:'135****2904',area:'珠晖区',stores:4,status:'on'},
+    {name:'易凡',phone:'135****2905',area:'南岳区',stores:4,status:'on'}
+  ],
+  142:[
+    {name:'龙飞',phone:'135****3001',area:'珠晖区',stores:5,status:'on'},
+    {name:'贺敏',phone:'135****3002',area:'雁峰区',stores:4,status:'on'},
+    {name:'龚雪',phone:'135****3003',area:'蒸湘区',stores:4,status:'on'}
+  ],
+  151:[
+    {name:'文涛',phone:'135****3101',area:'岳阳楼区',stores:3,status:'on'},
+    {name:'段宁',phone:'135****3102',area:'云溪区',stores:3,status:'on'},
+    {name:'雷蕾',phone:'135****3103',area:'君山区',stores:2,status:'on'},
+    {name:'侯军',phone:'135****3104',area:'屈原管理区',stores:2,status:'off'}
+  ],
+  152:[
+    {name:'邵华',phone:'135****3201',area:'云溪区',stores:3,status:'on'},
+    {name:'孟洁',phone:'135****3202',area:'岳阳楼区',stores:3,status:'on'},
+    {name:'邱勇',phone:'135****3203',area:'君山区',stores:2,status:'on'}
+  ],
+  211:[
+    {name:'武磊',phone:'135****3301',area:'江汉区',stores:4,status:'on'},
+    {name:'康辉',phone:'135****3302',area:'武昌区',stores:4,status:'on'},
+    {name:'万琳',phone:'135****3303',area:'洪山区',stores:4,status:'on'},
+    {name:'常乐',phone:'135****3304',area:'江岸区',stores:3,status:'on'},
+    {name:'董洁',phone:'135****3305',area:'汉阳区',stores:3,status:'off'},
+    {name:'萧然',phone:'135****3306',area:'硚口区',stores:2,status:'on'},
+    {name:'潘伟',phone:'135****3307',area:'青山区',stores:2,status:'on'},
+    {name:'尹航',phone:'135****3308',area:'东西湖区',stores:2,status:'on'}
+  ]
+};
+
+function render(){
+  const box=document.getElementById('content');
+  const dname=dealerName[id]||'该经销商';
+  document.getElementById('subbar').textContent=dname+' · 业务员列表';
+  const list=allSales[id]||[];
+  if(list.length===0){box.innerHTML='<div class="empty">暂无业务员数据</div>';return;}
+  box.innerHTML=list.map(s=>`
+    <div class="card">
+      <div class="avatar">${s.name.charAt(0)}</div>
+      <div class="main">
+        <div class="top">
+          <span class="name">${s.name}</span>
+          <span class="status ${s.status}">${s.status==='on'?'在职':'离职'}</span>
+        </div>
+        <div class="info">
+          <span class="label">电话：</span>${s.phone}　<span class="label">负责区域：</span>${s.area}
+        </div>
+      </div>
+      <div class="stores">
+        <div class="num">${s.stores}</div>
+        <div class="txt">门店</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

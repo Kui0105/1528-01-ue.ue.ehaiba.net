@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 门店数据</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.subbar{height:38px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);display:flex;align-items:center;padding:0 14px;font-size:13px;color:#666;flex-shrink:0}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.card .name{font-size:15px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.card .status{font-size:12px;padding:2px 8px;border-radius:4px}
+.card .status.open{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.card .status.stop{color:#999;background:#f2f2f2}
+.card .info{font-size:13px;color:#666;line-height:1.8}
+.card .info .label{color:#999;min-width:56px;display:inline-block}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">门店数据</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="subbar" id="subbar">经销商</div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const id=parseInt(params.get('id')||'0');
+
+const dealerName={
+  111:'长沙兴盛商贸有限公司',112:'长沙锦程贸易有限公司',113:'长沙联华批发部',
+  121:'株洲宏达商贸',122:'株洲金叶贸易',131:'湘潭金鹏商贸',132:'湘潭永辉批发部',
+  141:'衡阳天信商贸',142:'衡阳鹏程贸易',151:'岳阳宏发商贸',152:'岳阳联盛批发部',
+  211:'武汉恒信商贸有限公司',212:'武汉百川批发',213:'武汉惠民贸易',
+  221:'宜昌顺达商贸',222:'宜昌长江批发部',231:'襄阳金穗商贸',232:'襄阳汉水贸易',
+  241:'荆州宏运商贸',242:'荆州古城批发部',
+  311:'广州粤海商贸',312:'广州南沙批发部',313:'广州白云贸易',
+  321:'深圳前海商贸',322:'深圳福田批发部',331:'东莞东城商贸',332:'东莞虎门贸易',
+  341:'佛山禅城商贸',342:'佛山顺德批发部',
+  411:'南昌洪城商贸',412:'南昌红谷滩贸易',421:'赣州赣南商贸',422:'赣州开发区批发部',
+  431:'九江浔阳商贸',432:'九江濂溪批发部',441:'上饶信州商贸',442:'上饶广丰批发部',
+  511:'成都蜀信商贸',512:'成都高新批发部',513:'成都武侯贸易',
+  521:'绵阳涪城商贸',522:'绵阳游仙批发部',531:'德阳旌阳商贸',532:'德阳广汉批发部',
+  541:'南充顺庆商贸',542:'南充高坪批发部',551:'乐山市中商贸',552:'乐山市五通桥批发部'
+};
+
+const allStores={
+  111:[
+    {name:'兴盛商贸·天心旗舰店',addr:'长沙市天心区劳动西路 188 号',contact:'刘店长',phone:'137****1101',status:'open'},
+    {name:'兴盛商贸·雨花店',addr:'长沙市雨花区韶山中路 66 号',contact:'王店长',phone:'137****1102',status:'open'},
+    {name:'兴盛商贸·芙蓉店',addr:'长沙市芙蓉区五一大道 99 号',contact:'李店长',phone:'137****1103',status:'open'},
+    {name:'兴盛商贸·开福店',addr:'长沙市开福区芙蓉中路 45 号',contact:'张店长',phone:'137****1104',status:'open'},
+    {name:'兴盛商贸·岳麓店',addr:'长沙市岳麓区麓谷大道 22 号',contact:'陈店长',phone:'137****1105',status:'open'},
+    {name:'兴盛商贸·望城店',addr:'长沙市望城区雷锋大道 18 号',contact:'赵店长',phone:'137****1106',status:'stop'}
+  ],
+  112:[
+    {name:'锦程贸易·岳麓店',addr:'长沙市岳麓区枫林路 56 号',contact:'孙店长',phone:'137****1201',status:'open'},
+    {name:'锦程贸易·高新店',addr:'长沙市高新区麓谷企业广场 8 号',contact:'周店长',phone:'137****1202',status:'open'},
+    {name:'锦程贸易·宁乡店',addr:'长沙市宁乡市玉潭镇楚沩路 30 号',contact:'吴店长',phone:'137****1203',status:'open'},
+    {name:'锦程贸易·浏阳店',addr:'长沙市浏阳市淮川街道北正路 12 号',contact:'郑店长',phone:'137****1204',status:'open'},
+    {name:'锦程贸易·望城二店',addr:'长沙市望城区金星路 77 号',contact:'钱店长',phone:'137****1205',status:'stop'}
+  ],
+  113:[
+    {name:'联华批发·开福店',addr:'长沙市开福区湘江北路 120 号',contact:'冯店长',phone:'137****1301',status:'open'},
+    {name:'联华批发·芙蓉店',addr:'长沙市芙蓉区万家丽路 33 号',contact:'褚店长',phone:'137****1302',status:'open'},
+    {name:'联华批发·天心店',addr:'长沙市天心区书院路 21 号',contact:'蒋店长',phone:'137****1303',status:'open'}
+  ],
+  121:[
+    {name:'宏达商贸·天元店',addr:'株洲市天元区长江北路 88 号',contact:'韩店长',phone:'137****1401',status:'open'},
+    {name:'宏达商贸·荷塘店',addr:'株洲市荷塘区新华西路 66 号',contact:'杨店长',phone:'137****1402',status:'open'},
+    {name:'宏达商贸·芦淞店',addr:'株洲市芦淞区建设路 19 号',contact:'朱店长',phone:'137****1403',status:'open'},
+    {name:'宏达商贸·石峰店',addr:'株洲市石峰区响田路 55 号',contact:'秦店长',phone:'137****1404',status:'open'},
+    {name:'宏达商贸·渌口店',addr:'株洲市渌口区伏波大道 8 号',contact:'许店长',phone:'137****1405',status:'stop'}
+  ],
+  122:[
+    {name:'金叶贸易·荷塘店',addr:'株洲市荷塘区红旗南路 42 号',contact:'何店长',phone:'137****1501',status:'open'},
+    {name:'金叶贸易·芦淞店',addr:'株洲市芦淞区沿江南路 16 号',contact:'吕店长',phone:'137****1502',status:'open'},
+    {name:'金叶贸易·天元店',addr:'株洲市天元区天台路 25 号',contact:'施店长',phone:'137****1503',status:'open'}
+  ],
+  131:[
+    {name:'金鹏商贸·雨湖店',addr:'湘潭市雨湖区建设北路 99 号',contact:'张店长',phone:'137****1601',status:'open'},
+    {name:'金鹏商贸·岳塘店',addr:'湘潭市岳塘区芙蓉中路 22 号',contact:'孔店长',phone:'137****1602',status:'open'},
+    {name:'金鹏商贸·湘潭县店',addr:'湘潭市湘潭县易俗河镇大鹏路 7 号',contact:'曹店长',phone:'137****1603',status:'open'}
+  ],
+  132:[
+    {name:'永辉批发·岳塘店',addr:'湘潭市岳塘区书院路 30 号',contact:'严店长',phone:'137****1701',status:'open'},
+    {name:'永辉批发·雨湖店',addr:'湘潭市雨湖区韶山中路 14 号',contact:'华店长',phone:'137****1702',status:'stop'},
+    {name:'永辉批发·湘潭县店',addr:'湘潭市湘潭县易俗河镇凤凰路 9 号',contact:'金店长',phone:'137****1703',status:'open'}
+  ],
+  141:[
+    {name:'天信商贸·蒸湘店',addr:'衡阳市蒸湘区解放大道 168 号',contact:'魏店长',phone:'137****1801',status:'open'},
+    {name:'天信商贸·雁峰店',addr:'衡阳市雁峰区先锋路 51 号',contact:'陶店长',phone:'137****1802',status:'open'},
+    {name:'天信商贸·石鼓店',addr:'衡阳市石鼓区中山北路 33 号',contact:'戚店长',phone:'137****1803',status:'open'},
+    {name:'天信商贸·珠晖店',addr:'衡阳市珠晖区东风南路 77 号',contact:'邹店长',phone:'137****1804',status:'open'},
+    {name:'天信商贸·南岳店',addr:'衡阳市南岳区祝融路 10 号',contact:'喻店长',phone:'137****1805',status:'open'}
+  ],
+  142:[
+    {name:'鹏程贸易·珠晖店',addr:'衡阳市珠晖区东风路 99 号',contact:'柏店长',phone:'137****1901',status:'open'},
+    {name:'鹏程贸易·雁峰店',addr:'衡阳市雁峰区蒸阳南路 28 号',contact:'水店长',phone:'137****1902',status:'open'},
+    {name:'鹏程贸易·蒸湘店',addr:'衡阳市蒸湘区船山大道 61 号',contact:'窦店长',phone:'137****1903',status:'open'}
+  ],
+  151:[
+    {name:'宏发商贸·岳阳楼店',addr:'岳阳市岳阳楼区南湖大道 55 号',contact:'章店长',phone:'137****2001',status:'open'},
+    {name:'宏发商贸·云溪店',addr:'岳阳市云溪区云中北路 33 号',contact:'云店长',phone:'137****2002',status:'open'},
+    {name:'宏发商贸·君山店',addr:'岳阳市君山区柳林路 18 号',contact:'苏店长',phone:'137****2003',status:'open'},
+    {name:'宏发商贸·屈原店',addr:'岳阳市屈原管理区营田镇',contact:'潘店长',phone:'137****2004',status:'stop'}
+  ],
+  152:[
+    {name:'联盛批发·云溪店',addr:'岳阳市云溪区云西路 41 号',contact:'葛店长',phone:'137****2101',status:'open'},
+    {name:'联盛批发·岳阳楼店',addr:'岳阳市岳阳楼区巴陵中路 72 号',contact:'奚店长',phone:'137****2102',status:'open'},
+    {name:'联盛批发·君山店',addr:'岳阳市君山区西环路 9 号',contact:'范店长',phone:'137****2103',status:'open'}
+  ],
+  211:[
+    {name:'恒信商贸·江汉店',addr:'武汉市江汉区建设大道 888 号',contact:'彭店长',phone:'137****2201',status:'open'},
+    {name:'恒信商贸·武昌店',addr:'武汉市武昌区中南路 66 号',contact:'鲁店长',phone:'137****2202',status:'open'},
+    {name:'恒信商贸·洪山店',addr:'武汉市洪山区珞喻路 288 号',contact:'韦店长',phone:'137****2203',status:'open'},
+    {name:'恒信商贸·江岸店',addr:'武汉市江岸区中山大道 333 号',contact:'马店长',phone:'137****2204',status:'open'},
+    {name:'恒信商贸·汉阳店',addr:'武汉市汉阳区龙阳大道 51 号',contact:'花店长',phone:'137****2205',status:'open'},
+    {name:'恒信商贸·硚口店',addr:'武汉市硚口区解放大道 109 号',contact:'方店长',phone:'137****2206',status:'open'}
+  ]
+};
+
+function render(){
+  const box=document.getElementById('content');
+  const dname=dealerName[id]||'该经销商';
+  document.getElementById('subbar').textContent=dname+' · 门店列表';
+  const list=allStores[id]||[];
+  if(list.length===0){box.innerHTML='<div class="empty">暂无门店数据</div>';return;}
+  box.innerHTML=list.map(s=>`
+    <div class="card">
+      <div class="name">${s.name}<span class="status ${s.status}">${s.status==='open'?'营业中':'已停业'}</span></div>
+      <div class="info">
+        <div><span class="label">地址</span>${s.addr}</div>
+        <div><span class="label">联系人</span>${s.contact}</div>
+        <div><span class="label">电话</span>${s.phone}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>
