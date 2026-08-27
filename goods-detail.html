@@ -55,9 +55,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
   <div class="footer">
-    <div class="points"><span>所需积分</span><span>500</span></div>
-    <button onclick="location.href='order-submit.html?id=0&qty=1'">立即兑换</button>
+    <div class="points"><span>所需积分</span><span id="footerPoints">500</span></div>
+    <button id="exchangeBtn">立即兑换</button>
   </div>
 </div>
+
+<script>
+const goods=[
+  {name:'迈极炫定制打火机',points:500,orig:'¥39.90',ex:128},
+  {name:'便携收纳盒',points:300,orig:'¥19.90',ex:86},
+  {name:'品牌毛巾套装',points:800,orig:'¥59.00',ex:45},
+  {name:'迈极炫帆布袋',points:450,orig:'¥29.90',ex:72},
+  {name:'迷你蓝牙音箱',points:1500,orig:'¥129.00',ex:23},
+  {name:'品牌钥匙扣',points:200,orig:'¥9.90',ex:210}
+];
+const params=new URLSearchParams(location.search);
+let id=parseInt(params.get('id')||'0',10);
+if(isNaN(id)||id<0||id>=goods.length)id=0;
+const g=goods[id];
+document.querySelector('.info .name').textContent=g.name;
+document.querySelector('.info .price').innerHTML=g.points+' 积分<span class="orig">'+g.orig+'</span>';
+document.querySelector('.info .stock').textContent='已兑换 '+g.ex+' 件 · 库存充足';
+document.getElementById('footerPoints').textContent=g.points;
+document.getElementById('exchangeBtn').onclick=()=>location.href='order-submit.html?id='+id+'&qty=1';
+</script>
 </body>
 </html>

@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>迈极炫 · 分类列表</title>
+<title>迈极炫 · 分类</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#f5f6f7;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -18,12 +19,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
-.placeholder .btn{display:inline-block;margin-top:20px;background:#c9302c;color:#fff;padding:10px 28px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+.goods-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.goods-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;cursor:pointer}
+.goods-card .img{height:110px;background:#f5f6f7;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px}
+.goods-card .info{padding:10px}
+.goods-card .name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:6px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.goods-card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#999}
+.goods-card .meta .pt{color:#c9302c;font-weight:600;font-size:13px}
+.empty{text-align:center;padding:60px 20px;color:#999;font-size:13px}
 </style>
 </head>
 <body>
@@ -31,16 +35,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
     <span class="back" onclick="history.back()">‹</span>
-    <span class="title">分类列表</span>
+    <span class="title" id="catTitle">分类</span>
   </div>
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">📦</div>
-      <h2>分类列表</h2>
-      <p>展示管理端配置的积分商品分类<br>该模块占位，后续补全分类筛选与商品列表</p>
-      <a class="btn" href="mall-home.html">返回商城首页</a>
-    </div>
+    <div class="goods-grid" id="goodsGrid"></div>
+    <div class="empty" id="empty" style="display:none">该分类暂无商品</div>
   </div>
 </div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const catName=decodeURIComponent(params.get('name')||'分类列表');
+document.getElementById('catTitle').textContent=catName;
+
+const allGoods=[
+  {name:'迈极炫定制打火机',points:500,orig:'¥39.90',ex:128,cats:['数码家电','家居日用']},
+  {name:'便携收纳盒',points:300,orig:'¥19.90',ex:86,cats:['家居日用']},
+  {name:'品牌毛巾套装',points:800,orig:'¥59.00',ex:45,cats:['家居日用','服饰箱包']},
+  {name:'迈极炫帆布袋',points:450,orig:'¥29.90',ex:72,cats:['服饰箱包']},
+  {name:'迷你蓝牙音箱',points:1500,orig:'¥129.00',ex:23,cats:['数码家电']},
+  {name:'品牌钥匙扣',points:200,orig:'¥9.90',ex:210,cats:['汽车用品','潮玩周边']},
+  {name:'纯牛奶一箱',points:1200,orig:'¥58.00',ex:56,cats:['食品生鲜']},
+  {name:'保温杯',points:900,orig:'¥79.00',ex:34,cats:['家居日用','汽车用品']},
+  {name:'品牌面膜套装',points:1100,orig:'¥99.00',ex:28,cats:['美妆个护']},
+  {name:'儿童拼图',points:350,orig:'¥25.00',ex:67,cats:['母婴玩具']},
+  {name:'优酷月卡',points:600,orig:'¥20.00',ex:189,cats:['卡券权益']},
+  {name:'经典名著一本',points:400,orig:'¥32.00',ex:92,cats:['图书文具']}
+];
+
+const list=allGoods.filter(g=>g.cats.includes(catName));
+const grid=document.getElementById('goodsGrid');
+const empty=document.getElementById('empty');
+
+if(list.length===0){
+  grid.style.display='none';
+  empty.style.display='block';
+}else{
+  list.forEach((g,i)=>{
+    const el=document.createElement('div');
+    el.className='goods-card';
+    el.onclick=()=>location.href='goods-detail.html?id='+i;
+    el.innerHTML=`<div class="img">商品图</div><div class="info"><div class="name">${g.name}</div><div class="meta"><span class="pt">${g.points} 积分</span><span>已兑 ${g.ex}</span></div></div>`;
+    grid.appendChild(el);
+  });
+}
+</script>
 </body>
 </html>
