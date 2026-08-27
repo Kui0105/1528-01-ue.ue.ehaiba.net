@@ -231,8 +231,7 @@ let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
 
 function doScan(){
-  const t=new Date().toISOString().slice(0,19).replace('T',' ');
-  location.href='p4-result.html?t='+encodeURIComponent(t)+'&win=1&from=scan';
+  location.href='p1-scan.html?from=mall';
 }
 </script>
 </body>
