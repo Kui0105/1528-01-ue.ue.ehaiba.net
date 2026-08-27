@@ -20,6 +20,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.filter-bar{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;display:flex;align-items:center;margin-bottom:12px;overflow:hidden}
+.filter-tab{flex:1;text-align:center;padding:12px 0;font-size:14px;color:#666;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px}
+.filter-tab.active{color:#c9302c;font-weight:500}
+.filter-tab .arrow{display:inline-flex;flex-direction:column;align-items:center;gap:1px;width:8px;height:10px;position:relative}
+.filter-tab .arrow i{display:block;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent}
+.filter-tab .arrow .up{border-bottom:4px solid #bbb}
+.filter-tab .arrow .down{border-top:4px solid #bbb;margin-top:-1px}
+.filter-tab.active .arrow .up{border-bottom-color:#c9302c}
+.filter-tab.active .arrow .down{border-top-color:#c9302c}
+.filter-tab.asc .arrow .up{border-bottom-color:#c9302c}
+.filter-tab.asc .arrow .down{border-top-color:#ddd}
+.filter-tab.desc .arrow .up{border-bottom-color:#ddd}
+.filter-tab.desc .arrow .down{border-top-color:#c9302c}
+
 .goods-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .goods-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;cursor:pointer}
 .goods-card .img{aspect-ratio:1/1;background:#f5f6f7;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px}
@@ -38,6 +53,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="title" id="catTitle">分类</span>
   </div>
   <div class="content">
+    <div class="filter-bar">
+      <div class="filter-tab active" data-mode="all" onclick="setFilter(this,'all')">综合</div>
+      <div class="filter-tab" data-mode="sales" onclick="setFilter(this,'sales')">销量<span class="arrow"><i class="up"></i><i class="down"></i></span></div>
+      <div class="filter-tab" data-mode="price" onclick="setFilter(this,'price')">价格<span class="arrow"><i class="up"></i><i class="down"></i></span></div>
+    </div>
     <div class="goods-grid" id="goodsGrid"></div>
     <div class="empty" id="empty" style="display:none">该分类暂无商品</div>
   </div>
@@ -63,22 +83,61 @@ const allGoods=[
   {name:'经典名著一本',points:400,orig:'¥32.00',ex:92,cats:['图书文具']}
 ];
 
-const list=allGoods.filter(g=>g.cats.includes(catName));
+let list=allGoods.filter(g=>g.cats.includes(catName));
+let filterMode='all';
+let sortDir='asc';
 const grid=document.getElementById('goodsGrid');
 const empty=document.getElementById('empty');
 
-if(list.length===0){
-  grid.style.display='none';
-  empty.style.display='block';
-}else{
-  list.forEach((g,i)=>{
-    const el=document.createElement('div');
-    el.className='goods-card';
-    el.onclick=()=>location.href='goods-detail.html?id='+i;
-    el.innerHTML=`<div class="img">商品图</div><div class="info"><div class="name">${g.name}</div><div class="meta"><span class="pt">${g.points} 积分</span><span>已兑 ${g.ex}</span></div></div>`;
-    grid.appendChild(el);
-  });
+function sortList(){
+  if(filterMode==='all')return list.slice();
+  const arr=list.slice();
+  if(filterMode==='sales'){
+    arr.sort((a,b)=>sortDir==='asc'?a.ex-b.ex:b.ex-a.ex);
+  }else if(filterMode==='price'){
+    arr.sort((a,b)=>sortDir==='asc'?a.points-b.points:b.points-a.points);
+  }
+  return arr;
 }
+
+function render(){
+  const data=sortList();
+  grid.innerHTML='';
+  if(data.length===0){
+    grid.style.display='none';
+    empty.style.display='block';
+  }else{
+    grid.style.display='grid';
+    empty.style.display='none';
+    data.forEach((g,i)=>{
+      const el=document.createElement('div');
+      el.className='goods-card';
+      el.onclick=()=>location.href='goods-detail.html?id='+allGoods.indexOf(g);
+      el.innerHTML=`<div class="img">商品图</div><div class="info"><div class="name">${g.name}</div><div class="meta"><span class="pt">${g.points} 积分</span><span>已兑 ${g.ex}</span></div></div>`;
+      grid.appendChild(el);
+    });
+  }
+}
+
+function setFilter(el,mode){
+  const tabs=document.querySelectorAll('.filter-tab');
+  if(filterMode===mode){
+    sortDir=sortDir==='asc'?'desc':'asc';
+  }else{
+    filterMode=mode;
+    sortDir=mode==='price'?'asc':'desc';
+  }
+  tabs.forEach(t=>{
+    t.classList.remove('active','asc','desc');
+    if(t.dataset.mode===filterMode){
+      t.classList.add('active');
+      if(filterMode!=='all')t.classList.add(sortDir);
+    }
+  });
+  render();
+}
+
+render();
 </script>
 </body>
 </html>
