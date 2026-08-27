@@ -102,18 +102,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <button class="save" onclick="doSave()">保存</button>
   </div>
 
-<div class="toast" id="toast">
-<div class="modal" id="nickModal" onclick="closeModal(event)">
-  <div class="modal-panel" onclick="event.stopPropagation()">
-    <h3>修改昵称</h3>
-    <input type="text" id="nickInput" placeholder="请输入昵称" maxlength="20">
-    <div class="btns">
-      <button class="cancel" onclick="hideModal()">取消</button>
-      <button class="confirm" onclick="confirmNickname()">确定</button>
+  <div class="modal" id="nickModal" onclick="closeModal(event)">
+    <div class="modal-panel" onclick="event.stopPropagation()">
+      <h3>修改昵称</h3>
+      <input type="text" id="nickInput" placeholder="请输入昵称" maxlength="20">
+      <div class="btns">
+        <button class="cancel" onclick="hideModal()">取消</button>
+        <button class="confirm" onclick="confirmNickname()">确定</button>
+      </div>
     </div>
   </div>
-</div>
-</div>
+  <div class="toast" id="toast"></div>
 </div>
 
 <!-- nickname modal -->
