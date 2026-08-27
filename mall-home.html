@@ -50,8 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 /* quick nav */
 .nav-section{margin:0 12px 12px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px}
-.nav-section .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.nav-section .h span{font-size:15px;font-weight:500}
+.nav-section .h{display:flex;justify-content:center;align-items:center;margin-top:10px}
 .nav-section .h .dots{display:flex;gap:5px}
 .nav-section .h .dots i{width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.15)}
 .nav-section .h .dots i.active{background:#c9302c}
@@ -67,7 +66,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .rec-section .h{font-size:15px;font-weight:500;margin-bottom:10px}
 .rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .rec-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden;cursor:pointer}
-.rec-card .img{height:110px;background:#f5f6f7;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px}
+.rec-card .img{aspect-ratio:1/1;background:#f5f6f7;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px}
 .rec-card .info{padding:10px}
 .rec-card .name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:6px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rec-card .meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#999}
@@ -134,7 +133,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
 
     <div class="nav-section">
-      <div class="h" style="justify-content:flex-end"><div class="dots" id="navDots"><i class="active"></i><i></i></div></div>
       <div class="nav-scroll" id="navScroll">
         <div class="nav-page">
           <div class="nav-item" onclick="location.href='category.html?name=数码家电'"><div class="icon">🎁</div><div class="name">数码家电</div></div>
@@ -149,6 +147,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
           <div class="nav-item" onclick="location.href='category.html?name=图书文具'"><div class="icon">📚</div><div class="name">图书文具</div></div>
         </div>
       </div>
+      <div class="h"><div class="dots" id="navDots"><i class="active"></i><i></i></div></div>
     </div>
 
     <div class="rec-section">
