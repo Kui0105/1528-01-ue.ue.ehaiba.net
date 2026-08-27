@@ -34,8 +34,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);height:24px;width:.5px;background:rgba(0,0,0,.08)}
 .stat-item .num{font-size:18px;font-weight:600;color:#c9302c;margin-bottom:4px}
 .stat-item .label{font-size:12px;color:#999}
-.stat-item.clickable{position:relative}
-.stat-item.clickable:active{opacity:.7}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
@@ -66,7 +64,7 @@ function render(){
     <div class="region-card" onclick="goRegion(${r.id},'${r.name}')">
       <div class="name">${r.name}<span class="arrow">›</span></div>
       <div class="stats">
-        <div class="stat-item clickable" onclick="event.stopPropagation();goDealers(${r.id},'${r.name}')">
+        <div class="stat-item">
           <div class="num">${r.dealers}</div>
           <div class="label">经销商</div>
         </div>
@@ -85,9 +83,6 @@ function render(){
 
 function goRegion(id,name){
   location.href='sales-region.html?pid='+id+'&name='+encodeURIComponent(name);
-}
-function goDealers(id,name){
-  location.href='dealer-list.html?regionId='+id+'&regionName='+encodeURIComponent(name);
 }
 
 render();
