@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>迈极炫 · 区域经销商</title>
+<title>迈极炫 · 区域详情</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
@@ -26,11 +26,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
+/* 区域卡片 */
+.region-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer}
+.region-card .name{font-size:15px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.region-card .name .arrow{color:#999;font-size:14px}
+.region-card .stats{display:flex;justify-content:space-around;align-items:center}
+.stat-item{text-align:center;flex:1;position:relative}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);height:24px;width:.5px;background:rgba(0,0,0,.08)}
+.stat-item .num{font-size:18px;font-weight:600;color:#c9302c;margin-bottom:4px}
+.stat-item .label{font-size:12px;color:#999}
+
+/* 搜索栏 */
 .search-bar{display:flex;gap:8px;margin-bottom:12px}
 .search-bar input{flex:1;height:38px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fff;outline:none}
 .search-bar input::placeholder{color:#bbb}
 .search-bar button{height:38px;padding:0 16px;border:none;border-radius:8px;background:#c9302c;color:#fff;font-size:14px;cursor:pointer}
 
+/* 经销商卡片 */
 .dealer-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
 .dealer-card .head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .dealer-card .name{font-size:15px;font-weight:500;line-height:1.4;flex:1;margin-right:8px}
@@ -55,11 +67,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
     <span class="back" onclick="history.back()">‹</span>
-    <span class="title" id="pageTitle">区域经销商</span>
+    <span class="title" id="pageTitle">区域详情</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
   <div class="content" id="content">
-    <div class="search-bar">
+    <div class="search-bar" id="searchBar" style="display:none">
       <input type="text" id="kw" placeholder="请输入经销商名称/联系人/联系电话" maxlength="50">
       <button onclick="search()">搜索</button>
     </div>
@@ -69,10 +81,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const params=new URLSearchParams(location.search);
-const regionId=parseInt(params.get('pid')||'0');
-const regionName=decodeURIComponent(params.get('name')||'区域详情');
-document.getElementById('pageTitle').textContent=regionName;
+const parentId=parseInt(params.get('pid')||'0');
+const parentName=decodeURIComponent(params.get('name')||'区域详情');
+document.getElementById('pageTitle').textContent=parentName;
 
+// 下级区域数据：省级 -> 市级
+const allRegions={
+  1:[{id:11,name:'长沙市',dealers:8,sales:45,stores:142},{id:12,name:'株洲市',dealers:5,sales:28,stores:86},{id:13,name:'湘潭市',dealers:4,sales:22,stores:68},{id:14,name:'衡阳市',dealers:6,sales:34,stores:98},{id:15,name:'岳阳市',dealers:5,sales:27,stores:88}],
+  2:[{id:21,name:'武汉市',dealers:10,sales:58,stores:168},{id:22,name:'宜昌市',dealers:4,sales:24,stores:62},{id:23,name:'襄阳市',dealers:5,sales:31,stores:89},{id:24,name:'荆州市',dealers:3,sales:21,stores:77}],
+  3:[{id:31,name:'广州市',dealers:12,sales:72,stores:215},{id:32,name:'深圳市',dealers:10,sales:65,stores:198},{id:33,name:'东莞市',dealers:7,sales:38,stores:112},{id:34,name:'佛山市',dealers:6,sales:26,stores:98}],
+  4:[{id:41,name:'南昌市',dealers:7,sales:38,stores:112},{id:42,name:'赣州市',dealers:5,sales:28,stores:78},{id:43,name:'九江市',dealers:3,sales:18,stores:52},{id:44,name:'上饶市',dealers:3,sales:14,stores:45}],
+  5:[{id:51,name:'成都市',dealers:9,sales:52,stores:148},{id:52,name:'绵阳市',dealers:5,sales:29,stores:76},{id:53,name:'德阳市',dealers:4,sales:24,stores:68},{id:54,name:'南充市',dealers:4,sales:26,stores:72},{id:55,name:'乐山市',dealers:3,sales:18,stores:48}]
+};
+
+// 经销商数据：市级 -> 经销商列表
 const allDealers={
   11:[
     {id:111,name:'长沙兴盛商贸有限公司',status:'enabled',contact:'刘经理',phone:'138****1234',province:'湖南省',city:'长沙市',area:'天心区',sales:6,stores:18},
@@ -168,11 +190,30 @@ const allDealers={
   ]
 };
 
-let currentList=allDealers[regionId]||[];
+const regions=allRegions[parentId]||[];
+const dealers=allDealers[parentId]||[];
 
-function render(list){
+// 有下级区域 -> 区域列表模式；否则 -> 经销商列表模式
+const mode=regions.length>0?'region':'dealer';
+
+function renderRegions(){
   const box=document.getElementById('listBox');
-  if(!list) list=currentList;
+  if(regions.length===0){box.innerHTML='<div class="empty">暂无下级区域数据</div>';return;}
+  box.innerHTML=regions.map(r=>`
+    <div class="region-card" onclick="goRegion(${r.id},'${r.name}')">
+      <div class="name">${r.name}<span class="arrow">›</span></div>
+      <div class="stats">
+        <div class="stat-item"><div class="num">${r.dealers}</div><div class="label">经销商</div></div>
+        <div class="stat-item"><div class="num">${r.sales}</div><div class="label">业务员</div></div>
+        <div class="stat-item"><div class="num">${r.stores}</div><div class="label">门店</div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDealers(list){
+  const box=document.getElementById('listBox');
+  if(!list) list=dealers;
   if(list.length===0){box.innerHTML='<div class="empty">暂无经销商数据</div>';return;}
   box.innerHTML=list.map(d=>`
     <div class="dealer-card">
@@ -199,24 +240,33 @@ function render(list){
 
 function search(){
   const kw=document.getElementById('kw').value.trim().toLowerCase();
-  if(!kw){render(currentList);return;}
-  const filtered=currentList.filter(d=>
+  if(!kw){renderDealers(dealers);return;}
+  const filtered=dealers.filter(d=>
     d.name.toLowerCase().includes(kw)||
     d.contact.toLowerCase().includes(kw)||
     d.phone.includes(kw)
   );
-  render(filtered);
+  renderDealers(filtered);
 }
 
+function goRegion(id,name){
+  location.href='sales-region.html?pid='+id+'&name='+encodeURIComponent(name);
+}
 function viewDealer(id){
   location.href='dealer-detail.html?id='+id;
 }
 
-document.getElementById('kw').addEventListener('keydown',function(e){
+document.getElementById('kw') && document.getElementById('kw').addEventListener('keydown',function(e){
   if(e.key==='Enter') search();
 });
 
-render();
+if(mode==='region'){
+  document.getElementById('searchBar').style.display='none';
+  renderRegions();
+}else{
+  document.getElementById('searchBar').style.display='flex';
+  renderDealers();
+}
 </script>
 </body>
 </html>
