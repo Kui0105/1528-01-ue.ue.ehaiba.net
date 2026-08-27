@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 我的</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
+.statusbar{height:28px;background:#c9302c;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0;color:#fff}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #fff;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#fff;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#fff;border-radius:1px}
+.navbar{height:44px;background:#c9302c;display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500;color:#fff}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(255,255,255,.35);border-radius:15px;display:flex;align-items:center;background:rgba(255,255,255,.15)}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#fff}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #fff;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(255,255,255,.35)}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:72px}
+
+/* user info */
+.user-card{background:linear-gradient(135deg,#c9302c,#e8645f);padding:18px 16px 22px;color:#fff;position:relative}
+.user-row{display:flex;align-items:center;gap:12px}
+.user-avatar{width:56px;height:56px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;border:.5px solid rgba(255,255,255,.4)}
+.user-meta{flex:1}
+.user-meta .name{font-size:17px;font-weight:500;margin-bottom:4px}
+.user-meta .phone{font-size:13px;opacity:.9}
+.user-set{position:absolute;right:16px;top:20px;font-size:14px;opacity:.95;cursor:pointer;padding:6px}
+
+/* order card */
+.order-card{margin:12px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden}
+.order-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.order-head span{font-size:14px;font-weight:500}
+.order-head a{font-size:12px;color:#999;text-decoration:none}
+.order-status{display:flex;padding:16px 0}
+.os-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.os-item .ic{font-size:22px;color:#666}
+.os-item .txt{font-size:12px;color:#666}
+
+/* menu list */
+.menu-card{margin:0 12px 12px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;overflow:hidden}
+.menu-item{display:flex;align-items:center;padding:14px 14px;border-bottom:.5px solid rgba(0,0,0,.06);cursor:pointer}
+.menu-item:last-child{border-bottom:none}
+.menu-item .ic{font-size:20px;width:28px;text-align:center;margin-right:10px;color:#666}
+.menu-item .txt{flex:1;font-size:14px}
+.menu-item .arrow{color:#ccc;font-size:14px}
+
+/* tabbar */
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:56px;background:#fff;border-top:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;z-index:20}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tab-item .ic{font-size:20px;color:#999}
+.tab-item .txt{font-size:11px;color:#999}
+.tab-item.active .ic,.tab-item.active .txt{color:#c9302c}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="title">我的</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content">
+    <div class="user-card">
+      <div class="user-set" onclick="location.href='settings.html'">设置</div>
+      <div class="user-row">
+        <div class="user-avatar">👤</div>
+        <div class="user-meta">
+          <div class="name">微信用户_abc123</div>
+          <div class="phone">138****8888</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card">
+      <div class="order-head">
+        <span>我的订单</span>
+        <a href="orders.html">全部 ›</a>
+      </div>
+      <div class="order-status">
+        <div class="os-item" onclick="location.href='orders.html?tab=pay'">
+          <div class="ic">💰</div>
+          <div class="txt">待付款</div>
+        </div>
+        <div class="os-item" onclick="location.href='orders.html?tab=ship'">
+          <div class="ic">📦</div>
+          <div class="txt">待发货</div>
+        </div>
+        <div class="os-item" onclick="location.href='orders.html?tab=receive'">
+          <div class="ic">🚚</div>
+          <div class="txt">待收货</div>
+        </div>
+        <div class="os-item" onclick="location.href='orders.html?tab=done'">
+          <div class="ic">✅</div>
+          <div class="txt">已完成</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-item" onclick="location.href='promote.html'">
+        <div class="ic">📢</div>
+        <div class="txt">业务推广</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='dealer.html'">
+        <div class="ic">🏪</div>
+        <div class="txt">经销控制台</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='sales.html'">
+        <div class="ic">📊</div>
+        <div class="txt">销售数据</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='points-detail.html'">
+        <div class="ic">⭐</div>
+        <div class="txt">积分明细</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='records.html'">
+        <div class="ic">🎁</div>
+        <div class="txt">中奖记录</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='address.html'">
+        <div class="ic">📍</div>
+        <div class="txt">我的地址</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="toast('打开官方在线客服')">
+        <div class="ic">💬</div>
+        <div class="txt">联系客服</div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="location.href='about.html'">
+        <div class="ic">ℹ️</div>
+        <div class="txt">关于我们</div>
+        <div class="arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab-item" onclick="location.href='mall-home.html'">
+      <div class="ic">🏠</div>
+      <div class="txt">首页</div>
+    </div>
+    <div class="tab-item active" onclick="toast('当前在我的页面')">
+      <div class="ic">👤</div>
+      <div class="txt">我的</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>
