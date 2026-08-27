@@ -31,10 +31,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .user-card .info .dealer{font-size:13px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .stat-card{padding:14px}
-.stat-title{font-size:15px;font-weight:500;margin-bottom:12px}
-.filter-tabs{display:flex;gap:8px;margin-bottom:16px}
-.filter-tabs .tab{flex:1;text-align:center;height:32px;line-height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;font-size:13px;color:#666;cursor:pointer}
-.filter-tabs .tab.active{background:#c9302c;color:#fff;border-color:#c9302c}
+.stat-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.stat-title{font-size:15px;font-weight:500}
+.filter-trigger{display:flex;align-items:center;gap:4px;font-size:13px;color:#666;cursor:pointer;padding:4px 8px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;background:#fff}
+.filter-trigger svg{width:14px;height:14px}
 .stat-grid{display:flex}
 .stat-item{flex:1;text-align:center;position:relative}
 .stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:8px;bottom:8px;width:.5px;background:rgba(0,0,0,.08)}
@@ -71,6 +71,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .scan-btn{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px}
 .scan-cancel{width:100%;height:40px;background:transparent;color:#666;border:.5px solid rgba(0,0,0,.12);border-radius:999px;font-size:14px;cursor:pointer}
 
+.filter-sheet{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px 0;animation:slideUp .22s ease}
+.sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.sheet-hd span{font-size:15px;font-weight:500}
+.sheet-hd .close{font-size:22px;color:#999;cursor:pointer;width:30px;text-align:right}
+.sheet-item{padding:14px 16px;font-size:14px;color:#333;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.sheet-item:not(:last-child){border-bottom:.5px solid rgba(0,0,0,.06)}
+.sheet-item.active{color:#c9302c}
+.sheet-item .check{width:18px;height:18px;display:none}
+.sheet-item.active .check{display:block}
+
 .toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
@@ -94,12 +104,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
 
     <div class="card stat-card">
-      <div class="stat-title">数据统计</div>
-      <div class="filter-tabs">
-        <span class="tab active" data-type="today" onclick="switchTab(this,'today')">今日</span>
-        <span class="tab" data-type="yesterday" onclick="switchTab(this,'yesterday')">昨日</span>
-        <span class="tab" data-type="week" onclick="switchTab(this,'week')">本周</span>
-        <span class="tab" data-type="month" onclick="switchTab(this,'month')">本月</span>
+      <div class="stat-hd">
+        <div class="stat-title">数据统计</div>
+        <div class="filter-trigger" onclick="showFilterSheet()">
+          <span id="filterText">今日</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
       </div>
       <div class="stat-grid">
         <div class="stat-item">
@@ -173,6 +185,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
+  <div class="modal" id="filterModal" onclick="closeFilterModal(event)">
+    <div class="filter-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-hd">
+        <span>选择时间</span>
+        <span class="close" onclick="hideFilterSheet()">×</span>
+      </div>
+      <div class="sheet-list">
+        <div class="sheet-item active" data-type="today" onclick="selectFilter('today','今日')">
+          <span>今日</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-type="yesterday" onclick="selectFilter('yesterday','昨日')">
+          <span>昨日</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-type="week" onclick="selectFilter('week','本周')">
+          <span>本周</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-type="month" onclick="selectFilter('month','本月')">
+          <span>本月</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="storeModal" onclick="closeStoreModal(event)">
     <div class="modal-panel" onclick="event.stopPropagation()">
       <div class="modal-hd">
@@ -213,13 +252,18 @@ const stores=[
 ];
 let scanMode='';
 
-function switchTab(el,type){
-  document.querySelectorAll('.filter-tabs .tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
+function showFilterSheet(){document.getElementById('filterModal').classList.add('show');}
+function hideFilterSheet(){document.getElementById('filterModal').classList.remove('show');}
+function closeFilterModal(e){if(e.target.id==='filterModal')hideFilterSheet();}
+function selectFilter(type,label){
+  document.querySelectorAll('.sheet-item').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.sheet-item[data-type="${type}"]`).classList.add('active');
+  document.getElementById('filterText').textContent=label;
   const d=statData[type];
   document.getElementById('statPut').textContent=d.put;
   document.getElementById('statVerify').textContent=d.verify;
   document.getElementById('statStore').textContent=d.store;
+  hideFilterSheet();
 }
 
 function activate(){
