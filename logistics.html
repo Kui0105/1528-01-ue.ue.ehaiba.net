@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 物流信息</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.card .company{font-size:14px;font-weight:500;margin-bottom:4px}
+.card .no{font-size:13px;color:#666}
+
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:rgba(0,0,0,.1)}
+.item{position:relative;padding-bottom:20px}
+.item:last-child{padding-bottom:0}
+.item .dot{position:absolute;left:-22px;top:4px;width:9px;height:9px;border-radius:50%;background:#ddd;border:2px solid #fff}
+.item.active .dot{background:#c9302c}
+.item .time{font-size:12px;color:#999;margin-bottom:4px}
+.item .text{font-size:13px;color:#666;line-height:1.5}
+.item.active .text{color:#1a1a1a}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center}
+.empty-state .ic{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:15px;font-weight:500;color:#666;margin-bottom:6px}
+.empty-state p{font-size:13px;color:#999}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">物流信息</span>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="company">圆通速递</div>
+      <div class="no">运单号：YT1234567890123</div>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="item active">
+          <div class="dot"></div>
+          <div class="time">2026-08-27 09:30</div>
+          <div class="text">【广州市】快件已到达 广州天河转运中心</div>
+        </div>
+        <div class="item">
+          <div class="dot"></div>
+          <div class="time">2026-08-27 06:15</div>
+          <div class="text">【广州市】快件已从 广州白云转运中心 发出</div>
+        </div>
+        <div class="item">
+          <div class="dot"></div>
+          <div class="time">2026-08-26 20:40</div>
+          <div class="text">【深圳市】快件已揽收</div>
+        </div>
+        <div class="item">
+          <div class="dot"></div>
+          <div class="time">2026-08-26 18:40</div>
+          <div class="text">商家已发货，等待快递员揽收</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 订单详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:10px 12px 90px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.status-head{text-align:center;padding:20px 0;background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;border-radius:10px;margin-bottom:10px}
+.status-head .big{font-size:20px;font-weight:600;margin-bottom:6px}
+.status-head .sub{font-size:13px;opacity:.9}
+
+.section-title{font-size:14px;font-weight:500;color:#333;margin-bottom:10px}
+.addr-row{display:flex;align-items:flex-start;gap:10px}
+.addr-row .pin{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.addr-row .info{font-size:14px;line-height:1.5}
+.addr-row .info .name{margin-bottom:4px}
+.addr-row .info .addr{color:#666;font-size:13px}
+
+.goods{display:flex;gap:12px;padding-bottom:12px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.goods .img{width:80px;flex-shrink:0;aspect-ratio:1/1;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;overflow:hidden}
+.goods .info{flex:1;min-width:0}
+.goods .name{font-size:14px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.goods .meta{font-size:13px;color:#666}
+.goods .meta span{margin-right:12px}
+
+.row-list .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.row-list .row:last-child{border-bottom:none}
+.row-list .row .label{font-size:13px;color:#666}
+.row-list .row .value{font-size:13px;color:#333}
+.row-list .row .value.red{color:#c9302c;font-weight:500}
+
+.footer{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 12px;display:flex;justify-content:flex-end;gap:8px;z-index:20}
+.footer button{padding:8px 16px;border-radius:999px;font-size:14px;cursor:pointer;border:none}
+.footer .primary{background:#c9302c;color:#fff}
+.footer .plain{background:#fff;color:#666;border:.5px solid rgba(0,0,0,.15)}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-panel{width:100%;max-width:280px;background:#fff;border-radius:12px;padding:20px;text-align:center}
+.modal-panel h3{font-size:16px;font-weight:500;margin-bottom:10px}
+.modal-panel p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.modal-panel .btns{display:flex;gap:10px}
+.modal-panel .btns button{flex:1;height:38px;border-radius:999px;border:none;font-size:14px;cursor:pointer}
+.modal-panel .btns .cancel{background:#f5f6f7;color:#666}
+.modal-panel .btns .confirm{background:#c9302c;color:#fff}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">订单详情</span>
+  </div>
+
+  <div class="content">
+    <div class="status-head" id="statusHead">
+      <div class="big" id="statusBig">待付款</div>
+      <div class="sub" id="statusSub">请在自动取消前完成支付</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">收货地址</div>
+      <div class="addr-row">
+        <div class="pin">📍</div>
+        <div class="info">
+          <div class="name">张三 <span style="color:#999;margin-left:8px">138****8888</span></div>
+          <div class="addr">广东省 广州市 天河区 科韵路 123 号某某大厦 18 楼</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">商品信息</div>
+      <div class="goods">
+        <div class="img" id="goodsImg">商品图</div>
+        <div class="info">
+          <div class="name" id="goodsName">商品名称</div>
+          <div class="meta"><span id="goodsPoints">0 积分</span><span id="goodsQty">x1</span></div>
+        </div>
+      </div>
+      <div class="row-list">
+        <div class="row"><span class="label">兑换积分</span><span class="value red" id="pointsVal">0</span></div>
+        <div class="row"><span class="label">配送费用</span><span class="value" id="shipVal">¥6.00</span></div>
+        <div class="row"><span class="label">支付金额</span><span class="value red" id="payVal">¥6.00</span></div>
+      </div>
+    </div>
+
+    <div class="card row-list">
+      <div class="row"><span class="label">订单编号</span><span class="value" id="orderNo">-</span></div>
+      <div class="row"><span class="label">下单时间</span><span class="value" id="orderTime">-</span></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px;color:#c9302c;font-size:14px;cursor:pointer" onclick="contactService()">
+      联系客服
+    </div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="modal-panel" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">提示</h3>
+    <p id="modalText">确认操作？</p>
+    <div class="btns">
+      <button class="cancel" onclick="hideModal()">取消</button>
+      <button class="confirm" onclick="confirmAction()">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const statusMap={
+  pending:{label:'待付款',sub:'请在自动取消前完成支付'},
+  shipped:{label:'待发货',sub:'商品正在备货中'},
+  receipt:{label:'待收货',sub:'商品已发出，请注意查收'},
+  completed:{label:'已完成',sub:'订单已完成，欢迎再次兑换'},
+  cancelled:{label:'已取消',sub:'订单已取消，积分已退回'}
+};
+const orders=[
+  {id:'XJM20260827001',status:'pending',name:'迈极炫定制打火机',points:500,qty:1,pay:6.00,time:'2026-08-27 10:23:45'},
+  {id:'XJM20260827002',status:'shipped',name:'迈极炫品牌数据线',points:600,qty:2,pay:6.00,time:'2026-08-27 09:15:22'},
+  {id:'XJM20260827003',status:'receipt',name:'迈极炫零食大礼包',points:800,qty:1,pay:6.00,time:'2026-08-26 18:40:11'},
+  {id:'XJM20260827004',status:'completed',name:'迈极炫保温杯',points:1200,qty:1,pay:6.00,time:'2026-08-25 14:12:33'},
+  {id:'XJM20260827005',status:'cancelled',name:'迈极炫充电宝',points:2500,qty:1,pay:0,time:'2026-08-25 11:05:09'}
+];
+
+const params=new URLSearchParams(location.search);
+const oid=params.get('id')||'XJM20260827001';
+const o=orders.find(x=>x.id===oid)||orders[0];
+
+const s=statusMap[o.status];
+document.getElementById('statusBig').textContent=s.label;
+document.getElementById('statusSub').textContent=s.sub;
+document.getElementById('goodsName').textContent=o.name;
+document.getElementById('goodsPoints').textContent=o.points+' 积分';
+document.getElementById('goodsQty').textContent='x'+o.qty;
+document.getElementById('pointsVal').textContent=o.points;
+document.getElementById('payVal').textContent='¥'+o.pay.toFixed(2);
+document.getElementById('orderNo').textContent=o.id;
+document.getElementById('orderTime').textContent=o.time;
+
+const footer=document.getElementById('footer');
+if(o.status==='pending'){
+  footer.innerHTML=`<button class="plain" onclick="showCancel()">取消支付</button><button class="primary" onclick="doPay()">立即支付</button>`;
+}else if(o.status==='shipped'){
+  footer.innerHTML=`<button class="primary" onclick="viewLogistics()">查看物流</button>`;
+}else if(o.status==='receipt'){
+  footer.innerHTML=`<button class="plain" onclick="viewLogistics()">查看物流</button><button class="primary" onclick="showReceipt()">确认收货</button>`;
+}else if(o.status==='completed'){
+  footer.innerHTML=`<button class="primary" onclick="contactService()">联系客服</button>`;
+}else{
+  footer.innerHTML=`<button class="plain" onclick="history.back()">返回订单列表</button>`;
+}
+
+let modalAction='';
+function showCancel(){modalAction='cancel';document.getElementById('modalTitle').textContent='取消订单';document.getElementById('modalText').textContent='确认取消该订单？取消后积分将立即退回。';document.getElementById('modal').classList.add('show');}
+function showReceipt(){modalAction='receipt';document.getElementById('modalTitle').textContent='确认收货';document.getElementById('modalText').textContent='确认已收到商品？确认后订单将标记为已完成。';document.getElementById('modal').classList.add('show');}
+function hideModal(){document.getElementById('modal').classList.remove('show');}
+function closeModal(e){if(e.target.id==='modal')hideModal();}
+function confirmAction(){
+  if(modalAction==='cancel'){toast('订单已取消，积分已退回');}
+  if(modalAction==='receipt'){toast('确认收货成功');}
+  hideModal();
+  setTimeout(()=>history.back(),800);
+}
+function doPay(){toast('调用微信支付运费 ¥'+o.pay.toFixed(2));}
+function viewLogistics(){location.href='logistics.html?id='+o.id;}
+function contactService(){toast('跳转官方在线客服');}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>
