@@ -98,6 +98,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .tab-item .txt{font-size:11px;color:#999}
 .tab-item.active .ic,.tab-item.active .txt{color:#c9302c}
 
+.scan-fab{position:absolute;right:16px;bottom:72px;width:52px;height:52px;border-radius:50%;background:#c9302c;color:#fff;border:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30}
+.scan-fab svg{width:26px;height:26px;stroke:#fff}
+
 .toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
@@ -169,7 +172,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
-  
+  <div class="scan-fab" onclick="doScan()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+      <path d="M7 7h3v3H7z"></path>
+      <path d="M14 7h3v3h-3z"></path>
+      <path d="M7 14h3v3H7z"></path>
+      <path d="M3 12h18"></path>
+    </svg>
+  </div>
 </div>
 
 <script>
@@ -218,6 +229,11 @@ navScroll.addEventListener('scroll',()=>{
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+
+function doScan(){
+  const t=new Date().toISOString().slice(0,19).replace('T',' ');
+  location.href='p4-result.html?t='+encodeURIComponent(t)+'&win=1&from=scan';
+}
 </script>
 </body>
 </html>
