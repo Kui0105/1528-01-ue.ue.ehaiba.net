@@ -19,22 +19,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px 12px 90px}
 
-.addr-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer}
-.addr-card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.addr-card .name{font-size:15px;font-weight:500}
-.addr-card .phone{font-size:13px;color:#666}
-.addr-card .addr{font-size:13px;color:#666;line-height:1.5}
-.addr-card .tag{display:inline-block;margin-top:8px;padding:2px 6px;background:#fcebeb;color:#c9302c;font-size:11px;border-radius:4px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px;padding-bottom:90px}
 
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center}
+.addr-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px;position:relative}
+.addr-card .user{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:15px;font-weight:500;color:#1a1a1a}
+.addr-card .user .phone{font-weight:400;color:#666;font-size:14px}
+.addr-card .address{font-size:13px;color:#666;line-height:1.6;margin-bottom:12px}
+.addr-card .address .default{display:inline-block;background:#fcebeb;color:#c9302c;font-size:11px;padding:2px 6px;border-radius:4px;margin-right:6px}
+.addr-card .actions{display:flex;align-items:center;justify-content:flex-end;gap:16px;padding-top:12px;border-top:.5px solid rgba(0,0,0,.06)}
+.addr-card .actions .btn{font-size:13px;color:#666;cursor:pointer;display:flex;align-items:center;gap:4px}
+.addr-card .actions .btn.primary{color:#c9302c}
+
+.empty-state{padding:80px 20px;text-align:center;color:#999}
 .empty-state .ic{font-size:48px;margin-bottom:12px}
 .empty-state h3{font-size:15px;font-weight:500;color:#666;margin-bottom:6px}
-.empty-state p{font-size:13px;color:#999}
+.empty-state p{font-size:13px}
 
 .footer{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 12px;z-index:20}
-.footer .add{width:100%;background:#c9302c;color:#fff;border:none;border-radius:999px;padding:12px;font-size:15px;font-weight:500;cursor:pointer}
+.footer button{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;cursor:pointer}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-panel{width:100%;max-width:280px;background:#fff;border-radius:12px;padding:20px;text-align:center}
+.modal-panel h3{font-size:16px;font-weight:500;margin-bottom:10px}
+.modal-panel p{font-size:13px;color:#666;line-height:1.6;margin-bottom:20px}
+.modal-panel .btns{display:flex;gap:10px}
+.modal-panel .btns button{flex:1;height:38px;border-radius:999px;border:none;font-size:14px;cursor:pointer}
+.modal-panel .btns .cancel{background:#f5f6f7;color:#666}
+.modal-panel .btns .confirm{background:#c9302c;color:#fff}
 
 .toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
@@ -47,52 +61,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">我的地址</span>
   </div>
+
   <div class="content" id="content">
-    <!-- addresses injected here -->
+    <div id="list"></div>
   </div>
 
   <div class="footer">
-    <button class="add" onclick="toast('新增收货地址')">+ 新建收货地址</button>
+    <button onclick="location.href='address-edit.html'">+ 新增地址</button>
+  </div>
+</div>
+
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="modal-panel" onclick="event.stopPropagation()">
+    <h3>删除地址</h3>
+    <p>确认删除该收货地址吗？</p>
+    <div class="btns">
+      <button class="cancel" onclick="hideModal()">取消</button>
+      <button class="confirm" onclick="confirmDelete()">确定</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 <script>
-const params=new URLSearchParams(location.search);
-const from=params.get('from')||'';
-const oid=params.get('oid')||'0';
-const qty=params.get('qty')||'1';
-
-const addresses=[
-  {name:'张三',phone:'138****8888',addr:'广东省 广州市 天河区 科韵路 123 号某某大厦 18 楼',default:true},
-  {name:'李四',phone:'139****6666',addr:'广东省 深圳市 南山区 科技园南路 88 号某小区 5 栋 1202',default:false},
-  {name:'王五',phone:'137****9999',addr:'广东省 佛山市 禅城区 祖庙路 45 号某广场 3 座 806',default:false}
+let addresses=[
+  {id:1,name:'张三',phone:'13888888888',province:'广东省',city:'广州市',district:'天河区',detail:'科韵路 123 号某某大厦 18 楼',isDefault:true},
+  {id:2,name:'李四',phone:'13999999999',province:'广东省',city:'深圳市',district:'南山区',detail:'科技园南路 88 号某某中心 6 楼',isDefault:false}
 ];
+let deleteId=null;
 
-const content=document.getElementById('content');
-if(!addresses.length){
-  content.innerHTML=`<div class="empty-state"><div class="ic">📍</div><h3>暂无收货地址</h3><p>点击底部按钮新增收货地址</p></div>`;
-} else {
-  content.innerHTML=addresses.map((a,i)=>`
-    <div class="addr-card" onclick="selectAddr(${i})">
-      <div class="head">
-        <span class="name">${a.name}</span>
+function render(){
+  const listEl=document.getElementById('list');
+  if(!addresses.length){
+    listEl.innerHTML=`<div class="empty-state"><div class="ic">📍</div><h3>暂无收货地址</h3><p>点击下方按钮添加新地址</p></div>`;
+    return;
+  }
+  listEl.innerHTML=addresses.map(a=>`
+    <div class="addr-card">
+      <div class="user">
+        <span>${a.name}</span>
         <span class="phone">${a.phone}</span>
       </div>
-      <div class="addr">${a.addr}</div>
-      ${a.default?'<span class="tag">默认</span>':''}
+      <div class="address">
+        ${a.isDefault?'<span class="default">默认</span>':''}
+        ${a.province}${a.city}${a.district}${a.detail}
+      </div>
+      <div class="actions">
+        <span class="btn ${a.isDefault?'primary':''}" onclick="setDefault(${a.id})">${a.isDefault?'默认地址':'设为默认'}</span>
+        <span class="btn" onclick="location.href='address-edit.html?id=${a.id}'">编辑</span>
+        <span class="btn" onclick="showDelete(${a.id})">删除</span>
+      </div>
     </div>
   `).join('');
 }
 
-function selectAddr(i){
-  const a=addresses[i];
-  if(from==='order'){
-    location.href=`order-submit.html?id=${oid}&qty=${qty}&addr=1`;
-  } else {
-    toast(`已选择：${a.name} ${a.phone}`);
-  }
+function setDefault(id){
+  addresses.forEach(a=>a.isDefault=(a.id===id));
+  render();
+  toast('默认地址设置成功');
 }
+
+function showDelete(id){
+  deleteId=id;
+  document.getElementById('modal').classList.add('show');
+}
+function hideModal(){document.getElementById('modal').classList.remove('show');}
+function closeModal(e){if(e.target.id==='modal')hideModal();}
+function confirmDelete(){
+  if(deleteId){
+    addresses=addresses.filter(a=>a.id!==deleteId);
+    deleteId=null;
+    render();
+    toast('地址已删除');
+  }
+  hideModal();
+}
+
+render();
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}

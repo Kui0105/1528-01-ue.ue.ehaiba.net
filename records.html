@@ -6,27 +6,41 @@
 <title>迈极炫 · 中奖记录</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
-.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;border-bottom:.5px solid rgba(0,0,0,.06)}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
-.navbar{height:44px;background:#fff;display:flex;align-items:center;position:relative;flex-shrink:0;z-index:10;border-bottom:.5px solid rgba(0,0,0,.08)}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
-.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500;color:#1a1a1a}
-.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
-.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
-.capsule .c-left{font-size:11px;letter-spacing:-1px;color:#1a1a1a}
-.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
-.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
-.content{flex:1;background:#fff;padding:24px 18px}
-.empty{text-align:center;color:#999;margin-top:80px}
-.empty .ic{font-size:48px;margin-bottom:12px}
-.empty p{font-size:14px}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px}
+
+.record-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center}
+.record-card .img{width:72px;height:72px;flex-shrink:0;background:#f5f6f7;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;overflow:hidden}
+.record-card .info{flex:1;min-width:0}
+.record-card .name{font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:8px;line-height:1.4}
+.record-card .meta{font-size:12px;color:#999;line-height:1.6}
+.record-card .meta span{display:block}
+
+.load-more{text-align:center;padding:16px 0;font-size:13px;color:#999}
+.load-more .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.1);border-top-color:#c9302c;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px;display:none}
+.load-more.loading .spinner{display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty-state{padding:80px 20px;text-align:center;color:#999}
+.empty-state .ic{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:15px;font-weight:500;color:#666;margin-bottom:6px}
+.empty-state p{font-size:13px}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 <body>
@@ -35,14 +49,115 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="navbar">
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">中奖记录</span>
-    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
-  <div class="content">
-    <div class="empty">
-      <div class="ic">📋</div>
-      <p>暂无中奖记录</p>
+
+  <div class="content" id="content">
+    <div id="list"></div>
+    <div class="load-more" id="loadMore" onclick="loadMore()">
+      <span class="spinner"></span>
+      <span class="txt">下拉加载更多</span>
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
+<script>
+const allRecords=[
+  {id:'XJM20260827001',name:'迈极炫定制打火机',code:'AJM8X7K2P9',time:'2026-08-27 10:23:45'},
+  {id:'XJM20260827002',name:'+50 积分',code:'BJM3M9N4Q1',time:'2026-08-26 18:40:22'},
+  {id:'XJM20260827003',name:'迈极炫品牌数据线',code:'CJM5L2R8T6',time:'2026-08-25 14:12:33'},
+  {id:'XJM20260827004',name:'+20 积分',code:'DJM9P1W5X2',time:'2026-08-24 09:33:17'},
+  {id:'XJM20260827005',name:'迈极炫零食大礼包',code:'EJM2K6Y3Z8',time:'2026-08-23 16:55:01'},
+  {id:'XJM20260827006',name:'+50 积分',code:'FJM4H7B9N5',time:'2026-08-22 11:20:38'},
+  {id:'XJM20260827007',name:'迈极炫保温杯',code:'GJM1D3C6V9',time:'2026-08-21 20:15:52'},
+  {id:'XJM20260827008',name:'+20 积分',code:'HJM6F2G4J7',time:'2026-08-20 13:48:19'},
+  {id:'XJM20260827009',name:'迈极炫充电宝',code:'IJM8S5D2L4',time:'2026-08-19 08:05:44'},
+  {id:'XJM20260827010',name:'+50 积分',code:'JJM3A9E7H1',time:'2026-08-18 19:30:27'},
+  {id:'XJM20260827011',name:'迈极炫定制打火机',code:'KJM7Q4M8B3',time:'2026-08-17 15:22:09'},
+  {id:'XJM20260827012',name:'+20 积分',code:'LJM2W6T1R5',time:'2026-08-16 10:18:36'}
+];
+
+const PAGE_SIZE=10;
+let currentPage=1;
+let hasMore=true;
+let isLoading=false;
+
+function renderRecords(){
+  const list=allRecords.slice(0,PAGE_SIZE);
+  hasMore=allRecords.length>PAGE_SIZE;
+
+  const listEl=document.getElementById('list');
+  if(!list.length){
+    listEl.innerHTML=`<div class="empty-state"><div class="ic">🎁</div><h3>暂无中奖记录</h3><p>快去扫码参与抽奖吧</p></div>`;
+    document.getElementById('loadMore').style.display='none';
+    return;
+  }
+
+  listEl.innerHTML=list.map(r=>`
+    <div class="record-card">
+      <div class="img">奖品图</div>
+      <div class="info">
+        <div class="name">${r.name}</div>
+        <div class="meta">
+          <span>奖码ID：${r.code}</span>
+          <span>扫码时间：${r.time}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('loadMore').style.display=hasMore?'block':'none';
+}
+
+function loadMore(){
+  if(isLoading || !hasMore)return;
+  isLoading=true;
+  const lm=document.getElementById('loadMore');
+  lm.classList.add('loading');
+  lm.querySelector('.txt').textContent='加载中...';
+
+  setTimeout(()=>{
+    currentPage++;
+    const start=(currentPage-1)*PAGE_SIZE;
+    const end=currentPage*PAGE_SIZE;
+    const newItems=allRecords.slice(start,end);
+    const listEl=document.getElementById('list');
+    const html=newItems.map(r=>`
+      <div class="record-card">
+        <div class="img">奖品图</div>
+        <div class="info">
+          <div class="name">${r.name}</div>
+          <div class="meta">
+            <span>奖码ID：${r.code}</span>
+            <span>扫码时间：${r.time}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    listEl.insertAdjacentHTML('beforeend',html);
+    hasMore=end<allRecords.length;
+    lm.classList.remove('loading');
+    lm.querySelector('.txt').textContent=hasMore?'下拉加载更多':'没有更多了';
+    isLoading=false;
+  },600);
+}
+
+// pull-up load more simulation
+const content=document.getElementById('content');
+let startY=0;
+content.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;},{passive:true});
+content.addEventListener('touchend',e=>{
+  const endY=e.changedTouches[0].clientY;
+  const scrollBottom=content.scrollHeight-content.scrollTop-content.clientHeight;
+  if(startY-endY>40 && scrollBottom<40){
+    loadMore();
+  }
+},{passive:true});
+
+renderRecords();
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
 </body>
 </html>

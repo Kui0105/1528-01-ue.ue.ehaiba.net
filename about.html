@@ -8,8 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -18,11 +19,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px}
+.rich-text{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:16px;line-height:1.8;font-size:14px;color:#333}
+.rich-text h2{font-size:16px;font-weight:600;margin-bottom:12px;color:#1a1a1a}
+.rich-text h3{font-size:15px;font-weight:500;margin:16px 0 8px;color:#1a1a1a}
+.rich-text p{margin-bottom:10px}
+.rich-text ol{padding-left:18px;margin-bottom:10px}
+.rich-text li{margin-bottom:6px}
+.rich-text .note{color:#999;font-size:12px;margin-top:20px;padding-top:12px;border-top:.5px solid rgba(0,0,0,.08)}
 </style>
 </head>
 <body>
@@ -32,11 +37,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">关于我们</span>
   </div>
+
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">ℹ️</div>
-      <h2>关于我们</h2>
-      <p>品牌介绍、版本信息、联系方式<br>该模块占位，后续补全</p>
+    <div class="rich-text">
+      <h2>关于迈极炫</h2>
+      <p>迈极炫是专注于高品质槟榔产品研发、生产与销售的品牌。我们始终坚持以消费者为核心，致力于为用户提供安全、放心、美味的产品体验。</p>
+
+      <h3>品牌理念</h3>
+      <p>传承经典工艺，融合现代技术，打造具有迈极炫特色的槟榔产品。我们相信，每一颗槟榔都承载着对品质的执着追求。</p>
+
+      <h3>产品承诺</h3>
+      <ol>
+        <li>精选优质原料，严格把控生产工艺。</li>
+        <li>建立完善的质量追溯体系，保障食品安全。</li>
+        <li>持续创新产品口味，满足多样化消费需求。</li>
+      </ol>
+
+      <h3>一物一码服务</h3>
+      <p>迈极炫推出「一物一码」扫码抽奖活动，消费者购买产品后扫描包装内二维码，即可参与积分兑换、实物奖品等丰富活动。我们希望通过数字化互动，为用户带来更多惊喜与价值。</p>
+
+      <h3>联系我们</h3>
+      <p>如您在使用过程中有任何问题，可通过小程序「联系客服」功能与我们取得联系，我们将竭诚为您服务。</p>
+
+      <div class="note">以上内容由管理端富文本配置，仅作展示参考。</div>
     </div>
   </div>
 </div>
