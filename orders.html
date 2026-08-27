@@ -166,7 +166,7 @@ function actionButtons(o){
     return `<button class="plain" onclick="showCancel('${o.id}')">取消支付</button><button class="primary" onclick="doPay('${o.id}')">立即支付</button>`;
   }
   if(o.status==='shipped'){
-    return `<button class="primary" onclick="viewLogistics('${o.id}')">查看物流</button>`;
+    return `<button class="primary" onclick="location.href='order-detail.html?id=${o.id}'">查看详情</button>`;
   }
   if(o.status==='receipt'){
     return `<button class="plain" onclick="viewLogistics('${o.id}')">查看物流</button><button class="primary" onclick="showReceipt('${o.id}')">确认收货</button>`;
