@@ -8,8 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -18,11 +19,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7}
+
+.balance-card{background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;padding:28px 18px 22px;text-align:center}
+.balance-card .label{font-size:13px;opacity:.92;margin-bottom:8px}
+.balance-card .num{font-size:42px;font-weight:600;letter-spacing:1px;margin-bottom:14px}
+.balance-card .rule-btn{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#fff;border:1px solid rgba(255,255,255,.5);padding:7px 16px;border-radius:999px;background:rgba(255,255,255,.12);cursor:pointer}
+
+.filter-bar{background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex}
+.filter-tab{flex:1;text-align:center;padding:13px 0;font-size:14px;color:#666;position:relative;cursor:pointer}
+.filter-tab.active{color:#c9302c;font-weight:500}
+.filter-tab.active::after{content:'';position:absolute;bottom:0;left:25%;right:25%;height:2px;background:#c9302c;border-radius:2px}
+
+.list{padding:10px 12px 20px}
+.record-item{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.record-item .info{flex:1;min-width:0}
+.record-item .reason{font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:6px;line-height:1.4}
+.record-item .time{font-size:12px;color:#999}
+.record-item .amount{font-size:18px;font-weight:600;flex-shrink:0;margin-left:12px}
+.record-item .amount.increase{color:#c9302c}
+.record-item .amount.decrease{color:#1a1a1a}
+.record-item .amount.increase::before{content:'+'}
+
+.empty-state{padding:60px 20px;text-align:center;color:#999}
+.empty-state .ic{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:15px;font-weight:500;color:#666;margin-bottom:6px}
+.empty-state p{font-size:13px}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 <body>
@@ -32,13 +58,72 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">积分明细</span>
   </div>
+
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">⭐</div>
-      <h2>积分明细</h2>
-      <p>积分收入/支出记录<br>该模块占位，后续补全积分流水</p>
+    <div class="balance-card">
+      <div class="label">当前积分余额</div>
+      <div class="num" id="balanceNum">1,280</div>
+      <div class="rule-btn" onclick="location.href='points-rule.html'">
+        <span>积分规则</span>
+        <span>›</span>
+      </div>
     </div>
+
+    <div class="filter-bar">
+      <div class="filter-tab active" data-type="all" onclick="setFilter('all')">全部</div>
+      <div class="filter-tab" data-type="in" onclick="setFilter('in')">积分获得</div>
+      <div class="filter-tab" data-type="out" onclick="setFilter('out')">积分扣减</div>
+    </div>
+
+    <div class="list" id="list"></div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
+<script>
+const records=[
+  {id:1,reason:'一物一码获得积分',time:'2026-08-27 10:23:45',amount:50,type:'in'},
+  {id:2,reason:'兑换迈极炫定制打火机扣减积分',time:'2026-08-27 10:25:10',amount:-500,type:'out'},
+  {id:3,reason:'订单取消退回积分',time:'2026-08-26 18:40:22',amount:300,type:'in'},
+  {id:4,reason:'一物一码获得积分',time:'2026-08-26 15:12:08',amount:20,type:'in'},
+  {id:5,reason:'兑换迈极炫品牌数据线扣减积分',time:'2026-08-25 14:12:33',amount:-600,type:'out'},
+  {id:6,reason:'订单取消退回积分',time:'2026-08-25 11:05:09',amount:2500,type:'in'},
+  {id:7,reason:'一物一码获得积分',time:'2026-08-24 09:33:17',amount:50,type:'in'}
+];
+
+let filter='all';
+
+function setFilter(type){
+  filter=type;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.toggle('active',t.dataset.type===type));
+  render();
+}
+
+function render(){
+  const listEl=document.getElementById('list');
+  const list=filter==='all'?records:records.filter(r=>r.type===filter);
+  if(!list.length){
+    listEl.innerHTML=`<div class="empty-state"><div class="ic">📋</div><h3>暂无积分明细</h3><p>该类型下暂时没有积分变动记录</p></div>`;
+    return;
+  }
+  listEl.innerHTML=list.map(r=>{
+    const isIn=r.type==='in';
+    return `
+      <div class="record-item">
+        <div class="info">
+          <div class="reason">${r.reason}</div>
+          <div class="time">${r.time}</div>
+        </div>
+        <div class="amount ${isIn?'increase':'decrease'}">${Math.abs(r.amount)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+render();
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
 </body>
 </html>

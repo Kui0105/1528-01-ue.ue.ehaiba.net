@@ -168,7 +168,9 @@ const footer=document.getElementById('footer');
 if(o.status==='pending'){
   footer.innerHTML=`<button class="plain" onclick="showCancel()">取消支付</button><button class="primary" onclick="doPay()">立即支付</button>`;
 }else if(o.status==='shipped'){
-  footer.innerHTML=`<button class="primary" onclick="viewLogistics()">查看物流</button>`;
+  // 待发货不展示查看物流按钮
+  footer.innerHTML='';
+  footer.style.display='none';
 }else if(o.status==='receipt'){
   footer.innerHTML=`<button class="plain" onclick="viewLogistics()">查看物流</button><button class="primary" onclick="showReceipt()">确认收货</button>`;
 }else if(o.status==='completed'){

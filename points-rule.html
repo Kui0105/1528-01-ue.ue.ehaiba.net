@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 积分规则</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden;position:relative}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:12px}
+.rich-text{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:16px;line-height:1.8;font-size:14px;color:#333}
+.rich-text h2{font-size:16px;font-weight:600;margin-bottom:12px;color:#1a1a1a}
+.rich-text h3{font-size:15px;font-weight:500;margin:16px 0 8px;color:#1a1a1a}
+.rich-text p{margin-bottom:10px}
+.rich-text ol{padding-left:18px;margin-bottom:10px}
+.rich-text li{margin-bottom:6px}
+.rich-text .note{color:#999;font-size:12px;margin-top:20px;padding-top:12px;border-top:.5px solid rgba(0,0,0,.08)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">积分规则</span>
+  </div>
+
+  <div class="content">
+    <div class="rich-text">
+      <h2>迈极炫积分规则</h2>
+      <p>欢迎您使用迈极炫会员积分服务。为保障您的权益，请在使用前仔细阅读以下规则。</p>
+
+      <h3>一、积分获取</h3>
+      <ol>
+        <li>用户通过扫描迈极炫产品包装内袋二维码（一物一码），验证成功后可获得随机积分奖励。</li>
+        <li>同一验证码仅限使用一次，重复扫码不会重复获得积分。</li>
+        <li>积分将实时发放至您的会员账户，可在「积分明细」中查看。</li>
+      </ol>
+
+      <h3>二、积分使用</h3>
+      <ol>
+        <li>积分可在积分商城兑换指定商品，兑换时按商品标注积分值进行扣减。</li>
+        <li>积分不可兑换现金、不可转让、不可提现。</li>
+        <li>兑换商品如需物流配送，用户需自行支付运费；运费金额以订单提交页为准。</li>
+      </ol>
+
+      <h3>三、积分退回</h3>
+      <ol>
+        <li>订单在未支付状态下取消，积分不予扣减。</li>
+        <li>订单在支付成功后取消，已扣减积分将在订单取消后自动退回账户。</li>
+        <li>退货退款完成后，对应积分将在处理完成后退回账户。</li>
+      </ol>
+
+      <h3>四、积分有效期</h3>
+      <ol>
+        <li>积分有效期为获取之日起 12 个自然月，过期未使用将自动清零。</li>
+        <li>积分使用时优先扣除较早获取的积分。</li>
+      </ol>
+
+      <h3>五、其他说明</h3>
+      <ol>
+        <li>如发现通过不正当手段获取积分，平台有权扣除相应积分并保留追究法律责任的权利。</li>
+        <li>本规则由迈极炫运营方制定并保留最终解释权。</li>
+        <li>规则内容如有调整，将以最新公示为准。</li>
+      </ol>
+
+      <div class="note">以上内容由管理端富文本配置，仅作展示参考。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
