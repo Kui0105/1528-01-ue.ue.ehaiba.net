@@ -6,8 +6,9 @@
 <title>迈极炫 · 订单提交</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#f5f6f7;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;position:relative;overflow:hidden}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
 .statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -18,12 +19,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
 .navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
 .navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
-.placeholder .btn{display:inline-block;margin-top:20px;background:#c9302c;color:#fff;padding:10px 28px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:10px 12px 90px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+
+/* address */
+.addr-row{display:flex;align-items:center;gap:10px;cursor:pointer}
+.addr-row .pin{width:36px;height:36px;border-radius:50%;background:#fcebeb;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.addr-row .info{flex:1;min-width:0}
+.addr-row .info .name{font-size:15px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.addr-row .info .name span{font-size:13px;color:#666;margin-left:8px;font-weight:400}
+.addr-row .info .addr{font-size:13px;color:#666;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.addr-row .arrow{color:#999;font-size:18px}
+.addr-empty{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.addr-empty span{font-size:14px;color:#666}
+.addr-empty .add{padding:6px 14px;background:#c9302c;color:#fff;border-radius:999px;font-size:13px}
+
+/* goods */
+.goods-row{display:flex;gap:12px}
+.goods-row .img{width:80px;flex-shrink:0;aspect-ratio:1/1;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:12px;overflow:hidden}
+.goods-row .info{flex:1;min-width:0}
+.goods-row .name{font-size:14px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.goods-row .meta{display:flex;justify-content:space-between;align-items:center}
+.goods-row .points{font-size:15px;font-weight:600;color:#c9302c}
+.goods-row .qty{font-size:13px;color:#666}
+
+/* row list */
+.row-list .row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.row-list .row:last-child{border-bottom:none}
+.row-list .row .label{font-size:14px;color:#333}
+.row-list .row .value{font-size:14px;color:#666}
+.row-list .row .value.red{color:#c9302c;font-weight:500}
+
+/* note */
+.note-area{width:100%;min-height:60px;border:none;outline:none;resize:none;font-size:14px;color:#1a1a1a;line-height:1.5;background:transparent}
+.note-area::placeholder{color:#bbb}
+
+/* bottom bar */
+.footer{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:8px 12px;display:flex;align-items:center;gap:12px;z-index:20}
+.footer .total{flex:1;font-size:13px;color:#666;line-height:1.5}
+.footer .total .num{font-size:16px;font-weight:600;color:#c9302c}
+.footer .pay{flex-shrink:0;background:#c9302c;color:#fff;border:none;border-radius:999px;padding:11px 28px;font-size:15px;font-weight:500;cursor:pointer}
+.footer .pay:active{opacity:.9}
+
+.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
 <body>
@@ -33,14 +73,107 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="back" onclick="history.back()">‹</span>
     <span class="title">订单提交</span>
   </div>
+
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">📝</div>
-      <h2>订单提交</h2>
-      <p>展示收货地址、兑换商品、积分抵扣等信息<br>该模块占位，后续补全订单提交与支付流程</p>
-      <a class="btn" href="mall-home.html">返回商城首页</a>
+    <!-- address -->
+    <div class="card">
+      <div class="addr-row" id="addrRow" onclick="goAddress()" style="display:none">
+        <div class="pin">📍</div>
+        <div class="info">
+          <div class="name">张三 <span>138****8888</span></div>
+          <div class="addr">广东省 广州市 天河区 科韵路 123 号某某大厦 18 楼</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+      <div class="addr-empty" id="addrEmpty" onclick="goAddress()">
+        <span>请选择收货地址</span>
+        <span class="add">+ 添加地址</span>
+      </div>
+    </div>
+
+    <!-- goods info -->
+    <div class="card">
+      <div class="goods-row">
+        <div class="img" id="goodsImg">商品图</div>
+        <div class="info">
+          <div class="name" id="goodsName">商品名称</div>
+          <div class="meta">
+            <span class="points" id="goodsPoints">0 积分</span>
+            <span class="qty" id="goodsQty">x1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- fee & note -->
+    <div class="card row-list">
+      <div class="row">
+        <span class="label">配送运费</span>
+        <span class="value" id="shipFee">¥6.00</span>
+      </div>
+      <div class="row" style="align-items:flex-start">
+        <span class="label" style="padding-top:2px">订单备注</span>
+        <textarea class="note-area" id="noteInput" placeholder="选填，请输入订单备注"></textarea>
+      </div>
     </div>
   </div>
+
+  <!-- bottom bar -->
+  <div class="footer">
+    <div class="total">
+      <div>共 <span id="totalQty">1</span> 件，所需积分 <span class="num" id="totalPoints">0</span></div>
+      <div>运费 <span id="footerFee">¥6.00</span></div>
+    </div>
+    <button class="pay" onclick="doPay()">立即支付</button>
+  </div>
 </div>
+
+<div class="toast" id="toast"></div>
+<script>
+const goods=[
+  {name:'迈极炫定制打火机',points:500,ex:1280,cat:'数码家电'},
+  {name:'迈极炫品牌数据线',points:300,ex:2560,cat:'数码家电'},
+  {name:'迈极炫零食大礼包',points:800,ex:890,cat:'食品生鲜'},
+  {name:'迈极炫保温杯',points:1200,ex:560,cat:'家居日用'},
+  {name:'迈极炫充电宝',points:2500,ex:320,cat:'数码家电'},
+  {name:'迈极炫品牌T恤',points:1500,ex:430,cat:'服饰箱包'},
+  {name:'迈极炫棒球帽',points:900,ex:670,cat:'服饰箱包'},
+  {name:'迈极炫电动牙刷',points:1800,ex:210,cat:'家居日用'}
+];
+
+const params=new URLSearchParams(location.search);
+const gid=parseInt(params.get('id')||'0',10);
+const qty=parseInt(params.get('qty')||'1',10);
+const g=goods[gid]||goods[0];
+const shipFee=6;
+
+// simulate address selected from URL
+const addr=params.get('addr');
+if(addr){
+  document.getElementById('addrEmpty').style.display='none';
+  document.getElementById('addrRow').style.display='flex';
+}
+
+document.getElementById('goodsName').textContent=g.name;
+document.getElementById('goodsPoints').textContent=g.points+' 积分';
+document.getElementById('goodsQty').textContent='x'+qty;
+document.getElementById('totalQty').textContent=qty;
+document.getElementById('totalPoints').textContent=(g.points*qty).toLocaleString();
+
+function goAddress(){
+  location.href=`address.html?from=order&oid=${gid}&qty=${qty}`;
+}
+
+function doPay(){
+  // simulate WeChat Pay
+  toast('调用微信支付运费 ¥'+shipFee.toFixed(2));
+  setTimeout(()=>{
+    toast('支付成功，订单进入待发货状态');
+  },1200);
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
 </body>
 </html>
