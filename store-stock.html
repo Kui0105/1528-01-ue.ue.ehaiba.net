@@ -50,9 +50,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
   <div class="tabs">
     <div class="tab active" data-cat="all" onclick="switchCat(this,'all')">全部</div>
-    <div class="tab" data-cat="cigarette" onclick="switchCat(this,'cigarette')">槟榔</div>
-    <div class="tab" data-cat="gift" onclick="switchCat(this,'gift')">礼品</div>
-    <div class="tab" data-cat="point" onclick="switchCat(this,'point')">积分</div>
+    <div class="tab" data-cat="price20" onclick="switchCat(this,'price20')">20元系列</div>
+    <div class="tab" data-cat="price50" onclick="switchCat(this,'price50')">50元系列</div>
+    <div class="tab" data-cat="price100" onclick="switchCat(this,'price100')">100元系列</div>
   </div>
 
   <div class="content">
@@ -67,12 +67,12 @@ const storeName=['','湘江东路店','五一广场店','岳麓山北店'][store
 document.getElementById('pageTitle').textContent=storeName+' · 库存';
 
 const allGoods=[
-  {id:1,name:'迈极炫槟榔 50元装',spec:'15颗/袋',cat:'cigarette',stock:8,img:''},
-  {id:2,name:'迈极炫槟榔 30元装',spec:'12颗/袋',cat:'cigarette',stock:12,img:''},
-  {id:3,name:'迈极炫定制打火机',spec:'金属/防风',cat:'gift',stock:20,img:''},
-  {id:4,name:'品牌毛巾套装',spec:'3条装',cat:'gift',stock:5,img:''},
-  {id:5,name:'100积分兑换券',spec:'虚拟',cat:'point',stock:999,img:''},
-  {id:6,name:'加5元兑换50元迈极炫槟榔一包',spec:'优惠券',cat:'point',stock:6,img:''}
+  {id:1,name:'迈极炫槟榔 20元装',spec:'12颗/袋',cat:'price20',stock:18,img:''},
+  {id:2,name:'迈极炫槟榔 50元装',spec:'15颗/袋',cat:'price50',stock:8,img:''},
+  {id:3,name:'迈极炫槟榔 100元装',spec:'20颗/袋',cat:'price100',stock:5,img:''},
+  {id:4,name:'迈极炫定制打火机',spec:'金属/防风',cat:'price20',stock:20,img:''},
+  {id:5,name:'品牌毛巾套装',spec:'3条装',cat:'price50',stock:5,img:''},
+  {id:6,name:'迈极炫礼盒套装',spec:'100元系列专属',cat:'price100',stock:3,img:''}
 ];
 
 function switchCat(el,cat){
