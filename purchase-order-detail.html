@@ -60,6 +60,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 .toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+.modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-mask.show{opacity:1;pointer-events:auto}
+.modal{width:300px;background:#fff;border-radius:12px;overflow:hidden}
+.modal .m-title{font-size:15px;font-weight:600;text-align:center;padding:18px 16px 8px}
+.modal .m-text{font-size:13px;color:#666;text-align:center;padding:0 20px 18px;line-height:1.5}
+.modal .m-actions{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.modal .m-actions .m-btn{flex:1;padding:13px 0;border:none;background:#fff;font-size:15px;cursor:pointer}
+.modal .m-actions .m-btn.plain{color:#666;border-right:.5px solid rgba(0,0,0,.08)}
+.modal .m-actions .m-btn.primary{color:#c9302c;font-weight:500}
 </style>
 </head>
 <body>
@@ -97,13 +107,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <div class="row"><span class="label">订单状态</span><span class="value" id="orderStatus">-</span></div>
     </div>
 
-    <div class="card" style="text-align:center;padding:12px;color:#c9302c;font-size:14px;cursor:pointer" onclick="contactService()">
-      联系采购
+    <div class="card" id="rejectCard" style="display:none">
+      <div class="section-title">驳回原因</div>
+      <div id="rejectReason" style="font-size:13px;color:#666;line-height:1.5"></div>
     </div>
   </div>
 
   <div class="footer" id="footer"></div>
   <div class="toast" id="toast"></div>
+
+  <div class="modal-mask" id="confirmMask" onclick="closeConfirm()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="m-title">确认撤回订单</div>
+      <div class="m-text">撤回后订单将变更为「已取消」，是否继续？</div>
+      <div class="m-actions">
+        <button class="m-btn plain" onclick="closeConfirm()">取消</button>
+        <button class="m-btn primary" onclick="confirmWithdraw()">确认撤回</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -112,12 +134,18 @@ const defaultOrders=[
   {no:'JH202608240008',date:'2026-08-24',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 100元装',unit:'10颗/袋',price:86,qty:120}]},
   {no:'JH202608220005',date:'2026-08-22',status:'pending',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:500}]},
   {no:'JH202608180003',date:'2026-08-18',status:'done',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:96,qty:60}]},
-  {no:'JH202608150001',date:'2026-08-15',status:'reject',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]}
+  {no:'JH202608150001',date:'2026-08-15',status:'reject',rejectReason:'商品库存不足，暂无法供货，请调整数量后重新提交',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]},
+  {no:'JH202608100002',date:'2026-08-10',status:'cancel',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:200}]}
 ];
 let orders=defaultOrders.slice();
 try{
   const extra=JSON.parse(localStorage.getItem('mall_orders')||'[]');
   if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
+}catch(e){}
+/* 状态改写持久化（撤回后变更为已取消） */
+try{
+  const ov=JSON.parse(localStorage.getItem('mall_order_status')||'{}');
+  orders.forEach(o=>{ if(ov[o.no]) o.status=ov[o.no]; });
 }catch(e){}
 orders.forEach(o=>{
   if(o.items&&o.items.length){
@@ -132,7 +160,8 @@ orders.forEach(o=>orderMap[o.no]=o);
 const statusMap={
   pending:{label:'待入库',sub:'等待仓库确认入库',ng:false},
   done:{label:'已入库',sub:'货物已入库',ng:false},
-  reject:{label:'已驳回',sub:'订单已被驳回，请联系采购',ng:true}
+  reject:{label:'已驳回',sub:'订单已被驳回',ng:true},
+  cancel:{label:'已取消',sub:'订单已取消',ng:true}
 };
 
 const params=new URLSearchParams(location.search);
@@ -167,19 +196,49 @@ document.getElementById('goodsBox').innerHTML=o.items.map(it=>`<div class="goods
   </div>
 </div>`).join('');
 
-const footer=document.getElementById('footer');
-if(o.status==='pending'){
-  footer.innerHTML=`<button class="plain" onclick="withdraw()">撤回订单</button><button class="primary" onclick="backList()">返回列表</button>`;
-}else if(o.status==='reject'){
-  footer.innerHTML=`<button class="plain" onclick="resubmit()">重新提交</button><button class="primary" onclick="backList()">返回列表</button>`;
+// 驳回原因
+const rejectCard=document.getElementById('rejectCard');
+if(o.status==='reject'){
+  rejectCard.style.display='';
+  document.getElementById('rejectReason').textContent=o.rejectReason||'未提供驳回原因';
 }else{
-  footer.innerHTML=`<button class="primary" onclick="backList()">返回列表</button>`;
+  rejectCard.style.display='none';
+}
+
+// 底部操作栏
+renderFooter();
+function renderFooter(){
+  const footer=document.getElementById('footer');
+  if(o.status==='pending'){
+    footer.innerHTML=`<button class="plain" onclick="openConfirm()">撤回订单</button><button class="primary" onclick="backList()">返回列表</button>`;
+  }else{
+    footer.innerHTML=`<button class="primary" onclick="backList()">返回列表</button>`;
+  }
 }
 
 function backList(){location.href='purchase-orders.html';}
-function withdraw(){toast('已申请撤回，等待处理');setTimeout(backList,800);}
-function resubmit(){toast('已复制为新的进货订单');}
-function contactService(){toast('跳转采购对接人');}
+
+// 撤回二次确认
+function openConfirm(){document.getElementById('confirmMask').classList.add('show');}
+function closeConfirm(){document.getElementById('confirmMask').classList.remove('show');}
+function confirmWithdraw(){
+  closeConfirm();
+  o.status='cancel';
+  /* 持久化状态改写，供列表页同步 */
+  let ov={};
+  try{ ov=JSON.parse(localStorage.getItem('mall_order_status')||'{}'); }catch(e){}
+  ov[o.no]='cancel';
+  try{ localStorage.setItem('mall_order_status', JSON.stringify(ov)); }catch(e){}
+  /* 更新当前页展示 */
+  const s2=statusMap.cancel;
+  document.getElementById('statusBig').textContent=s2.label;
+  document.getElementById('statusSub').textContent=s2.sub;
+  document.getElementById('statusHead').classList.add('ng');
+  document.getElementById('orderStatus').textContent=s2.label;
+  rejectCard.style.display='none';
+  renderFooter();
+  toast('撤销成功，订单已变更为已取消');
+}
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}

@@ -41,6 +41,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status.done{color:#2a9d4f;background:rgba(42,157,79,.1)}
 .card .status.pending{color:#d48806;background:rgba(212,136,6,.1)}
 .card .status.reject{color:#999;background:#f2f2f2}
+.card .status.cancel{color:#999;background:#f2f2f2}
 .card .name{font-size:15px;font-weight:500;margin-bottom:8px}
 .card .oi{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:.5px solid rgba(0,0,0,.05);font-size:13px;color:#333}
 .card .oi .pic{width:34px;height:34px;border-radius:8px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
@@ -72,6 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="tab" data-s="pending" onclick="setTab('pending')">待入库</div>
     <div class="tab" data-s="done" onclick="setTab('done')">已入库</div>
     <div class="tab" data-s="reject" onclick="setTab('reject')">已驳回</div>
+    <div class="tab" data-s="cancel" onclick="setTab('cancel')">已取消</div>
   </div>
   <div class="content" id="content"></div>
 
@@ -84,7 +86,8 @@ const defaultOrders=[
   {no:'JH202608240008',date:'2026-08-24',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 100元装',unit:'10颗/袋',price:86,qty:120}]},
   {no:'JH202608220005',date:'2026-08-22',status:'pending',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:500}]},
   {no:'JH202608180003',date:'2026-08-18',status:'done',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:96,qty:60}]},
-  {no:'JH202608150001',date:'2026-08-15',status:'reject',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]}
+  {no:'JH202608150001',date:'2026-08-15',status:'reject',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]},
+  {no:'JH202608100002',date:'2026-08-10',status:'cancel',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:200}]}
 ];
 let orders=defaultOrders.slice();
 try{
@@ -99,7 +102,12 @@ orders.forEach(o=>{
     o.name=o.items[0].name+(o.items.length>1?(' 等'+o.items.length+'款'):'');
   }
 });
-const statusMap={done:'已入库',pending:'待入库',reject:'已驳回'};
+/* 状态改写持久化（撤回后变更为已取消） */
+try{
+  const ov=JSON.parse(localStorage.getItem('mall_order_status')||'{}');
+  orders.forEach(o=>{ if(ov[o.no]) o.status=ov[o.no]; });
+}catch(e){}
+const statusMap={done:'已入库',pending:'待入库',reject:'已驳回',cancel:'已取消'};
 let orderMap={};
 orders.forEach(o=>orderMap[o.no]=o);
 let curTab='all';
