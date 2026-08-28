@@ -78,7 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="content">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-      <input type="text" id="searchInput" placeholder="请输入门店名称或业务员名称" oninput="filterStore()">
+      <input type="text" id="searchInput" placeholder="请输入门店名称" oninput="filterStore()">
     </div>
     <div id="storeContent"></div>
   </div>
@@ -108,10 +108,15 @@ const stores=[
 let delId=null;
 const fromParam=new URLSearchParams(location.search).get('from');
 const fromSuffix=fromParam?('?from='+fromParam):'';
+if(fromParam==='dealer')document.getElementById('searchInput').placeholder='请输入门店名称或业务员名称';
 
 function render(){
   const kw=document.getElementById('searchInput').value.trim().toLowerCase();
-  const list=stores.filter(s=>(s.name+(s.salesman||'')).toLowerCase().includes(kw));
+  const list=stores.filter(s=>{
+    const base=s.name.toLowerCase();
+    if(fromParam==='dealer')return (base+(s.salesman||'').toLowerCase()).includes(kw);
+    return base.includes(kw);
+  });
   const box=document.getElementById('storeContent');
   if(list.length===0){box.innerHTML='<div class="empty">暂无门店数据</div>';return;}
   box.innerHTML=list.map(s=>`
@@ -122,7 +127,7 @@ function render(){
           <div class="name">${s.name}<span class="status ${s.status==='stop'?'stop':''}">${s.status==='open'?'营业中':'已停业'}</span></div>
           <div class="addr">${s.addr}</div>
           <div class="contact">联系人：${s.contact} · ${s.phone}</div>
-          <div class="contact">业务员：${s.salesman}</div>
+          ${fromParam==='dealer'?`<div class="contact">业务员：${s.salesman}</div>`:''}
         </div>
       </div>
       <div class="actions">
