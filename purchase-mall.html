@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 进货商城</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:76px}
+
+.search{display:flex;align-items:center;gap:8px;background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:999px;padding:0 14px;height:38px;margin-bottom:12px}
+.search svg{width:16px;height:16px;color:#999;flex-shrink:0}
+.search input{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{flex-shrink:0;font-size:13px;padding:6px 14px;border:.5px solid rgba(0,0,0,.1);border-radius:999px;background:#fff;color:#666;cursor:pointer}
+.tab.active{background:#c9302c;border-color:#c9302c;color:#fff}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.card .pic{width:54px;height:54px;border-radius:10px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.card .main{flex:1;min-width:0}
+.card .name{font-size:14px;font-weight:500;margin-bottom:5px}
+.card .price{font-size:14px;color:#c9302c;font-weight:600}
+.card .price small{font-size:11px;font-weight:400;color:#999;margin-left:3px}
+.card .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:4px;background:#f5f6f7;color:#888;margin-left:6px}
+.stepper{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.stepper .btn{width:28px;height:28px;border-radius:50%;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#333;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.stepper .btn.plus{background:#c9302c;border-color:#c9302c;color:#fff}
+.stepper .qty{min-width:18px;text-align:center;font-size:14px;font-weight:500}
+.stepper .qty.zero{color:#bbb}
+
+.empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
+
+/* 底部进货单栏 */
+.cartbar{position:absolute;left:0;right:0;bottom:0;height:60px;background:#fff;border-top:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 14px;gap:12px;z-index:50}
+.cartbar .info{flex:1}
+.cartbar .info .t{font-size:14px;font-weight:500}
+.cartbar .info .s{font-size:12px;color:#999;margin-top:2px}
+.cartbar .submit{height:40px;padding:0 22px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.cartbar .submit:disabled{background:#ddd;cursor:not-allowed}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">进货商城</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
+      <input id="kw" type="text" placeholder="搜索产品名称" oninput="render()">
+    </div>
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-cat="all" onclick="setCat('all')">全部</div>
+      <div class="tab" data-cat="20" onclick="setCat('20')">20元系列</div>
+      <div class="tab" data-cat="50" onclick="setCat('50')">50元系列</div>
+      <div class="tab" data-cat="100" onclick="setCat('100')">100元系列</div>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <div class="cartbar">
+    <div class="info">
+      <div class="t">进货单 <span id="cartTotal">0</span> 件</div>
+      <div class="s" id="cartAmount">合计 ¥0</div>
+    </div>
+    <button class="submit" id="submitBtn" disabled onclick="submitCart()">提交进货单</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const products=[
+  {id:1,name:'迈极炫槟榔 20元装',series:'20',price:16,emoji:'📦'},
+  {id:2,name:'迈极炫槟榔 50元装',series:'50',price:42,emoji:'📦'},
+  {id:3,name:'迈极炫槟榔 100元装',series:'100',price:88,emoji:'🎁'},
+  {id:4,name:'迈极炫礼盒套装',series:'100',price:168,emoji:'🛍️'}
+];
+const cart={};
+let curCat='all';
+
+function setCat(c){curCat=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===c));render();}
+function render(){
+  const kw=(document.getElementById('kw').value||'').trim();
+  const list=document.getElementById('list');
+  const items=products.filter(p=>(curCat==='all'||p.series===curCat)&&p.name.includes(kw));
+  if(items.length===0){list.innerHTML='<div class="empty">未找到相关产品</div>';return;}
+  list.innerHTML=items.map(p=>{
+    const q=cart[p.id]||0;
+    return `<div class="card">
+      <div class="pic">${p.emoji}</div>
+      <div class="main">
+        <div class="name">${p.name}<span class="tag">${p.series}元系列</span></div>
+        <div class="price">¥${p.price}<small>/件</small></div>
+      </div>
+      <div class="stepper">
+        <div class="btn" onclick="change(${p.id},-1)">−</div>
+        <div class="qty ${q===0?'zero':''}">${q}</div>
+        <div class="btn plus" onclick="change(${p.id},1)">+</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function change(id,delta){
+  const cur=cart[id]||0;
+  const next=Math.max(0,cur+delta);
+  if(next===0)delete cart[id];else cart[id]=next;
+  render();updateCart();
+}
+function updateCart(){
+  let total=0,amount=0;
+  products.forEach(p=>{const q=cart[p.id]||0;total+=q;amount+=q*p.price;});
+  document.getElementById('cartTotal').textContent=total;
+  document.getElementById('cartAmount').textContent='合计 ¥'+amount.toLocaleString('en-US');
+  document.getElementById('submitBtn').disabled=total===0;
+}
+function submitCart(){
+  let total=0,amount=0;
+  products.forEach(p=>{const q=cart[p.id]||0;total+=q;amount+=q*p.price;});
+  if(total===0)return;
+  Object.keys(cart).forEach(k=>delete cart[k]);
+  render();updateCart();
+  toast('进货单已提交，共 '+total+' 件 · ¥'+amount.toLocaleString('en-US'));
+}
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();updateCart();
+</script>
+</body>
+</html>

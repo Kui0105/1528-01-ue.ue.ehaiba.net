@@ -125,7 +125,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <div class="stat-hd">
         <div class="stat-title">数据统计</div>
         <div class="filter-trigger" onclick="showFilterSheet()">
-          <span id="filterText">今日</span>
+          <span id="filterText">全部</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -210,7 +210,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
         <span class="close" onclick="hideFilterSheet()">×</span>
       </div>
       <div class="sheet-list">
-        <div class="sheet-item active" data-type="today" onclick="selectFilter('today','今日')">
+        <div class="sheet-item active" data-type="all" onclick="selectFilter('all','全部')">
+          <span>全部</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-type="today" onclick="selectFilter('today','今日')">
           <span>今日</span>
           <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </div>
@@ -259,6 +263,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const statData={
+  all:{put:12860,verify:9268,store:352},
   today:{put:128,verify:86,store:42},
   yesterday:{put:112,verify:74,store:38},
   week:{put:856,verify:612,store:96},
