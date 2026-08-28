@@ -8,8 +8,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
-.mp{width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
 .statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
 .sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
 .sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
 .sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
@@ -23,11 +24,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .c-left{font-size:11px;letter-spacing:-1px}
 .capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
-.content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.placeholder{border:.5px dashed rgba(0,0,0,.2);border-radius:14px;padding:40px 28px;text-align:center;width:100%;max-width:320px;background:#fff}
-.placeholder .ic{font-size:42px;margin-bottom:16px}
-.placeholder h2{font-size:17px;font-weight:500;margin-bottom:8px}
-.placeholder p{font-size:13px;color:#999;line-height:1.8}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;margin-bottom:12px;overflow:hidden}
+
+/* 经销商信息卡 */
+.dealer-card{padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.dealer-top{display:flex;align-items:center;gap:14px}
+.dealer-top .avatar{width:56px;height:56px;border-radius:50%;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:.5px solid rgba(201,48,44,.15)}
+.dealer-top .info{flex:1;min-width:0}
+.dealer-top .info .name{font-size:17px;font-weight:600;margin-bottom:8px}
+.dealer-top .info .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:4px;background:rgba(42,157,79,.1);color:#2a9d4f}
+.dealer-meta{display:flex;gap:10px}
+.dealer-meta .col{flex:1;background:#fafafa;border:.5px solid rgba(0,0,0,.06);border-radius:8px;padding:10px 12px}
+.dealer-meta .col .label{font-size:12px;color:#999;margin-bottom:4px}
+.dealer-meta .col .value{font-size:14px;color:#333;font-weight:500}
+
+/* 数据概览 */
+.stat-card{padding:16px 14px}
+.stat-title{font-size:15px;font-weight:500;margin-bottom:14px}
+.stat-grid{display:flex}
+.stat-item{flex:1;text-align:center;position:relative;padding:2px 0}
+.stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:6px;bottom:6px;width:.5px;background:rgba(0,0,0,.08)}
+.stat-item .num{font-size:19px;font-weight:600;color:#c9302c;margin-bottom:4px}
+.stat-item .label{font-size:12px;color:#666}
+
+/* 功能入口 */
+.menu-card{padding:16px 14px}
+.menu-title{font-size:15px;font-weight:500;margin-bottom:16px}
+.menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px}
+.menu-item{display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer}
+.menu-item .icon{width:48px;height:48px;border-radius:12px;background:#fff;border:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center}
+.menu-item .icon svg{width:24px;height:24px}
+.menu-item .label{font-size:12px;color:#333}
+.menu-item:active .icon{background:#fafafa}
 </style>
 </head>
 <body>
@@ -38,11 +68,99 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="title">经销控制台</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
+
   <div class="content">
-    <div class="placeholder">
-      <div class="ic">🏪</div>
-      <h2>经销控制台</h2>
-      <p>经销商管理界面<br>该模块占位，后续按权限展示</p>
+    <!-- 经销商信息 -->
+    <div class="card dealer-card">
+      <div class="dealer-top">
+        <div class="avatar">🏪</div>
+        <div class="info">
+          <div class="name">长沙兴盛商贸有限公司</div>
+          <span class="badge">启用</span>
+        </div>
+      </div>
+      <div class="dealer-meta">
+        <div class="col">
+          <div class="label">省市</div>
+          <div class="value">湖南省 长沙市</div>
+        </div>
+        <div class="col">
+          <div class="label">销售区域</div>
+          <div class="value">华中大区 · 湖南省</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据概览 -->
+    <div class="card stat-card">
+      <div class="stat-title">数据概览</div>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <div class="num">3,600</div>
+          <div class="label">进货量</div>
+        </div>
+        <div class="stat-item">
+          <div class="num">3,240</div>
+          <div class="label">激活量</div>
+        </div>
+        <div class="stat-item">
+          <div class="num">2,960</div>
+          <div class="label">动销量</div>
+        </div>
+        <div class="stat-item">
+          <div class="num">880</div>
+          <div class="label">中奖量</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 功能入口 -->
+    <div class="card menu-card">
+      <div class="menu-title">功能入口</div>
+      <div class="menu-grid">
+        <div class="menu-item" onclick="location.href='purchase-upload.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M5 20h14"></path></svg>
+          </div>
+          <div class="label">进货上传</div>
+        </div>
+        <div class="menu-item" onclick="location.href='purchase-orders.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path><path d="M9 13h6"></path><path d="M9 17h6"></path></svg>
+          </div>
+          <div class="label">进货订单</div>
+        </div>
+        <div class="menu-item" onclick="location.href='product-stock.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"></path><path d="M12 12l8-4.5"></path><path d="M12 12v9"></path><path d="M12 12L4 7.5"></path></svg>
+          </div>
+          <div class="label">产品库存</div>
+        </div>
+        <div class="menu-item" onclick="location.href='store.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M5 21V10l7-4 7 4v11"></path><path d="M9 21v-6h6v6"></path></svg>
+          </div>
+          <div class="label">门店管理</div>
+        </div>
+        <div class="menu-item" onclick="location.href='dealer-sales.html?id=111'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1"></path><path d="M16 5.4a3 3 0 0 1 0 5.8"></path><path d="M21 20v-1a5 5 0 0 0-3.5-4.8"></path></svg>
+          </div>
+          <div class="label">业务管理</div>
+        </div>
+        <div class="menu-item" onclick="location.href='sales-detail.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V12"></path><path d="M10 20V5"></path><path d="M16 20v-8"></path><path d="M3 20h18"></path></svg>
+          </div>
+          <div class="label">销售明细</div>
+        </div>
+        <div class="menu-item" onclick="location.href='prize-detail.html'">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v8H4v-8"></path><path d="M2 8h20v4H2z"></path><path d="M12 8v12"></path><path d="M12 8C12 6 10.5 4 8.5 4 6.5 4 5.5 6 6.2 8z"></path><path d="M12 8c0-2 1.5-4 3.5-4 2 0 3 2 2.3 4z"></path></svg>
+          </div>
+          <div class="label">兑奖明细</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 兑奖明细</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.search{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.search input{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
+.search input:focus{border-color:#c9302c}
+.search button{width:60px;height:36px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.card .store{font-size:15px;font-weight:500}
+.card .date{font-size:12px;color:#999}
+.card .name{font-size:14px;color:#333;margin-bottom:8px}
+.card .info{display:flex;font-size:13px;color:#666;line-height:1.8}
+.card .info .col{flex:1}
+.card .info .label{color:#999}
+.card .status{font-size:12px;padding:2px 8px;border-radius:4px;flex-shrink:0}
+.card .status.done{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.card .status.pending{color:#d48806;background:rgba(212,136,6,.1)}
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">兑奖明细</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+  <div class="search">
+    <input type="text" id="kw" placeholder="搜索门店/奖品名称" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">搜索</button>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const PRIZE='加5元兑换50元迈极炫槟榔一包';
+const prizes=[
+  {store:'湘江东路店',user:'138****8821',prize:PRIZE,date:'2026-08-27',status:'done'},
+  {store:'五一广场店',user:'139****3356',prize:PRIZE,date:'2026-08-27',status:'done'},
+  {store:'岳麓山北店',user:'137****0912',prize:PRIZE,date:'2026-08-26',status:'pending'},
+  {store:'湘江东路店',user:'135****6678',prize:PRIZE,date:'2026-08-26',status:'done'},
+  {store:'五一广场店',user:'136****2245',prize:PRIZE,date:'2026-08-25',status:'done'},
+  {store:'岳麓山北店',user:'138****1190',prize:PRIZE,date:'2026-08-25',status:'pending'},
+  {store:'湘江东路店',user:'139****7788',prize:PRIZE,date:'2026-08-24',status:'done'}
+];
+const statusMap={done:'已核销',pending:'待核销'};
+function render(kw){
+  kw=(kw||'').trim().toLowerCase();
+  const box=document.getElementById('content');
+  let list=prizes.filter(p=>(p.store+p.prize).toLowerCase().includes(kw));
+  if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的兑奖记录</div>';return;}
+  box.innerHTML=list.map(p=>`
+    <div class="card">
+      <div class="top">
+        <span class="store">${p.store}</span>
+        <span class="status ${p.status}">${statusMap[p.status]}</span>
+      </div>
+      <div class="name">${p.prize}</div>
+      <div class="info">
+        <div class="col"><span class="label">中奖用户</span> ${p.user}</div>
+        <div class="col" style="text-align:right"><span class="label">时间</span> ${p.date}</div>
+      </div>
+    </div>`).join('');
+}
+function doSearch(){render(document.getElementById('kw').value);}
+render();
+</script>
+</body>
+</html>
