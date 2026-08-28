@@ -25,21 +25,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
 .search{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
-.search input{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
+.search input{flex:1;height:38px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
 .search input:focus{border-color:#c9302c}
-.search button{width:60px;height:36px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+.search button{width:64px;height:38px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+.stats-bar{display:flex;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);padding:12px;gap:8px;flex-shrink:0}
+.stats-bar .item{flex:1;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:10px 4px;text-align:center}
+.stats-bar .item .v{font-size:16px;font-weight:600;color:#c9302c}
+.stats-bar .item .t{font-size:12px;color:#666;margin-top:3px}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
 .card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
 .card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.card .store{font-size:15px;font-weight:500}
-.card .date{font-size:12px;color:#999}
-.card .name{font-size:14px;color:#333;margin-bottom:8px}
-.card .info{display:flex;font-size:13px;color:#666;line-height:1.8}
-.card .info .col{flex:1}
-.card .info .label{color:#999}
-.card .info .col.amt{text-align:right}
-.card .info .col.amt .v{font-size:16px;font-weight:600;color:#c9302c}
+.card .batch{font-size:14px;font-weight:500;color:#333}
+.card .status{font-size:12px;padding:2px 8px;border-radius:4px}
+.card .status.activated{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.card .status.pending{color:#e6a23c;background:rgba(230,162,60,.1)}
+.card .status.expired{color:#999;background:#f2f2f2}
+.card .rows{font-size:13px;color:#666;line-height:1.9}
+.card .rows .row{display:flex}
+.card .rows .row .k{width:72px;color:#999;flex-shrink:0}
+.card .rows .row .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#333}
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
 </head>
@@ -51,38 +56,78 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <span class="title">销售明细</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
+
   <div class="search">
-    <input type="text" id="kw" placeholder="搜索门店/产品名称" onkeydown="if(event.key==='Enter')doSearch()">
+    <input type="text" id="kw" placeholder="搜索门店/业务员/商品名称" onkeydown="if(event.key==='Enter')doSearch()">
     <button onclick="doSearch()">搜索</button>
   </div>
+
+  <div class="stats-bar">
+    <div class="item"><div class="v" id="statAct">0</div><div class="t">激活量</div></div>
+    <div class="item"><div class="v" id="statWin">0</div><div class="t">中奖量</div></div>
+    <div class="item"><div class="v" id="statVerify">0</div><div class="t">兑奖量</div></div>
+    <div class="item"><div class="v" id="statRec">0</div><div class="t">回收量</div></div>
+  </div>
+
   <div class="content" id="content"></div>
 </div>
 
 <script>
-const sales=[
-  {store:'湘江东路店',name:'迈极炫槟榔 50元装',qty:6,amt:300,date:'2026-08-27'},
-  {store:'五一广场店',name:'迈极炫槟榔 100元装',qty:3,amt:300,date:'2026-08-27'},
-  {store:'岳麓山北店',name:'迈极炫槟榔 20元装',qty:24,amt:480,date:'2026-08-26'},
-  {store:'湘江东路店',name:'迈极炫礼盒套装',qty:2,amt:200,date:'2026-08-26'},
-  {store:'五一广场店',name:'迈极炫槟榔 50元装',qty:10,amt:500,date:'2026-08-25'},
-  {store:'岳麓山北店',name:'迈极炫槟榔 100元装',qty:4,amt:400,date:'2026-08-25'},
-  {store:'湘江东路店',name:'迈极炫槟榔 20元装',qty:30,amt:600,date:'2026-08-24'}
-];
+const products=['迈极炫槟榔 20元装','迈极炫槟榔 50元装','迈极炫槟榔 100元装','迈极炫礼盒套装'];
+const stores=['湘江东路店','五一广场店','岳麓山北店','万家丽店','德思勤店'];
+const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏'];
+const statuses=['activated','pending','expired'];
+const sales=Array.from({length:15},(_,i)=>{
+  const id=i+1;
+  const batch='PC'+('20260827'+String(id).padStart(3,'0'));
+  const code='JM'+String(id).padStart(6,'0');
+  const product=products[i%products.length];
+  const store=stores[i%stores.length];
+  const salesman=salesmen[i%salesmen.length];
+  const status=statuses[i%statuses.length];
+  const total=((i*37)%50)+50;
+  const date=new Date(2026,7,27-Math.floor(i/3));
+  const valid=new Date(date.getFullYear()+1,date.getMonth(),date.getDate());
+  const ctime=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(8+i%12).padStart(2,'0')}:${String((i*7)%60).padStart(2,'0')}`;
+  return {id,total,batch,code,valid:fmtDate(valid),store,salesman,name:product,status,ctime};
+});
+const statusMap={activated:'已激活',pending:'待激活',expired:'已过期'};
+
+function fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+
+function genStats(list){
+  return {
+    act:list.reduce((s,it)=>s+it.total,0),
+    win:Math.round(list.reduce((s,it)=>s+it.total,0)*0.18),
+    verify:Math.round(list.reduce((s,it)=>s+it.total,0)*0.12),
+    rec:Math.round(list.reduce((s,it)=>s+it.total,0)*0.08)
+  };
+}
+
 function render(kw){
   kw=(kw||'').trim().toLowerCase();
   const box=document.getElementById('content');
-  let list=sales.filter(s=>(s.store+s.name).toLowerCase().includes(kw));
+  let list=sales.filter(s=>(s.store+s.salesman+s.name+s.batch+s.code).toLowerCase().includes(kw));
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的销售记录</div>';return;}
+  const st=genStats(list);
+  document.getElementById('statAct').textContent=st.act.toLocaleString('en-US');
+  document.getElementById('statWin').textContent=st.win.toLocaleString('en-US');
+  document.getElementById('statVerify').textContent=st.verify.toLocaleString('en-US');
+  document.getElementById('statRec').textContent=st.rec.toLocaleString('en-US');
   box.innerHTML=list.map(s=>`
     <div class="card">
       <div class="top">
-        <span class="store">${s.store}</span>
-        <span class="date">${s.date}</span>
+        <span class="batch">批次号：${s.batch}</span>
+        <span class="status ${s.status}">${statusMap[s.status]}</span>
       </div>
-      <div class="name">${s.name}</div>
-      <div class="info">
-        <div class="col"><span class="label">数量</span> ${s.qty} 件</div>
-        <div class="col amt"><span class="label">销售额</span> <span class="v">¥${s.amt}</span></div>
+      <div class="rows">
+        <div class="row"><span class="k">总批次</span><span class="v">${s.total} 件</span></div>
+        <div class="row"><span class="k">奖码ID</span><span class="v">${s.code}</span></div>
+        <div class="row"><span class="k">有效期</span><span class="v">${s.valid}</span></div>
+        <div class="row"><span class="k">销售门店</span><span class="v">${s.store}</span></div>
+        <div class="row"><span class="k">业务员</span><span class="v">${s.salesman}</span></div>
+        <div class="row"><span class="k">商品名称</span><span class="v">${s.name}</span></div>
+        <div class="row"><span class="k">激活时间</span><span class="v">${s.ctime}</span></div>
       </div>
     </div>`).join('');
 }
