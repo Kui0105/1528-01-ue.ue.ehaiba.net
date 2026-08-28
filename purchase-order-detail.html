@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 进货订单详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f5f6f7;padding:10px 12px 90px}
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.status-head{text-align:center;padding:20px 0;background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;border-radius:10px;margin-bottom:10px}
+.status-head.ng{background:linear-gradient(135deg,#9aa0a6,#c2c6cc)}
+.status-head .big{font-size:20px;font-weight:600;margin-bottom:6px}
+.status-head .sub{font-size:13px;opacity:.9}
+
+.section-title{font-size:14px;font-weight:500;color:#333;margin-bottom:10px}
+.addr-row{display:flex;align-items:flex-start;gap:10px}
+.addr-row .pin{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.addr-row .info{font-size:14px;line-height:1.5}
+.addr-row .info .name{margin-bottom:4px}
+.addr-row .info .addr{color:#666;font-size:13px}
+.addr-empty{font-size:13px;color:#999}
+
+.goods{display:flex;gap:12px;padding-bottom:12px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.goods .img{width:64px;height:64px;flex-shrink:0;background:#fff7f7;color:#c9302c;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden}
+.goods .info{flex:1;min-width:0}
+.goods .name{font-size:14px;font-weight:500;color:#1a1a1a;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.goods .meta{font-size:13px;color:#666}
+.goods .meta span{margin-right:12px}
+
+.row-list .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.row-list .row:last-child{border-bottom:none}
+.row-list .row .label{font-size:13px;color:#666}
+.row-list .row .value{font-size:13px;color:#333}
+.row-list .row .value.red{color:#c9302c;font-weight:500}
+
+.footer{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 12px;display:flex;justify-content:flex-end;gap:8px;z-index:20}
+.footer button{padding:8px 16px;border-radius:999px;font-size:14px;cursor:pointer;border:none}
+.footer .primary{background:#c9302c;color:#fff}
+.footer .plain{background:#fff;color:#666;border:.5px solid rgba(0,0,0,.15)}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">进货订单详情</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content" id="content">
+    <div class="status-head" id="statusHead">
+      <div class="big" id="statusBig">-</div>
+      <div class="sub" id="statusSub">-</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">收货信息</div>
+      <div id="addrBox"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">商品信息</div>
+      <div id="goodsBox"></div>
+      <div class="row-list">
+        <div class="row"><span class="label">合计数量</span><span class="value" id="totalQty">-</span></div>
+        <div class="row"><span class="label">合计总额</span><span class="value red" id="totalAmount">-</span></div>
+      </div>
+    </div>
+
+    <div class="card row-list">
+      <div class="row"><span class="label">订单编号</span><span class="value" id="orderNo">-</span></div>
+      <div class="row"><span class="label">下单时间</span><span class="value" id="orderTime">-</span></div>
+      <div class="row"><span class="label">订单状态</span><span class="value" id="orderStatus">-</span></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px;color:#c9302c;font-size:14px;cursor:pointer" onclick="contactService()">
+      联系采购
+    </div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const defaultOrders=[
+  {no:'JH202608260012',date:'2026-08-26',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 50元装',unit:'15颗/袋',price:42,qty:300}]},
+  {no:'JH202608240008',date:'2026-08-24',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 100元装',unit:'10颗/袋',price:86,qty:120}]},
+  {no:'JH202608220005',date:'2026-08-22',status:'pending',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:500}]},
+  {no:'JH202608180003',date:'2026-08-18',status:'done',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:96,qty:60}]},
+  {no:'JH202608150001',date:'2026-08-15',status:'reject',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]}
+];
+let orders=defaultOrders.slice();
+try{
+  const extra=JSON.parse(localStorage.getItem('mall_orders')||'[]');
+  if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
+}catch(e){}
+orders.forEach(o=>{
+  if(o.items&&o.items.length){
+    o.total=o.items.reduce((s,it)=>s+(it.qty||0),0);
+    o.amount=o.items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0);
+    o.name=o.items[0].name+(o.items.length>1?(' 等'+o.items.length+'款'):'');
+  }
+});
+const orderMap={};
+orders.forEach(o=>orderMap[o.no]=o);
+
+const statusMap={
+  pending:{label:'待入库',sub:'等待仓库确认入库',ng:false},
+  done:{label:'已入库',sub:'货物已入库',ng:false},
+  reject:{label:'已驳回',sub:'订单已被驳回，请联系采购',ng:true}
+};
+
+const params=new URLSearchParams(location.search);
+const no=params.get('no')||'';
+const o=orderMap[no]||orders[0];
+
+const s=statusMap[o.status]||{label:o.status,sub:'',ng:false};
+document.getElementById('statusBig').textContent=s.label;
+document.getElementById('statusSub').textContent=s.sub;
+if(s.ng)document.getElementById('statusHead').classList.add('ng');
+document.getElementById('orderNo').textContent=o.no;
+document.getElementById('orderTime').textContent=o.date||'-';
+document.getElementById('orderStatus').textContent=s.label;
+document.getElementById('totalQty').textContent=o.total+' 件';
+document.getElementById('totalAmount').textContent='¥'+o.amount.toLocaleString('en-US');
+
+const addrBox=document.getElementById('addrBox');
+if(o.region||o.contact||o.phone||o.address){
+  addrBox.innerHTML=`<div class="addr-row"><div class="pin">📍</div><div class="info">
+    <div class="name">${o.contact||'-'}<span style="color:#999;margin-left:8px">${o.phone||''}</span></div>
+    <div class="addr">${[o.region,o.address].filter(Boolean).join(' ')}</div>
+  </div></div>`;
+}else{
+  addrBox.innerHTML='<div class="addr-empty">暂无收货信息</div>';
+}
+
+document.getElementById('goodsBox').innerHTML=o.items.map(it=>`<div class="goods">
+  <div class="img">${it.emoji}</div>
+  <div class="info">
+    <div class="name">${it.name}</div>
+    <div class="meta"><span>${it.unit}</span><span>¥${it.price}</span><span>×${it.qty}</span></div>
+  </div>
+</div>`).join('');
+
+const footer=document.getElementById('footer');
+if(o.status==='pending'){
+  footer.innerHTML=`<button class="plain" onclick="withdraw()">撤回订单</button><button class="primary" onclick="backList()">返回列表</button>`;
+}else if(o.status==='reject'){
+  footer.innerHTML=`<button class="plain" onclick="resubmit()">重新提交</button><button class="primary" onclick="backList()">返回列表</button>`;
+}else{
+  footer.innerHTML=`<button class="primary" onclick="backList()">返回列表</button>`;
+}
+
+function backList(){location.href='purchase-orders.html';}
+function withdraw(){toast('已申请撤回，等待处理');setTimeout(backList,800);}
+function resubmit(){toast('已复制为新的进货订单');}
+function contactService(){toast('跳转采购对接人');}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+</script>
+</body>
+</html>
