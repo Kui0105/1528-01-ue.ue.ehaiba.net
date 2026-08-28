@@ -78,7 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="content">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
-      <input type="text" id="searchInput" placeholder="请输入门店名称" oninput="filterStore()">
+      <input type="text" id="searchInput" placeholder="请输入门店名称或业务员名称" oninput="filterStore()">
     </div>
     <div id="storeContent"></div>
   </div>
@@ -101,15 +101,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const stores=[
-  {id:1,name:'湘江东路店',status:'open',addr:'长沙市开福区湘江东路一段 88 号',contact:'李店长',phone:'138****6688',avatar:'',stock:12},
-  {id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',avatar:'',stock:8},
-  {id:3,name:'岳麓山北店',status:'stop',addr:'长沙市岳麓区麓山南路 66 号',contact:'张店长',phone:'137****5522',avatar:'',stock:0}
+  {id:1,name:'湘江东路店',status:'open',addr:'长沙市开福区湘江东路一段 88 号',contact:'李店长',phone:'138****6688',salesman:'刘伟',avatar:'',stock:12},
+  {id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',salesman:'陈静',avatar:'',stock:8},
+  {id:3,name:'岳麓山北店',status:'stop',addr:'长沙市岳麓区麓山南路 66 号',contact:'张店长',phone:'137****5522',salesman:'赵磊',avatar:'',stock:0}
 ];
 let delId=null;
 
 function render(){
-  const kw=document.getElementById('searchInput').value.trim();
-  const list=stores.filter(s=>s.name.includes(kw));
+  const kw=document.getElementById('searchInput').value.trim().toLowerCase();
+  const list=stores.filter(s=>(s.name+(s.salesman||'')).toLowerCase().includes(kw));
   const box=document.getElementById('storeContent');
   if(list.length===0){box.innerHTML='<div class="empty">暂无门店数据</div>';return;}
   box.innerHTML=list.map(s=>`
@@ -120,6 +120,7 @@ function render(){
           <div class="name">${s.name}<span class="status ${s.status==='stop'?'stop':''}">${s.status==='open'?'营业中':'已停业'}</span></div>
           <div class="addr">${s.addr}</div>
           <div class="contact">联系人：${s.contact} · ${s.phone}</div>
+          <div class="contact">业务员：${s.salesman}</div>
         </div>
       </div>
       <div class="actions">
