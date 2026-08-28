@@ -26,9 +26,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:76px}
 
-.search{display:flex;align-items:center;gap:8px;background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:999px;padding:0 14px;height:38px;margin-bottom:12px}
-.search svg{width:16px;height:16px;color:#999;flex-shrink:0}
-.search input{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333}
+.search{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.search-box{display:flex;align-items:center;gap:8px;flex:1;background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:999px;padding:0 14px;height:38px;min-width:0}
+.search-box svg{width:16px;height:16px;color:#999;flex-shrink:0}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333;min-width:0}
+.search-btn{height:38px;padding:0 18px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;flex-shrink:0}
+.search-btn:active{opacity:.9}
 
 .tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tab{flex-shrink:0;font-size:13px;padding:6px 14px;border:.5px solid rgba(0,0,0,.1);border-radius:999px;background:#fff;color:#666;cursor:pointer}
@@ -37,9 +40,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
 .card .pic{width:54px;height:54px;border-radius:10px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
 .card .main{flex:1;min-width:0}
-.card .name{font-size:14px;font-weight:500;margin-bottom:5px}
-.card .price{font-size:14px;color:#c9302c;font-weight:600}
-.card .price small{font-size:11px;font-weight:400;color:#999;margin-left:3px}
+.card .name{font-size:14px;font-weight:500;margin-bottom:6px}
+.card .meta{display:flex;align-items:baseline;gap:8px}
+.card .price{font-size:15px;color:#c9302c;font-weight:600}
+.card .unit{font-size:12px;color:#999}
 .card .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:4px;background:#f5f6f7;color:#888;margin-left:6px}
 .stepper{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .stepper .btn{width:28px;height:28px;border-radius:50%;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#333;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -72,8 +76,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
   <div class="content">
     <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
-      <input id="kw" type="text" placeholder="搜索产品名称" oninput="render()">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
+        <input id="kw" type="text" placeholder="搜索产品名称" onkeydown="if(event.key==='Enter')doSearch()">
+      </div>
+      <button class="search-btn" onclick="doSearch()">搜索</button>
     </div>
     <div class="tabs" id="tabs">
       <div class="tab active" data-cat="all" onclick="setCat('all')">全部</div>
@@ -97,14 +104,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const products=[
-  {id:1,name:'迈极炫槟榔 20元装',series:'20',price:16,emoji:'📦'},
-  {id:2,name:'迈极炫槟榔 50元装',series:'50',price:42,emoji:'📦'},
-  {id:3,name:'迈极炫槟榔 100元装',series:'100',price:88,emoji:'🎁'},
-  {id:4,name:'迈极炫礼盒套装',series:'100',price:168,emoji:'🛍️'}
+  {id:1,name:'迈极炫槟榔 20元装',series:'20',price:16,unit:'15颗/袋',emoji:'📦'},
+  {id:2,name:'迈极炫槟榔 50元装',series:'50',price:42,unit:'12颗/袋',emoji:'📦'},
+  {id:3,name:'迈极炫槟榔 100元装',series:'100',price:88,unit:'10颗/袋',emoji:'🎁'},
+  {id:4,name:'迈极炫礼盒套装',series:'100',price:168,unit:'1盒/套',emoji:'🛍️'}
 ];
 const cart={};
 let curCat='all';
 
+function doSearch(){render();}
 function setCat(c){curCat=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===c));render();}
 function render(){
   const kw=(document.getElementById('kw').value||'').trim();
@@ -116,8 +124,11 @@ function render(){
     return `<div class="card">
       <div class="pic">${p.emoji}</div>
       <div class="main">
-        <div class="name">${p.name}<span class="tag">${p.series}元系列</span></div>
-        <div class="price">¥${p.price}<small>/件</small></div>
+        <div class="name">${p.name}</div>
+        <div class="meta">
+          <span class="price">¥${p.price}</span>
+          <span class="unit">${p.unit}</span>
+        </div>
       </div>
       <div class="stepper">
         <div class="btn" onclick="change(${p.id},-1)">−</div>
