@@ -24,10 +24,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .c-left{font-size:11px;letter-spacing:-1px}
 .capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
-.search{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.search{display:flex;gap:8px;padding:10px 12px 8px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
 .search input{flex:1;height:38px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
 .search input:focus{border-color:#c9302c}
 .search button{width:64px;height:38px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+.filter-tabs{display:flex;gap:8px;padding:0 12px 10px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.filter-tabs .tab{flex:1;height:32px;display:flex;align-items:center;justify-content:center;border:.5px solid rgba(0,0,0,.12);border-radius:6px;font-size:13px;color:#666;background:#fff;cursor:pointer}
+.filter-tabs .tab.active{border-color:#c9302c;color:#c9302c;background:rgba(201,48,44,.04)}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:80px}
 
 .card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start}
@@ -40,6 +43,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status.off{color:#999;background:#f2f2f2}
 .card .info{font-size:13px;color:#666;line-height:1.8}
 .card .info .label{color:#999}
+.card .stats-line{display:flex;margin-top:9px;padding-top:9px;border-top:.5px solid rgba(0,0,0,.06)}
+.card .stats-line .col{flex:1;text-align:center}
+.card .stats-line .col+.col{border-left:.5px solid rgba(0,0,0,.06)}
+.card .stats-line .col .v{font-size:16px;font-weight:600;color:#c9302c}
+.card .stats-line .col .t{font-size:12px;color:#999;margin-top:2px}
 .card .ops{display:flex;flex-direction:column;gap:8px;flex-shrink:0;margin-left:10px}
 .card .ops button{height:28px;padding:0 12px;border:.5px solid rgba(0,0,0,.12);background:#fff;border-radius:6px;font-size:13px;color:#333;cursor:pointer}
 .card .ops button.danger{color:#c9302c;border-color:rgba(201,48,44,.3)}
@@ -75,6 +83,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <button onclick="doSearch()">搜索</button>
   </div>
 
+  <div class="filter-tabs">
+    <div class="tab active" data-type="today" onclick="setFilter('today')">今日</div>
+    <div class="tab" data-type="yesterday" onclick="setFilter('yesterday')">昨日</div>
+    <div class="tab" data-type="week" onclick="setFilter('week')">本周</div>
+    <div class="tab" data-type="month" onclick="setFilter('month')">本月</div>
+  </div>
+
   <div class="content" id="content"></div>
 
   <button class="fab" onclick="addSalesman()">+</button>
@@ -102,8 +117,19 @@ let salesmen=[
   {id:5,name:'周强',phone:'135****1144',stores:4,status:'on',ctime:'2024-08-12'},
   {id:6,name:'吴敏',phone:'134****2288',stores:6,status:'off',ctime:'2023-09-18'}
 ];
+const filterMult={today:1,yesterday:0.85,week:5.5,month:22};
 let delId=null;
 let curKw='';
+let curFilter='today';
+
+function genStats(id,type){
+  const base=((id*97)%80)+20;
+  const m=filterMult[type]||1;
+  const act=Math.round(base*m);
+  const rec=Math.round(base*m*0.7);
+  const verify=Math.round(base*m*0.45);
+  return {act,rec,verify};
+}
 
 function render(kw){
   kw=(kw||'').trim().toLowerCase();
@@ -111,8 +137,9 @@ function render(kw){
   const box=document.getElementById('content');
   const list=salesmen.filter(s=>(s.name+s.phone).toLowerCase().includes(kw));
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的业务员</div>';return;}
-  box.innerHTML=list.map(s=>`
-    <div class="card" data-id="${s.id}">
+  box.innerHTML=list.map(s=>{
+    const st=genStats(s.id,curFilter);
+    return `<div class="card" data-id="${s.id}">
       <div class="avatar">${s.name.charAt(0)}</div>
       <div class="main">
         <div class="top">
@@ -124,13 +151,24 @@ function render(kw){
           <div><span class="label">门店数</span> ${s.stores}</div>
           <div><span class="label">创建时间</span> ${s.ctime}</div>
         </div>
+        <div class="stats-line">
+          <div class="col"><div class="v">${st.act}</div><div class="t">激活量</div></div>
+          <div class="col"><div class="v">${st.rec}</div><div class="t">回收量</div></div>
+          <div class="col"><div class="v">${st.verify}</div><div class="t">兑奖量</div></div>
+        </div>
       </div>
       <div class="ops">
         <button onclick="editSalesman(${s.id})">编辑</button>
         <button class="danger" onclick="delSalesman(${s.id})">删除</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+}
+
+function setFilter(type){
+  curFilter=type;
+  document.querySelectorAll('.filter-tabs .tab').forEach(t=>t.classList.toggle('active',t.dataset.type===type));
+  render(curKw);
 }
 
 function doSearch(){render(document.getElementById('kw').value);}
