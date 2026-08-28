@@ -48,7 +48,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .stepper{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .stepper .btn{width:28px;height:28px;border-radius:50%;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#333;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .stepper .btn.plus{background:#c9302c;border-color:#c9302c;color:#fff}
-.stepper .qty{min-width:18px;text-align:center;font-size:14px;font-weight:500}
+.stepper .qty{-moz-appearance:textfield;appearance:textfield;width:44px;text-align:center;font-size:14px;font-weight:500;border:none;background:transparent;outline:none}
+.stepper .qty::-webkit-outer-spin-button,.stepper .qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .stepper .qty.zero{color:#bbb}
 
 .empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
@@ -132,7 +133,7 @@ function render(){
       </div>
       <div class="stepper">
         <div class="btn" onclick="change(${p.id},-1)">−</div>
-        <div class="qty ${q===0?'zero':''}">${q}</div>
+        <input class="qty ${q===0?'zero':''}" id="qty_${p.id}" type="number" min="0" inputmode="numeric" value="${q}" oninput="onQtyInput(${p.id})" onblur="onQtyBlur(${p.id})">
         <div class="btn plus" onclick="change(${p.id},1)">+</div>
       </div>
     </div>`;
@@ -142,7 +143,23 @@ function change(id,delta){
   const cur=cart[id]||0;
   const next=Math.max(0,cur+delta);
   if(next===0)delete cart[id];else cart[id]=next;
-  render();updateCart();
+  const inp=document.getElementById('qty_'+id);
+  if(inp){inp.value=next;inp.classList.toggle('zero',next===0);}
+  updateCart();
+}
+function onQtyInput(id){
+  const inp=document.getElementById('qty_'+id);
+  let v=parseInt(inp.value,10);
+  if(isNaN(v)||v<0)v=0;
+  if(v===0)delete cart[id];else cart[id]=v;
+  inp.classList.toggle('zero',v===0);
+  updateCart();
+}
+function onQtyBlur(id){
+  const inp=document.getElementById('qty_'+id);
+  let v=parseInt(inp.value,10);
+  if(isNaN(v)||v<0)v=0;
+  inp.value=v;
 }
 function updateCart(){
   let total=0,amount=0;

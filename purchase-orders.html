@@ -56,7 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 <div class="mp">
   <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
   <div class="navbar">
-    <span class="back" onclick="history.back()">‹</span>
+    <span class="back" onclick="goBack()">‹</span>
     <span class="title">进货订单</span>
     <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
   </div>
@@ -90,7 +90,7 @@ function render(kw){
     let body;
     if(o.items&&o.items.length){
       const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">¥${it.price} ×${it.qty}</span></div>`).join('');
-      const addr=o.address?`<div class="addr">收货人：${o.contact||'-'} · ${o.phone||'-'}<br>地址：${o.address}${o.remark?(' · 备注：'+o.remark):''}</div>`:'';
+      const addr=o.address?`<div class="addr">收货地区：${o.region||'-'}<br>收货人：${o.contact||'-'} · ${o.phone||'-'}<br>地址：${o.address}${o.remark?(' · 备注：'+o.remark):''}</div>`:'';
       body=`<div class="info" style="display:block">${rows}</div><div class="sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>${addr}`;
     }else{
       body=`<div class="info"><div class="col"><span class="label">数量</span> ${o.qty} 件</div><div class="col"><span class="label">单价</span> ¥${o.price}</div><div class="col"><span class="label">日期</span> ${o.date}</div></div>`;
@@ -106,6 +106,11 @@ function render(kw){
   }).join('');
 }
 function doSearch(){render(document.getElementById('kw').value);}
+function goBack(){
+  const r=localStorage.getItem('orders_return');
+  if(r){localStorage.removeItem('orders_return');location.href=r;}
+  else history.back();
+}
 render();
 </script>
 </body>

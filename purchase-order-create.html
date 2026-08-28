@@ -31,9 +31,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .field{display:flex;align-items:center;min-height:48px;border-bottom:.5px solid rgba(0,0,0,.06)}
 .field:last-child{border-bottom:none}
 .field label{width:78px;font-size:14px;color:#333;flex-shrink:0}
-.field input,.field textarea{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333;resize:none;padding:12px 0;line-height:1.5}
+.field input,.field textarea{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333;resize:none;padding:12px 0;line-height:1.5;min-width:0}
 .field textarea{font-family:inherit}
 .field input::placeholder,.field textarea::placeholder{color:#bbb}
+.field.click{cursor:pointer}
+.field .fv{flex:1;font-size:14px;color:#bbb;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field .fv.filled{color:#333}
+.field .fa{color:#ccc;font-size:18px;margin-left:4px;flex-shrink:0}
 
 .block{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px 14px;margin-bottom:12px}
 .block .bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -69,8 +73,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .submitbar .confirm{height:40px;padding:0 26px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
 .submitbar .confirm:active{opacity:.9}
 
-.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:300;opacity:0;pointer-events:none;transition:all .2s;max-width:80%}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* 省市区选择弹层 */
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s}
+.mask.show{opacity:1;pointer-events:auto}
+.region-sheet{position:absolute;left:0;right:0;bottom:0;height:300px;background:#fff;z-index:401;border-radius:14px 14px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .25s}
+.region-sheet.show{transform:translateY(0)}
+.rs-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.rs-head .rs-cancel,.rs-head .rs-confirm{font-size:14px;cursor:pointer;padding:4px}
+.rs-head .rs-cancel{color:#999}
+.rs-head .rs-confirm{color:#c9302c;font-weight:500}
+.rs-head .rs-title{font-size:15px;font-weight:500}
+.rs-body{flex:1;display:flex;overflow:hidden}
+.rs-col{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0}
+.rs-col+.rs-col{border-left:.5px solid rgba(0,0,0,.05)}
+.rs-item{text-align:center;font-size:14px;padding:11px 4px;color:#333}
+.rs-item.active{color:#c9302c;font-weight:600;background:rgba(201,48,44,.06)}
+
+/* 二次确认弹窗 */
+.modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-mask.show{opacity:1;pointer-events:auto}
+.modal{width:280px;background:#fff;border-radius:14px;overflow:hidden}
+.modal .m-title{text-align:center;font-size:15px;font-weight:600;padding:18px 16px 6px}
+.modal .m-text{text-align:center;font-size:13px;color:#666;padding:0 20px 18px;line-height:1.6}
+.modal .m-actions{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn{flex:1;text-align:center;padding:13px 0;font-size:15px;cursor:pointer}
+.modal .m-btn.cancel{color:#666;border-right:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn.ok{color:#c9302c;font-weight:500}
 </style>
 </head>
 <body>
@@ -86,6 +117,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <!-- 收货地址 -->
     <div class="section">
       <div class="sec-title">收货地址</div>
+      <div class="field click" onclick="openRegion()">
+        <label>地区</label>
+        <div class="fv" id="region">请选择省 / 市 / 区</div>
+        <span class="fa">›</span>
+      </div>
       <div class="field"><label>联系人</label><input id="contact" type="text" placeholder="请输入收货联系人"></div>
       <div class="field"><label>联系电话</label><input id="phone" type="tel" placeholder="请输入联系电话"></div>
       <div class="field"><label>收货地址</label><input id="address" type="text" placeholder="请输入详细收货地址"></div>
@@ -122,9 +158,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <button class="confirm" onclick="confirmOrder()">确认提交</button>
   </div>
 
+  <!-- 省市区选择弹层 -->
+  <div class="mask" id="regionMask" onclick="closeRegion()"></div>
+  <div class="region-sheet" id="regionSheet">
+    <div class="rs-head">
+      <span class="rs-cancel" onclick="closeRegion()">取消</span>
+      <span class="rs-title">选择地区</span>
+      <span class="rs-confirm" onclick="confirmRegion()">确定</span>
+    </div>
+    <div class="rs-body">
+      <div class="rs-col" id="colProv"></div>
+      <div class="rs-col" id="colCity"></div>
+      <div class="rs-col" id="colArea"></div>
+    </div>
+  </div>
+
+  <!-- 二次确认弹窗 -->
+  <div class="modal-mask" id="confirmMask">
+    <div class="modal">
+      <div class="m-title">确认提交</div>
+      <div class="m-text">确认提交该进货订单？<br>提交后将进入待入库状态</div>
+      <div class="m-actions">
+        <div class="m-btn cancel" onclick="closeConfirm()">取消</div>
+        <div class="m-btn ok" onclick="doSubmit()">确认提交</div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
+<script src="region-data.js"></script>
 <script>
 const raw=localStorage.getItem('mall_order');
 let data=null;
@@ -135,8 +199,7 @@ function render(){
   const itemsEl=document.getElementById('items');
   if(!data||!data.items||data.items.length===0){
     box.innerHTML='<div class="empty">未获取到进货商品<br>请返回进货商城重新选择</div>';
-    document.getElementById('submitbar')&&0;
-    document.querySelector('.submitbar').style.display='none';
+    const sb=document.querySelector('.submitbar');if(sb)sb.style.display='none';
     return;
   }
   itemsEl.innerHTML=data.items.map(it=>`<div class="oi">
@@ -156,11 +219,65 @@ function render(){
   document.getElementById('barAmount').textContent='¥'+data.amount.toLocaleString('en-US');
 }
 
+/* 省市区选择 */
+let selProv='',selCity='',selArea='';
+function openRegion(){
+  const cur=(document.getElementById('region').textContent||'').trim();
+  selProv='';selCity='';selArea='';
+  if(cur&&cur.indexOf('/')<0){
+    const parts=cur.split(' ');
+    if(REGION[parts[0]])selProv=parts[0];
+    if(selProv&&REGION[selProv][parts[1]])selCity=parts[1];
+    if(selProv&&selCity&&REGION[selProv][selCity].indexOf(parts[2])>=0)selArea=parts[2];
+  }
+  if(!selProv)selProv=Object.keys(REGION)[0];
+  if(!selCity)selCity=Object.keys(REGION[selProv])[0];
+  if(!selArea)selArea=REGION[selProv][selCity][0];
+  renderRegion();
+  document.getElementById('regionMask').classList.add('show');
+  document.getElementById('regionSheet').classList.add('show');
+}
+function renderRegion(){
+  const provs=Object.keys(REGION);
+  document.getElementById('colProv').innerHTML=provs.map(p=>`<div class="rs-item ${p===selProv?'active':''}" onclick="pickProv('${p}')">${p}</div>`).join('');
+  const cities=Object.keys(REGION[selProv]);
+  document.getElementById('colCity').innerHTML=cities.map(c=>`<div class="rs-item ${c===selCity?'active':''}" onclick="pickCity('${c}')">${c}</div>`).join('');
+  const areas=REGION[selProv][selCity];
+  document.getElementById('colArea').innerHTML=areas.map(a=>`<div class="rs-item ${a===selArea?'active':''}" onclick="pickArea('${a}')">${a}</div>`).join('');
+  ['colProv','colCity','colArea'].forEach(scrollActive);
+}
+function pickProv(p){selProv=p;selCity=Object.keys(REGION[selProv])[0];selArea=REGION[selProv][selCity][0];renderRegion();}
+function pickCity(c){selCity=c;selArea=REGION[selProv][selCity][0];renderRegion();}
+function pickArea(a){selArea=a;renderRegion();}
+function scrollActive(col){
+  const el=document.getElementById(col);const act=el.querySelector('.active');
+  if(act)el.scrollTop=act.offsetTop-el.clientHeight/2+act.clientHeight/2;
+}
+function closeRegion(){document.getElementById('regionMask').classList.remove('show');document.getElementById('regionSheet').classList.remove('show');}
+function confirmRegion(){
+  const fv=document.getElementById('region');
+  fv.textContent=selProv+' '+selCity+' '+selArea;
+  fv.classList.add('filled');
+  closeRegion();
+}
+
+/* 提交 + 二次确认 */
 function confirmOrder(){
+  const region=(document.getElementById('region').textContent||'').trim();
   const contact=(document.getElementById('contact').value||'').trim();
   const phone=(document.getElementById('phone').value||'').trim();
   const address=(document.getElementById('address').value||'').trim();
+  if(!region||region.indexOf('/')>=0){toast('请选择收货地区');return;}
   if(!contact||!phone||!address){toast('请填写完整的收货信息');return;}
+  document.getElementById('confirmMask').classList.add('show');
+}
+function closeConfirm(){document.getElementById('confirmMask').classList.remove('show');}
+function doSubmit(){
+  closeConfirm();
+  const region=(document.getElementById('region').textContent||'').trim();
+  const contact=(document.getElementById('contact').value||'').trim();
+  const phone=(document.getElementById('phone').value||'').trim();
+  const address=(document.getElementById('address').value||'').trim();
   const remark=(document.getElementById('remark').value||'').trim();
   const d=new Date();const p=n=>(''+n).padStart(2,'0');
   const order={
@@ -170,7 +287,7 @@ function confirmOrder(){
     items:data.items,
     name:data.items[0].name+(data.items.length>1?(' 等'+data.items.length+'款'):''),
     total:data.total,amount:data.amount,
-    contact:contact,phone:phone,address:address,remark:remark
+    region:region,contact:contact,phone:phone,address:address,remark:remark
   };
   let list=[];
   try{list=JSON.parse(localStorage.getItem('mall_orders')||'[]');}catch(e){list=[];}
@@ -178,6 +295,7 @@ function confirmOrder(){
   list.unshift(order);
   localStorage.setItem('mall_orders',JSON.stringify(list));
   localStorage.removeItem('mall_order');
+  localStorage.setItem('orders_return','dealer.html');
   toast('提交成功，等待入库');
   setTimeout(()=>{location.href='purchase-orders.html';},900);
 }
