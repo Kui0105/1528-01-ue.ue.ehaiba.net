@@ -24,46 +24,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .c-left{font-size:11px;letter-spacing:-1px}
 .capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.content{flex:1;overflow:hidden;-webkit-overflow-scrolling:touch;position:relative}
 
 /* full screen poster */
-.poster-bg{position:absolute;inset:0;background:linear-gradient(155deg,#c9302c,#e8645f);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#fff;text-align:center;padding:80px 20px 20px;z-index:0}
-.poster-bg .brand{font-size:40px;font-weight:600;letter-spacing:8px;margin-bottom:12px}
-.poster-bg .slogan{font-size:16px;opacity:.92;letter-spacing:1px}
+.poster-bg{position:absolute;inset:0;background:linear-gradient(155deg,#c9302c,#e8645f);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;color:#fff;text-align:center;padding:55px 20px 20px;z-index:0}
+.poster-bg .brand{font-size:34px;font-weight:600;letter-spacing:6px;margin-bottom:8px}
+.poster-bg .slogan{font-size:14px;opacity:.92;letter-spacing:1px}
+
+/* preview toggles: float on poster, not in flow */
+.prev{position:absolute;top:150px;left:16px;right:16px;display:flex;gap:8px;z-index:3}
+.prev button{flex:1;height:30px;border:.5px solid rgba(0,0,0,.12);background:#fff;border-radius:6px;font-size:12px;color:#666;cursor:pointer}
+.prev button.on{background:#c9302c;color:#fff;border-color:#c9302c}
 
 /* result area */
-.result-wrap{padding:0 16px 20px;padding-top:270px;position:relative;z-index:2}
-.prev{display:flex;gap:8px;margin-bottom:14px}
-.prev button{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);background:#fff;border-radius:8px;font-size:13px;color:#666;cursor:pointer}
-.prev button.on{background:#c9302c;color:#fff;border-color:#c9302c}
-.rc{background:#fff;border-radius:14px;padding:28px 20px;text-align:center;border:.5px solid rgba(0,0,0,.08);margin-bottom:14px}
-.ric{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.result-wrap{padding:0 16px 16px;padding-top:220px;position:relative;z-index:2}
+.rc{background:#fff;border-radius:12px;padding:18px 16px;text-align:center;border:.5px solid rgba(0,0,0,.08);margin-bottom:12px}
+.ric{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:26px}
 .ric.win{background:#fdf6e8}.ric.points{background:#eaf4ed}.ric.no{background:#f5f6f7}
-.rt{font-size:19px;font-weight:500;margin-bottom:4px}
-.rs{font-size:13px;color:#999;margin-bottom:20px}
-.pd2{background:#f5f6f7;border-radius:10px;padding:16px;margin-bottom:20px}
-.pd2 .pv{font-size:26px;font-weight:500;color:#c9302c}
-.pd2 .pl{font-size:12px;color:#999;margin-top:2px}
-.ra{display:flex;gap:10px;margin-bottom:20px}
-.ra button{flex:1;height:40px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;border:none}
-.ra .p{background:#c9302c;color:#fff}
-.ra .o{background:#fff;color:#666;border:.5px solid rgba(0,0,0,.12)!important}
-.sec{background:#fff;border-radius:14px;padding:16px 18px;margin-bottom:12px;border:.5px solid rgba(0,0,0,.08)}
-.sec h3{font-size:14px;font-weight:500;margin-bottom:10px}
-.sec p,.sec li{font-size:12px;color:#666;line-height:1.8}
-.sec ul{padding-left:16px}
-.mall-card .mall-btn{display:block;margin-top:14px;text-align:center;padding:11px 4px;border-radius:10px;font-size:13px;font-weight:500;color:#fff;background:#c9302c;text-decoration:none;border:.5px solid #c9302c}
-.mini{display:flex;gap:10px;align-items:center}
-.mini .t{width:48px;height:48px;border-radius:8px;background:#e2e4e7;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:10px}
-.mini .info h4{font-size:13px;font-weight:500}
-.mini .info p{font-size:11px;color:#999}
-.fn{background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 16px;display:flex;gap:8px}
-.fn a{flex:1;text-align:center;padding:10px 4px;border-radius:8px;font-size:12px;color:#666;text-decoration:none;border:.5px solid rgba(0,0,0,.10);display:block}
-.fn a.on{color:#c9302c;border-color:#c9302c;background:#fcebeb}
-.meta-line{display:flex;justify-content:center;gap:16px;margin-bottom:18px;font-size:12px;color:#999}
-.meta-line span{display:flex;align-items:center;gap:4px}
-.link-row{display:flex;justify-content:center;gap:24px;margin-top:14px}
-.rule-link{font-size:12px;color:#c9302c;text-decoration:underline;cursor:pointer}
+.rt{font-size:17px;font-weight:500;margin-bottom:2px}
+.rs{font-size:12px;color:#999;margin-bottom:14px}
+.pd2{background:#f5f6f7;border-radius:8px;padding:10px;margin-bottom:14px}
+.pd2 .pv{font-size:20px;font-weight:500;color:#c9302c}
+.pd2 .pl{font-size:11px;color:#999;margin-top:2px}
+.link-row{display:flex;justify-content:center;gap:20px;margin-top:10px}
+.rule-link{font-size:11px;color:#c9302c;text-decoration:underline;cursor:pointer}
+.sec{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:.5px solid rgba(0,0,0,.08)}
+.sec h3{font-size:13px;font-weight:500;margin-bottom:8px}
+.mall-card .mall-btn{display:block;margin-top:10px;text-align:center;padding:9px 4px;border-radius:8px;font-size:12px;font-weight:500;color:#fff;background:#c9302c;text-decoration:none;border:.5px solid #c9302c}
+.mini{display:flex;gap:8px;align-items:center}
+.mini .t{width:40px;height:40px;border-radius:8px;background:#e2e4e7;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:10px}
+.mini .info h4{font-size:12px;font-weight:500}
+.mini .info p{font-size:10px;color:#999}
 .toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
@@ -83,13 +74,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <div class="slogan">扫码赢好礼 · 惊喜即刻开启</div>
     </div>
 
-    <div class="result-wrap">
-      <div class="prev">
-        <button id="pv-win" onclick="setMode('win')">中奖态</button>
-        <button id="pv-points" onclick="setMode('points')">积分态</button>
-        <button id="pv-no" onclick="setMode('no')">未中奖态</button>
-      </div>
+    <div class="prev">
+      <button id="pv-win" onclick="setMode('win')">中奖态</button>
+      <button id="pv-points" onclick="setMode('points')">积分态</button>
+      <button id="pv-no" onclick="setMode('no')">未中奖态</button>
+    </div>
 
+    <div class="result-wrap">
       <div class="rc" id="rc"></div>
 
       <div class="sec mall-card">
@@ -106,23 +97,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 const params=new URLSearchParams(location.search);
 let chosen=null;
 try{chosen=JSON.parse(decodeURIComponent(params.get('p')||'null'));}catch(e){}
-const scanTime=params.get('t')?new Date(parseInt(params.get('t'),10)):new Date();
-const nickname=params.get('n')||'微信用户_abc123';
 let mode=null;
 if(chosen){
   mode = chosen.type==='product'?'win' : chosen.type==='points'?'points' : 'no';
-}
-function fmtTime(d){
-  const pad=n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 function setMode(m){
   mode=m;render();
   document.querySelectorAll('.prev button').forEach(b=>b.classList.remove('on'));
   document.getElementById('pv-'+m).classList.add('on');
 }
-function metaHtml(){
-  return `<div class="meta-line"><span>🕐 ${fmtTime(scanTime)}</span><span>👤 ${nickname}</span></div><div class="link-row"><a class="rule-link" href="rule.html">活动规则 &gt;</a><a class="rule-link" href="records.html">中奖记录 &gt;</a></div>`;
+function linksHtml(){
+  return `<div class="link-row"><a class="rule-link" href="rule.html">活动规则 &gt;</a><a class="rule-link" href="records.html">中奖记录 &gt;</a></div>`;
 }
 function render(){
   const rc=document.getElementById('rc');
@@ -130,16 +115,16 @@ function render(){
   if(mode==='win'){
     html=`<div class="ric win">🎁</div><div class="rt">恭喜中奖！</div><div class="rs">加5元兑换50元迈极炫槟榔一包</div>
     <div class="pd2"><div class="pv">加5元兑换</div><div class="pl">50元迈极炫槟榔一包 · 线下门店兑换</div></div>
-    ${metaHtml()}`;
+    ${linksHtml()}`;
   }else if(mode==='points'){
     const pts=chosen&&chosen.name.match(/\d+/)?chosen.name.match(/\d+/)[0]:'50';
     html=`<div class="ric points">⭐</div><div class="rt">获得积分</div><div class="rs">积分已发放至您的账户</div>
     <div class="pd2"><div class="pv">+${pts} 积分</div><div class="pl">前往积分商城兑换好礼</div></div>
-    ${metaHtml()}`;
+    ${linksHtml()}`;
   }else{
     html=`<div class="ric no">😊</div><div class="rt">谢谢参与</div><div class="rs">很遗憾本次未中奖，再接再厉</div>
-    <div class="pd2"><div class="pv" style="color:#666;font-size:18px">下次一定中</div><div class="pl">继续购买扫码参与吧</div></div>
-    ${metaHtml()}`;
+    <div class="pd2"><div class="pv" style="color:#666;font-size:16px">下次一定中</div><div class="pl">继续购买扫码参与吧</div></div>
+    ${linksHtml()}`;
   }
   rc.innerHTML=html;
 }
