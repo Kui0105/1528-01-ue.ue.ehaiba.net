@@ -41,6 +41,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .info{display:flex;font-size:13px;color:#666;line-height:1.8}
 .card .info .col{flex:1}
 .card .info .label{color:#999}
+.card .oi{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:.5px solid rgba(0,0,0,.05);font-size:13px;color:#333}
+.card .oi .pic{width:34px;height:34px;border-radius:8px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card .oi .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .oi .u{color:#999;font-size:12px;margin:0 4px}
+.card .oi .q{color:#666}
+.card .sum{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:.5px solid rgba(0,0,0,.08);font-size:13px;color:#666}
+.card .sum .amt{color:#c9302c;font-weight:600}
+.card .addr{font-size:12px;color:#999;margin-top:8px;line-height:1.6}
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
 </style>
 </head>
@@ -60,32 +68,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 </div>
 
 <script>
-const orders=[
+const defaultOrders=[
   {no:'JH202608260012',name:'迈极炫槟榔 50元装',qty:300,price:42,date:'2026-08-26',status:'done'},
   {no:'JH202608240008',name:'迈极炫槟榔 100元装',qty:120,price:86,date:'2026-08-24',status:'done'},
   {no:'JH202608220005',name:'迈极炫槟榔 20元装',qty:500,price:16,date:'2026-08-22',status:'pending'},
   {no:'JH202608180003',name:'迈极炫礼盒套装',qty:60,price:96,date:'2026-08-18',status:'done'},
-  {no:'JH202608150001',name:'迈极炫槟榔 100元装',qty:80,price:86,date:'2026-08-15',status:'cancel'}
+  {no:'JH202608150001',name:'迈极炫礼盒套装',qty:80,price:86,date:'2026-08-15',status:'cancel'}
 ];
+let orders=defaultOrders.slice();
+try{
+  const extra=JSON.parse(localStorage.getItem('mall_orders')||'[]');
+  if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
+}catch(e){}
 const statusMap={done:'已入库',pending:'待入库',cancel:'已取消'};
 function render(kw){
   kw=(kw||'').trim().toLowerCase();
   const box=document.getElementById('content');
-  let list=orders.filter(o=>(o.no+o.name).toLowerCase().includes(kw));
+  let list=orders.filter(o=>(o.no+(o.name||'')).toLowerCase().includes(kw));
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的进货订单</div>';return;}
-  box.innerHTML=list.map(o=>`
-    <div class="card">
+  box.innerHTML=list.map(o=>{
+    let body;
+    if(o.items&&o.items.length){
+      const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">¥${it.price} ×${it.qty}</span></div>`).join('');
+      const addr=o.address?`<div class="addr">收货人：${o.contact||'-'} · ${o.phone||'-'}<br>地址：${o.address}${o.remark?(' · 备注：'+o.remark):''}</div>`:'';
+      body=`<div class="info" style="display:block">${rows}</div><div class="sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>${addr}`;
+    }else{
+      body=`<div class="info"><div class="col"><span class="label">数量</span> ${o.qty} 件</div><div class="col"><span class="label">单价</span> ¥${o.price}</div><div class="col"><span class="label">日期</span> ${o.date}</div></div>`;
+    }
+    return `<div class="card">
       <div class="top">
         <span class="no">${o.no}</span>
         <span class="status ${o.status}">${statusMap[o.status]}</span>
       </div>
       <div class="name">${o.name}</div>
-      <div class="info">
-        <div class="col"><span class="label">数量</span> ${o.qty} 件</div>
-        <div class="col"><span class="label">单价</span> ¥${o.price}</div>
-        <div class="col"><span class="label">日期</span> ${o.date}</div>
-      </div>
-    </div>`).join('');
+      ${body}
+    </div>`;
+  }).join('');
 }
 function doSearch(){render(document.getElementById('kw').value);}
 render();

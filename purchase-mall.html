@@ -152,12 +152,11 @@ function updateCart(){
   document.getElementById('submitBtn').disabled=total===0;
 }
 function submitCart(){
-  let total=0,amount=0;
-  products.forEach(p=>{const q=cart[p.id]||0;total+=q;amount+=q*p.price;});
-  if(total===0)return;
-  Object.keys(cart).forEach(k=>delete cart[k]);
-  render();updateCart();
-  toast('进货单已提交，共 '+total+' 件 · ¥'+amount.toLocaleString('en-US'));
+  const items=[];let total=0,amount=0;
+  products.forEach(p=>{const q=cart[p.id]||0;if(q>0){items.push({id:p.id,emoji:p.emoji,name:p.name,unit:p.unit,price:p.price,qty:q});total+=q;amount+=q*p.price;}});
+  if(items.length===0)return;
+  localStorage.setItem('mall_order',JSON.stringify({items:items,total:total,amount:amount}));
+  location.href='purchase-order-create.html';
 }
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
