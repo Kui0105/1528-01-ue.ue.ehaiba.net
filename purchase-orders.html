@@ -42,9 +42,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status.pending{color:#d48806;background:rgba(212,136,6,.1)}
 .card .status.reject{color:#999;background:#f2f2f2}
 .card .name{font-size:15px;font-weight:500;margin-bottom:8px}
-.card .info{display:flex;font-size:13px;color:#666;line-height:1.8}
-.card .info .col{flex:1}
-.card .info .label{color:#999}
 .card .oi{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:.5px solid rgba(0,0,0,.05);font-size:13px;color:#333}
 .card .oi .pic{width:34px;height:34px;border-radius:8px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .card .oi .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -113,17 +110,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const defaultOrders=[
-  {no:'JH202608260012',name:'迈极炫槟榔 50元装',qty:300,price:42,date:'2026-08-26',status:'done'},
-  {no:'JH202608240008',name:'迈极炫槟榔 100元装',qty:120,price:86,date:'2026-08-24',status:'done'},
-  {no:'JH202608220005',name:'迈极炫槟榔 20元装',qty:500,price:16,date:'2026-08-22',status:'pending'},
-  {no:'JH202608180003',name:'迈极炫礼盒套装',qty:60,price:96,date:'2026-08-18',status:'done'},
-  {no:'JH202608150001',name:'迈极炫礼盒套装',qty:80,price:86,date:'2026-08-15',status:'reject'}
+  {no:'JH202608260012',date:'2026-08-26',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 50元装',unit:'15颗/袋',price:42,qty:300}]},
+  {no:'JH202608240008',date:'2026-08-24',status:'done',items:[{emoji:'📦',name:'迈极炫槟榔 100元装',unit:'10颗/袋',price:86,qty:120}]},
+  {no:'JH202608220005',date:'2026-08-22',status:'pending',items:[{emoji:'📦',name:'迈极炫槟榔 20元装',unit:'15颗/袋',price:16,qty:500}]},
+  {no:'JH202608180003',date:'2026-08-18',status:'done',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:96,qty:60}]},
+  {no:'JH202608150001',date:'2026-08-15',status:'reject',items:[{emoji:'🛍️',name:'迈极炫礼盒套装',unit:'1盒/套',price:86,qty:80}]}
 ];
 let orders=defaultOrders.slice();
 try{
   const extra=JSON.parse(localStorage.getItem('mall_orders')||'[]');
   if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
 }catch(e){}
+/* 归一化：保证每条订单都有 items/total/amount/name，统一卡片样式 */
+orders.forEach(o=>{
+  if(o.items&&o.items.length){
+    o.total=o.items.reduce((s,it)=>s+(it.qty||0),0);
+    o.amount=o.items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0);
+    o.name=o.items[0].name+(o.items.length>1?(' 等'+o.items.length+'款'):'');
+  }
+});
 const statusMap={done:'已入库',pending:'待入库',reject:'已驳回'};
 let orderMap={};
 orders.forEach(o=>orderMap[o.no]=o);
@@ -140,20 +145,15 @@ function render(kw){
   });
   if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的进货订单</div>';return;}
   box.innerHTML=list.map(o=>{
-    let body;
-    if(o.items&&o.items.length){
-      const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">¥${it.price} ×${it.qty}</span></div>`).join('');
-      body=`<div class="info" style="display:block">${rows}</div><div class="sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>`;
-    }else{
-      body=`<div class="info"><div class="col"><span class="label">数量</span> ${o.qty} 件</div><div class="col"><span class="label">单价</span> ¥${o.price}</div><div class="col"><span class="label">日期</span> ${o.date}</div></div>`;
-    }
+    const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">¥${it.price} ×${it.qty}</span></div>`).join('');
     return `<div class="card">
       <div class="top">
         <span class="no">${o.no}</span>
         <span class="status ${o.status}">${statusMap[o.status]}</span>
       </div>
       <div class="name">${o.name}</div>
-      ${body}
+      ${rows}
+      <div class="sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>
       <div class="detail-btn" onclick="openDetail('${o.no}')">查看详情 ›</div>
     </div>`;
   }).join('');
@@ -168,14 +168,8 @@ function openDetail(no){
   html+=`<div class="m-row"><span class="k">状态</span><span>${statusMap[o.status]||o.status}</span></div>`;
   if(o.date)html+=`<div class="m-row"><span class="k">日期</span><span>${o.date}</span></div>`;
   html+=`<div class="m-sec">商品清单</div>`;
-  if(o.items&&o.items.length){
-    html+=o.items.map(it=>`<div class="m-item"><span class="pic">${it.emoji}</span><span class="n">${it.name}<br><span class="sub">${it.unit} · ¥${it.price}</span></span><span class="q">×${it.qty}</span></div>`).join('');
-    html+=`<div class="m-sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>`;
-  }else{
-    html+=`<div class="m-row"><span class="k">商品</span><span>${o.name||'-'}</span></div>`;
-    html+=`<div class="m-row"><span class="k">数量</span><span>${o.qty} 件</span></div>`;
-    html+=`<div class="m-row"><span class="k">单价</span><span>¥${o.price}</span></div>`;
-  }
+  html+=o.items.map(it=>`<div class="m-item"><span class="pic">${it.emoji}</span><span class="n">${it.name}<br><span class="sub">${it.unit} · ¥${it.price}</span></span><span class="q">×${it.qty}</span></div>`).join('');
+  html+=`<div class="m-sum"><span>合计 ${o.total} 件</span><span class="amt">¥${o.amount.toLocaleString('en-US')}</span></div>`;
   if(o.region||o.contact||o.phone||o.address||o.remark){
     html+=`<div class="m-sec">收货信息</div>`;
     if(o.region)html+=`<div class="m-row"><span class="k">地区</span><span>${o.region}</span></div>`;
