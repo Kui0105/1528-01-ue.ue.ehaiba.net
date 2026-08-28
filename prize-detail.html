@@ -38,8 +38,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status{font-size:12px;padding:2px 8px;border-radius:4px;flex-shrink:0}
 .card .status.done{color:#2a9d4f;background:rgba(42,157,79,.1)}
 .card .status.pending{color:#d48806;background:rgba(212,136,6,.1)}
-.card .status.claimed{color:#c9302c;background:rgba(201,48,44,.1)}
-.card .status.finish{color:#666;background:rgba(0,0,0,.06)}
 .card .rows{font-size:13px;color:#333;line-height:1.9}
 .card .rows .row{display:flex;justify-content:space-between}
 .card .rows .row .label{color:#999}
@@ -64,7 +62,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <option value="all">全部状态</option>
       <option value="pending">待核销</option>
       <option value="done">已核销</option>
-      <option value="claimed">已兑奖</option>
     </select>
   </div>
   <div class="content" id="content"></div>
@@ -74,9 +71,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 const PRIZE='加5元兑换50元迈极炫槟榔一包';
 const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏'];
 const stores=['湘江东路店','五一广场店','岳麓山北店','万家丽店','高铁南站店','黄兴路店'];
-const statusList=['pending','done','claimed'];
-const statusMap={done:'已核销',pending:'待核销',claimed:'已兑奖'};
-const statusClass={done:'done',pending:'pending',claimed:'claimed'};
+const statusList=['pending','done'];
+const statusMap={done:'已核销',pending:'待核销'};
+const statusClass={done:'done',pending:'pending'};
 
 function genDate(seed){
   const base=new Date('2026-08-20').getTime();
