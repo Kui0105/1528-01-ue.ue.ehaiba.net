@@ -31,6 +31,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .form-row:last-child{margin-bottom:0}
 .form-row label{display:block;font-size:13px;color:#666;margin-bottom:8px}
 .form-row input{width:100%;height:42px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff}
+.form-row select{width:100%;height:42px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 .form-row input:focus{border-color:#c9302c}
 .form-row input::placeholder{color:#bbb}
 .form-row textarea{width:100%;height:80px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;resize:none}
@@ -96,6 +97,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
         <label>联系电话</label>
         <input type="text" id="phone" placeholder="请输入联系电话">
       </div>
+      <div class="form-row" id="salesmanRow" style="display:none">
+        <label>负责业务员</label>
+        <select id="salesman"></select>
+      </div>
       <div class="form-row">
         <label>门店地址</label>
         <div class="addr-row">
@@ -119,7 +124,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 <script>
 const params=new URLSearchParams(location.search);
 const editId=params.get('id');
-const demoStore={id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',avatar:''};
+const fromParam=params.get('from');
+const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏'];
+const demoStore={id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',salesman:'陈静',avatar:''};
 let status='open';
 let avatar='';
 
@@ -135,6 +142,16 @@ if(editId){
   document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.toggle('active',o.dataset.val===status));
   if(avatar)updateAvatar(avatar);
 }
+
+function initSalesman(){
+  if(fromParam!=='dealer')return;
+  const row=document.getElementById('salesmanRow');
+  const sel=document.getElementById('salesman');
+  sel.innerHTML='<option value="">请选择负责业务员</option>'+salesmen.map(n=>`<option value="${n}">${n}</option>`).join('');
+  row.style.display='block';
+  if(editId && demoStore.salesman)sel.value=demoStore.salesman;
+}
+initSalesman();
 
 function setStatus(el,val){
   status=val;
@@ -161,6 +178,10 @@ function save(){
   const name=document.getElementById('name').value.trim();
   const addr=document.getElementById('addr').value.trim();
   if(!name||!addr){toast('请填写门店名称和地址');return;}
+  if(fromParam==='dealer'){
+    const sm=document.getElementById('salesman').value;
+    if(!sm){toast('请选择负责业务员');return;}
+  }
   toast(editId?'门店修改成功':'门店新增成功');
   setTimeout(()=>history.back(),800);
 }

@@ -106,6 +106,8 @@ const stores=[
   {id:3,name:'岳麓山北店',status:'stop',addr:'长沙市岳麓区麓山南路 66 号',contact:'张店长',phone:'137****5522',salesman:'赵磊',avatar:'',stock:0}
 ];
 let delId=null;
+const fromParam=new URLSearchParams(location.search).get('from');
+const fromSuffix=fromParam?('?from='+fromParam):'';
 
 function render(){
   const kw=document.getElementById('searchInput').value.trim().toLowerCase();
@@ -147,8 +149,8 @@ function render(){
 
 function filterStore(){render();}
 
-function addStore(){location.href='store-edit.html';}
-function editStore(id){location.href='store-edit.html?id='+id;}
+function addStore(){location.href='store-edit.html'+fromSuffix;}
+function editStore(id){location.href='store-edit.html?id='+id+(fromParam?('&from='+fromParam):'');}
 function goStock(id){location.href='store-stock.html?id='+id;}
 function goLogs(id){location.href='store-logs.html?id='+id;}
 
