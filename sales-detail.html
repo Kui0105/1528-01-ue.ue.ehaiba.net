@@ -38,9 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .status{font-size:12px;padding:2px 8px;border-radius:4px}
 .card .status.activated{color:#2a9d4f;background:rgba(42,157,79,.1)}
 .card .status.pending_prize{color:#e6a23c;background:rgba(230,162,60,.1)}
-.card .status.prized{color:#2a7fd4;background:rgba(42,127,212,.1)}
 .card .status.pending_verify{color:#9b59b6;background:rgba(155,89,182,.1)}
-.card .status.verified{color:#17a2b8;background:rgba(23,162,184,.1)}
 .card .status.completed{color:#666;background:#f2f2f2}
 .card .rows{font-size:13px;color:#666;line-height:1.9}
 .card .rows .row{display:flex}
@@ -68,9 +66,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <option value="">全部状态</option>
       <option value="activated">已激活</option>
       <option value="pending_prize">待兑奖</option>
-      <option value="prized">已兑奖</option>
       <option value="pending_verify">待核销</option>
-      <option value="verified">已核销</option>
       <option value="completed">已完成</option>
     </select>
   </div>
@@ -82,13 +78,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 const products=['迈极炫槟榔 20元装','迈极炫槟榔 50元装','迈极炫槟榔 100元装','迈极炫礼盒套装'];
 const stores=['湘江东路店','五一广场店','岳麓山北店','万家丽店','德思勤店'];
 const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏'];
-const statuses=['activated','pending_prize','prized','pending_verify','verified','completed'];
+const statuses=['activated','pending_prize','pending_verify','completed'];
 const statusMap={
   activated:'已激活',
   pending_prize:'待兑奖',
-  prized:'已兑奖',
   pending_verify:'待核销',
-  verified:'已核销',
   completed:'已完成'
 };
 const sales=Array.from({length:18},(_,i)=>{
