@@ -99,7 +99,7 @@ const sales=Array.from({length:18},(_,i)=>{
   const store=stores[i%stores.length];
   const salesman=salesmen[i%salesmen.length];
   const status=statuses[i%statuses.length];
-  const total=((i*37)%50)+50;
+  const total='第'+(i+1)+'批次';
   const date=new Date(2026,7,27-Math.floor(i/3));
   const valid=new Date(date.getFullYear()+1,date.getMonth(),date.getDate());
   const ctime=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')} ${String(8+i%12).padStart(2,'0')}:${String((i*7)%60).padStart(2,'0')}`;
@@ -125,7 +125,7 @@ function render(kw,status){
         <span class="status ${s.status}">${statusMap[s.status]}</span>
       </div>
       <div class="rows">
-        <div class="row"><span class="k">总批次</span><span class="v">${s.total} 件</span></div>
+        <div class="row"><span class="k">总批次</span><span class="v">${s.total}</span></div>
         <div class="row"><span class="k">奖码ID</span><span class="v">${s.code}</span></div>
         <div class="row"><span class="k">有效期</span><span class="v">${s.valid}</span></div>
         <div class="row"><span class="k">销售门店</span><span class="v">${s.store}</span></div>
