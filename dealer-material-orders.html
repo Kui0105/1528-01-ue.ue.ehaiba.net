@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 物料订单</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+.search{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.search input{flex:1;height:36px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;background:#fafafa;outline:none}
+.search input:focus{border-color:#c9302c}
+.search button{width:60px;height:36px;background:#c9302c;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+
+.tabs{display:flex;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs .tab{flex:1;text-align:center;padding:11px 10px;font-size:13px;color:#666;cursor:pointer;position:relative;white-space:nowrap;flex-shrink:0}
+.tabs .tab.active{color:#c9302c;font-weight:500}
+.tabs .tab.active::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:24px;height:2px;background:#c9302c;border-radius:2px}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.card .no{font-size:13px;color:#999}
+.card .status{font-size:12px;padding:2px 8px;border-radius:4px}
+.card .status.waitShip{color:#d48806;background:rgba(212,136,6,.1)}
+.card .status.waitReceive{color:#1677ff;background:rgba(22,119,255,.1)}
+.card .status.done{color:#2a9d4f;background:rgba(42,157,79,.1)}
+.card .status.closed{color:#999;background:#f2f2f2}
+.card .oi{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:.5px solid rgba(0,0,0,.05);font-size:13px;color:#333}
+.card .oi .pic{width:34px;height:34px;border-radius:8px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card .oi .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .oi .u{color:#999;font-size:12px;margin:0 4px}
+.card .oi .q{color:#666}
+.card .sum{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:.5px solid rgba(0,0,0,.08);font-size:13px;color:#666}
+.card .sum .amt{color:#c9302c;font-weight:600}
+.card .date{font-size:12px;color:#999;margin-top:6px}
+.card .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.card .acts .btn{height:32px;padding:0 16px;border-radius:999px;font-size:13px;cursor:pointer;background:#fff;border:.5px solid rgba(0,0,0,.15);color:#666}
+.card .acts .btn.primary{background:#c9302c;border-color:#c9302c;color:#fff}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+
+/* 确认弹层 */
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:150;display:none;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.dialog{width:78%;max-width:300px;background:#fff;border-radius:14px;padding:22px 20px 0;overflow:hidden}
+.dialog .t{font-size:15px;font-weight:500;text-align:center;margin-bottom:10px}
+.dialog .m{font-size:13px;color:#666;text-align:center;line-height:1.6;margin-bottom:18px}
+.dialog .ops{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.dialog .ops div{flex:1;text-align:center;padding:12px 0;font-size:14px;cursor:pointer}
+.dialog .ops .cancel{color:#999;border-right:.5px solid rgba(0,0,0,.08)}
+.dialog .ops .ok{color:#c9302c;font-weight:500}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">物料订单</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="search">
+    <input type="text" id="kw" placeholder="搜索订单号/物料名称" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">搜索</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-s="all" onclick="setTab('all')">全部</div>
+    <div class="tab" data-s="waitShip" onclick="setTab('waitShip')">待发货</div>
+    <div class="tab" data-s="waitReceive" onclick="setTab('waitReceive')">待收货</div>
+    <div class="tab" data-s="done" onclick="setTab('done')">已完成</div>
+    <div class="tab" data-s="closed" onclick="setTab('closed')">已关闭</div>
+  </div>
+
+  <div class="content" id="content"></div>
+
+  <div class="modal" id="modal" onclick="closeModal(event)">
+    <div class="dialog" onclick="event.stopPropagation()">
+      <div class="t" id="dlgTitle">提示</div>
+      <div class="m" id="dlgMsg"></div>
+      <div class="ops">
+        <div class="cancel" onclick="hideModal()">取消</div>
+        <div class="ok" id="dlgOk">确定</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const defaultOrders=[
+  {no:'WL20260902001',date:'2026-09-02',status:'waitShip',items:[{emoji:'🪧',name:'迈极炫陈列展架',unit:'个',points:1200,qty:2}]},
+  {no:'WL20260829003',date:'2026-08-29',status:'waitReceive',items:[{emoji:'🛍️',name:'促销礼品袋',unit:'个',points:80,qty:5}]},
+  {no:'WL20260825007',date:'2026-08-25',status:'waitReceive',items:[{emoji:'🖼️',name:'门店灯箱海报',unit:'张',points:860,qty:2}]},
+  {no:'WL20260821005',date:'2026-08-21',status:'done',items:[{emoji:'🥤',name:'定制保温杯',unit:'个',points:980,qty:2}]},
+  {no:'WL20260817002',date:'2026-08-17',status:'done',items:[{emoji:'📄',name:'产品宣传单页',unit:'份',points:120,qty:5}]},
+  {no:'WL20260812004',date:'2026-08-12',status:'closed',items:[{emoji:'📢',name:'促销立牌（大）',unit:'个',points:420,qty:1}]}
+];
+let orders=defaultOrders.slice();
+try{
+  const extra=JSON.parse(localStorage.getItem('dealer_material_orders')||'[]');
+  if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
+}catch(e){}
+/* 归一化 */
+orders.forEach(o=>{
+  o.total=o.items.reduce((s,it)=>s+(it.qty||0),0);
+  o.points=o.items.reduce((s,it)=>s+(it.qty||0)*(it.points||0),0);
+  o.name=o.items[0].name+(o.items.length>1?(' 等'+o.items.length+'款'):'');
+});
+/* 状态持久化（确认收货 / 取消订单） */
+try{
+  const ov=JSON.parse(localStorage.getItem('dealer_material_order_status')||'{}');
+  orders.forEach(o=>{ if(ov[o.no]) o.status=ov[o.no]; });
+}catch(e){}
+const statusMap={waitShip:'待发货',waitReceive:'待收货',done:'已完成',closed:'已关闭'};
+let curTab='all';
+
+function setTab(s){curTab=s;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.s===s));render();}
+function render(kw){
+  kw=(kw||'').trim().toLowerCase();
+  const box=document.getElementById('content');
+  const list=orders.filter(o=>{
+    if(curTab!=='all'&&o.status!==curTab)return false;
+    if(kw&&!(o.no+(o.name||'')).toLowerCase().includes(kw))return false;
+    return true;
+  });
+  if(list.length===0){box.innerHTML='<div class="empty">未找到匹配的物料订单</div>';return;}
+  box.innerHTML=list.map(o=>{
+    const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">${it.points} 积分 ×${it.qty}</span></div>`).join('');
+    let acts='';
+    if(o.status==='waitReceive')acts='<div class="acts"><div class="btn primary" onclick="confirmReceive(\''+o.no+'\')">确认收货</div></div>';
+    else if(o.status==='waitShip')acts='<div class="acts"><div class="btn" onclick="confirmCancel(\''+o.no+'\')">取消订单</div></div>';
+    else acts='<div class="acts"><div class="btn" onclick="location.href=\'dealer-material-mall.html\'">再次兑换</div></div>';
+    return `<div class="card">
+      <div class="top">
+        <span class="no">${o.no}</span>
+        <span class="status ${o.status}">${statusMap[o.status]}</span>
+      </div>
+      ${rows}
+      <div class="sum"><span>合计 ${o.total} 件</span><span class="amt">${o.points.toLocaleString('en-US')} 积分</span></div>
+      <div class="date">下单时间 ${o.date}</div>
+      ${acts}
+    </div>`;
+  }).join('');
+}
+function doSearch(){render(document.getElementById('kw').value);}
+
+let pendingAction=null;
+function showModal(title,msg,cb){
+  document.getElementById('dlgTitle').textContent=title;
+  document.getElementById('dlgMsg').textContent=msg;
+  pendingAction=cb;
+  document.getElementById('modal').classList.add('show');
+}
+function hideModal(){document.getElementById('modal').classList.remove('show');pendingAction=null;}
+function closeModal(e){if(e.target.id==='modal')hideModal();}
+document.getElementById('dlgOk').onclick=function(){if(pendingAction)pendingAction();hideModal();};
+
+function saveStatus(no,status){
+  try{
+    const ov=JSON.parse(localStorage.getItem('dealer_material_order_status')||'{}');
+    ov[no]=status;
+    localStorage.setItem('dealer_material_order_status',JSON.stringify(ov));
+  }catch(e){}
+  const o=orders.find(x=>x.no===no);
+  if(o)o.status=status;
+  render(document.getElementById('kw').value);
+}
+function confirmReceive(no){
+  showModal('确认收货','确认已收到该物料订单的物料？',()=>{saveStatus(no,'done');toast('已确认收货，订单变更为已完成');});
+}
+function confirmCancel(no){
+  showModal('取消订单','取消后订单将变更为已关闭，消耗的积分将退回',()=>{saveStatus(no,'closed');toast('订单已取消，变更为已关闭');});
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 物料商城</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:76px}
+
+/* 积分余额条 */
+.point-bar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#fff5f5,#fff);border:.5px solid rgba(201,48,44,.15);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.point-bar .lb{font-size:13px;color:#666}
+.point-bar .val{font-size:20px;font-weight:600;color:#c9302c}
+.point-bar .val small{font-size:12px;font-weight:400;margin-left:3px}
+
+.search{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.search-box{display:flex;align-items:center;gap:8px;flex:1;background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:999px;padding:0 14px;height:38px;min-width:0}
+.search-box svg{width:16px;height:16px;color:#999;flex-shrink:0}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333;min-width:0}
+.search-btn{height:38px;padding:0 18px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer;flex-shrink:0}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{flex-shrink:0;font-size:13px;padding:6px 14px;border:.5px solid rgba(0,0,0,.1);border-radius:999px;background:#fff;color:#666;cursor:pointer}
+.tab.active{background:#c9302c;border-color:#c9302c;color:#fff}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.card .pic{width:54px;height:54px;border-radius:10px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.card .main{flex:1;min-width:0}
+.card .name{font-size:14px;font-weight:500;margin-bottom:6px}
+.card .meta{display:flex;align-items:baseline;gap:8px}
+.card .price{font-size:15px;color:#c9302c;font-weight:600}
+.card .unit{font-size:12px;color:#999}
+.card .stock{font-size:11px;color:#999;margin-top:4px}
+.stepper{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.stepper .btn{width:28px;height:28px;border-radius:50%;border:.5px solid rgba(0,0,0,.15);background:#fff;color:#333;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.stepper .btn.plus{background:#c9302c;border-color:#c9302c;color:#fff}
+.stepper .qty{-moz-appearance:textfield;appearance:textfield;width:44px;text-align:center;font-size:14px;font-weight:500;border:none;background:transparent;outline:none}
+.stepper .qty::-webkit-outer-spin-button,.stepper .qty::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stepper .qty.zero{color:#bbb}
+
+.empty{text-align:center;padding:60px 24px;color:#999;font-size:13px}
+
+.cartbar{position:absolute;left:0;right:0;bottom:0;height:60px;background:#fff;border-top:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 14px;gap:12px;z-index:50}
+.cartbar .info{flex:1}
+.cartbar .info .t{font-size:14px;font-weight:500}
+.cartbar .info .s{font-size:12px;color:#999;margin-top:2px}
+.cartbar .submit{height:40px;padding:0 22px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.cartbar .submit:disabled{background:#ddd;cursor:not-allowed}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">物料商城</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content">
+    <div class="point-bar">
+      <div class="lb">可用积分</div>
+      <div class="val">12,860<small>分</small></div>
+    </div>
+
+    <div class="search">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
+        <input id="kw" type="text" placeholder="搜索物料名称" onkeydown="if(event.key==='Enter')doSearch()">
+      </div>
+      <button class="search-btn" onclick="doSearch()">搜索</button>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-cat="all" onclick="setCat('all')">全部</div>
+      <div class="tab" data-cat="display" onclick="setCat('display')">陈列物料</div>
+      <div class="tab" data-cat="promo" onclick="setCat('promo')">宣传物料</div>
+      <div class="tab" data-cat="gift" onclick="setCat('gift')">促销礼品</div>
+    </div>
+
+    <div id="list"></div>
+  </div>
+
+  <div class="cartbar">
+    <div class="info">
+      <div class="t">已选 <span id="cartTotal">0</span> 件</div>
+      <div class="s" id="cartPoints">合计 0 积分</div>
+    </div>
+    <button class="submit" id="submitBtn" disabled onclick="submitExchange()">立即兑换</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const materials=[
+  {id:1,name:'迈极炫陈列展架',cat:'display',points:1200,unit:'个',stock:36,emoji:'🪧'},
+  {id:2,name:'门店灯箱海报',cat:'display',points:860,unit:'张',stock:120,emoji:'🖼️'},
+  {id:3,name:'产品宣传单页',cat:'promo',points:120,unit:'份',stock:800,emoji:'📄'},
+  {id:4,name:'促销立牌（大）',cat:'promo',points:420,unit:'个',stock:64,emoji:'📢'},
+  {id:5,name:'品牌定制雨伞',cat:'gift',points:1500,unit:'把',stock:50,emoji:'☂️'},
+  {id:6,name:'定制保温杯',cat:'gift',points:980,unit:'个',stock:88,emoji:'🥤'},
+  {id:7,name:'门店价签套装',cat:'display',points:260,unit:'套',stock:200,emoji:'🏷️'},
+  {id:8,name:'促销礼品袋',cat:'gift',points:80,unit:'个',stock:500,emoji:'🛍️'}
+];
+const cart={};
+let curCat='all';
+
+function doSearch(){render();}
+function setCat(c){curCat=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===c));render();}
+function render(){
+  const kw=(document.getElementById('kw').value||'').trim();
+  const list=document.getElementById('list');
+  const items=materials.filter(m=>(curCat==='all'||m.cat===curCat)&&m.name.includes(kw));
+  if(items.length===0){list.innerHTML='<div class="empty">未找到相关物料</div>';return;}
+  list.innerHTML=items.map(m=>{
+    const q=cart[m.id]||0;
+    return `<div class="card">
+      <div class="pic">${m.emoji}</div>
+      <div class="main">
+        <div class="name">${m.name}</div>
+        <div class="meta">
+          <span class="price">${m.points.toLocaleString('en-US')} 积分</span>
+          <span class="unit">${m.unit}</span>
+        </div>
+        <div class="stock">库存 ${m.stock} ${m.unit}</div>
+      </div>
+      <div class="stepper">
+        <div class="btn" onclick="change(${m.id},-1)">−</div>
+        <input class="qty ${q===0?'zero':''}" id="qty_${m.id}" type="number" min="0" inputmode="numeric" value="${q}" oninput="onQtyInput(${m.id})" onblur="onQtyBlur(${m.id})">
+        <div class="btn plus" onclick="change(${m.id},1)">+</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function change(id,delta){
+  const cur=cart[id]||0;
+  const next=Math.max(0,cur+delta);
+  const m=materials.find(x=>x.id===id);
+  if(m&&next>m.stock){toast('库存不足，最多 '+m.stock+' '+m.unit);return;}
+  if(next===0)delete cart[id];else cart[id]=next;
+  const inp=document.getElementById('qty_'+id);
+  if(inp){inp.value=next;inp.classList.toggle('zero',next===0);}
+  updateCart();
+}
+function onQtyInput(id){
+  const inp=document.getElementById('qty_'+id);
+  let v=parseInt(inp.value,10);
+  if(isNaN(v)||v<0)v=0;
+  const m=materials.find(x=>x.id===id);
+  if(m&&v>m.stock){v=m.stock;toast('库存不足，最多 '+m.stock+' '+m.unit);}
+  if(v===0)delete cart[id];else cart[id]=v;
+  inp.classList.toggle('zero',v===0);
+  updateCart();
+}
+function onQtyBlur(id){
+  const inp=document.getElementById('qty_'+id);
+  let v=parseInt(inp.value,10);
+  if(isNaN(v)||v<0)v=0;
+  inp.value=v;
+}
+function updateCart(){
+  let total=0,points=0;
+  materials.forEach(m=>{const q=cart[m.id]||0;total+=q;points+=q*m.points;});
+  document.getElementById('cartTotal').textContent=total;
+  document.getElementById('cartPoints').textContent='合计 '+points.toLocaleString('en-US')+' 积分';
+  document.getElementById('submitBtn').disabled=total===0;
+}
+function submitExchange(){
+  const items=[];let total=0,points=0;
+  materials.forEach(m=>{const q=cart[m.id]||0;if(q>0){items.push({emoji:m.emoji,name:m.name,unit:m.unit,points:m.points,qty:q});total+=q;points+=q*m.points;}});
+  if(items.length===0)return;
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const no='WL'+now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds());
+  const order={no:no,date:`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`,status:'waitShip',items:items,total:total,points:points};
+  try{
+    const list=JSON.parse(localStorage.getItem('dealer_material_orders')||'[]');
+    list.unshift(order);
+    localStorage.setItem('dealer_material_orders',JSON.stringify(list));
+  }catch(e){}
+  toast('兑换成功，已生成物料订单');
+  setTimeout(()=>{location.href='dealer-material-orders.html';},900);
+}
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();updateCart();
+</script>
+</body>
+</html>

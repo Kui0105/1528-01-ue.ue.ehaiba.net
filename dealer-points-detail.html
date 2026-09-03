@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 积分明细</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+/* 余额头 */
+.balance{background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;padding:18px 16px;flex-shrink:0}
+.balance .lb{font-size:13px;opacity:.9;margin-bottom:6px}
+.balance .num{font-size:28px;font-weight:600}
+.balance .num small{font-size:13px;font-weight:400;margin-left:4px}
+
+.tabs{display:flex;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.tabs .tab{flex:1;text-align:center;padding:11px 0;font-size:13px;color:#666;cursor:pointer;position:relative}
+.tabs .tab.active{color:#c9302c;font-weight:500}
+.tabs .tab.active::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:24px;height:2px;background:#c9302c;border-radius:2px}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.rec{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.rec .left{flex:1;min-width:0}
+.rec .reason{font-size:14px;font-weight:500;margin-bottom:6px;line-height:1.4}
+.rec .time{font-size:12px;color:#999}
+.rec .right{text-align:right;flex-shrink:0}
+.rec .delta{font-size:16px;font-weight:600;margin-bottom:4px}
+.rec .delta.minus{color:#2a9d4f}
+.rec .delta.plus{color:#c9302c}
+.rec .bal{font-size:11px;color:#999}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">积分明细</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="balance">
+    <div class="lb">当前积分余额</div>
+    <div class="num">12,860<small>分</small></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-t="all" onclick="setTab('all')">全部</div>
+    <div class="tab" data-t="in" onclick="setTab('in')">收入</div>
+    <div class="tab" data-t="out" onclick="setTab('out')">支出</div>
+  </div>
+
+  <div class="content" id="content"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* 积分变动明细（按时间倒序，余额已按变动前后推算一致）
+   变动原因三类：兑换物料商品扣减积分 / 平台充值增加积分 / 订单取消退回积分 */
+const records=[
+  {time:'2026-09-02 15:20',type:'deduct',reason:'兑换「迈极炫陈列展架」物料商品扣减积分',delta:-1200,balance:12860},
+  {time:'2026-09-01 10:05',type:'income',reason:'平台充值增加积分',delta:5000,balance:14060},
+  {time:'2026-08-31 16:42',type:'refund',reason:'订单取消退回积分',delta:420,balance:9060},
+  {time:'2026-08-29 11:18',type:'deduct',reason:'兑换「促销礼品袋」物料商品扣减积分',delta:-400,balance:8640},
+  {time:'2026-08-27 09:30',type:'income',reason:'平台充值增加积分',delta:3000,balance:9040},
+  {time:'2026-08-25 14:55',type:'deduct',reason:'兑换「门店灯箱海报」物料商品扣减积分',delta:-1720,balance:6040},
+  {time:'2026-08-23 17:02',type:'refund',reason:'订单取消退回积分',delta:260,balance:7760},
+  {time:'2026-08-21 10:12',type:'deduct',reason:'兑换「定制保温杯」物料商品扣减积分',delta:-1960,balance:7500},
+  {time:'2026-08-19 15:48',type:'income',reason:'平台充值增加积分',delta:4000,balance:9460},
+  {time:'2026-08-17 13:26',type:'deduct',reason:'兑换「产品宣传单页」物料商品扣减积分',delta:-600,balance:5460}
+];
+let curTab='all';
+
+function setTab(t){curTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));render();}
+function fmt(n){return (n>0?'+':'')+n.toLocaleString('en-US');}
+function render(){
+  const box=document.getElementById('content');
+  const list=records.filter(r=>{
+    if(curTab==='in')return r.delta>0;
+    if(curTab==='out')return r.delta<0;
+    return true;
+  });
+  if(list.length===0){box.innerHTML='<div class="empty">暂无积分变动记录</div>';return;}
+  box.innerHTML=list.map(r=>`
+    <div class="rec">
+      <div class="left">
+        <div class="reason">${r.reason}</div>
+        <div class="time">${r.time}</div>
+      </div>
+      <div class="right">
+        <div class="delta ${r.delta<0?'minus':'plus'}">${fmt(r.delta)}</div>
+        <div class="bal">余额 ${r.balance.toLocaleString('en-US')}</div>
+      </div>
+    </div>`).join('');
+}
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>
