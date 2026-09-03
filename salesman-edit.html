@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 业务员编辑</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+.form-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:16px;margin-bottom:12px}
+.form-row{margin-bottom:16px}
+.form-row:last-child{margin-bottom:0}
+.form-row label{display:block;font-size:13px;color:#666;margin-bottom:8px}
+.form-row input{width:100%;height:42px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff}
+.form-row input:focus{border-color:#c9302c}
+.form-row input::placeholder{color:#bbb}
+.status-row{display:flex;gap:12px}
+.status-row .opt{flex:1;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.12);border-radius:8px;font-size:14px;color:#666;cursor:pointer;background:#fff}
+.status-row .opt.active{border-color:#c9302c;color:#c9302c;background:rgba(201,48,44,.04)}
+
+.footer{padding:12px;background:#fff;border-top:.5px solid rgba(0,0,0,.08)}
+.footer button{width:100%;height:44px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:15px;cursor:pointer}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title" id="pageTitle">新增业务员</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content">
+    <div class="form-card">
+      <div class="form-row">
+        <label>业务员姓名</label>
+        <input type="text" id="name" placeholder="请输入业务员姓名">
+      </div>
+      <div class="form-row">
+        <label>联系电话</label>
+        <input type="tel" id="phone" placeholder="请输入联系电话">
+      </div>
+      <div class="form-row">
+        <label>状态</label>
+        <div class="status-row">
+          <div class="opt active" data-val="on" onclick="setStatus(this,'on')">在职</div>
+          <div class="opt" data-val="off" onclick="setStatus(this,'off')">离职</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button onclick="save()">保存</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const editId=params.get('id');
+const initName=params.get('name')||'';
+const initPhone=params.get('phone')||'';
+const initStatus=params.get('status')||'on';
+let status=initStatus;
+
+if(editId){
+  document.getElementById('pageTitle').textContent='编辑业务员';
+  document.getElementById('name').value=decodeURIComponent(initName);
+  document.getElementById('phone').value=decodeURIComponent(initPhone);
+}
+document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.toggle('active',o.dataset.val===status));
+
+function setStatus(el,val){
+  status=val;
+  document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function save(){
+  const name=document.getElementById('name').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  if(!name){toast('请输入业务员姓名');return;}
+  if(!phone){toast('请输入联系电话');return;}
+
+  if(editId){
+    try{
+      const map=JSON.parse(localStorage.getItem('salesman_edits')||'{}');
+      map[editId]={name:name,phone:phone,status:status};
+      localStorage.setItem('salesman_edits',JSON.stringify(map));
+    }catch(e){}
+    toast('业务员信息已更新');
+  }else{
+    try{
+      const added=JSON.parse(localStorage.getItem('salesman_added')||'[]');
+      const d=new Date();const p=n=>String(n).padStart(2,'0');
+      added.unshift({
+        id:Date.now(),
+        name:name,
+        phone:phone,
+        status:status,
+        stores:0,
+        ctime:d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())
+      });
+      localStorage.setItem('salesman_added',JSON.stringify(added));
+    }catch(e){}
+    toast('业务员新增成功');
+  }
+  setTimeout(()=>history.back(),800);
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
+</script>
+</body>
+</html>

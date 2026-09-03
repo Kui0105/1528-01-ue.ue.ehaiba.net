@@ -46,8 +46,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .stat-card{padding:14px}
 .stat-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .stat-title{font-size:15px;font-weight:500}
+.hd-filters{display:flex;gap:6px}
 .filter-trigger{display:flex;align-items:center;gap:4px;font-size:13px;color:#666;cursor:pointer;padding:4px 8px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;background:#fff}
 .filter-trigger svg{width:14px;height:14px}
+.filter-trigger span{max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stat-grid{display:flex}
 .stat-item{flex:1;text-align:center;position:relative}
 .stat-item:not(:last-child)::after{content:'';position:absolute;right:0;top:8px;bottom:8px;width:.5px;background:rgba(0,0,0,.08)}
@@ -143,11 +145,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     <div class="card stat-card">
       <div class="stat-hd">
         <div class="stat-title">数据统计</div>
-        <div class="filter-trigger" onclick="showFilterSheet()">
-          <span id="filterText">全部</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
+        <div class="hd-filters">
+          <div class="filter-trigger" onclick="showStoreSheet()">
+            <span id="storeText">全部门店</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <div class="filter-trigger" onclick="showFilterSheet()">
+            <span id="filterText">全部</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
         </div>
       </div>
       <div class="stat-grid">
@@ -253,6 +263,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
     </div>
   </div>
 
+  <div class="modal" id="storeModal" onclick="closeStoreModal(event)">
+    <div class="filter-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-hd">
+        <span>选择门店</span>
+        <span class="close" onclick="hideStoreSheet()">×</span>
+      </div>
+      <div class="sheet-list" id="storeList"></div>
+    </div>
+  </div>
+
   <div class="modal" id="scanModal" onclick="closeScanModal(event)">
     <div class="scan-panel" onclick="event.stopPropagation()">
       <div class="scan-hd">
@@ -288,19 +308,57 @@ const statData={
   week:{put:856,verify:612,store:96},
   month:{put:3520,verify:2846,store:128}
 };
+/* 门店筛选 */
+const stores=[
+  {id:0,name:'全部门店',factor:1},
+  {id:1,name:'五一广场店',factor:0.4},
+  {id:2,name:'芙蓉广场店',factor:0.28},
+  {id:3,name:'万家丽店',factor:0.2},
+  {id:4,name:'河西步步高店',factor:0.15},
+  {id:5,name:'星沙通程店',factor:0.1}
+];
+let curStoreId=0;
+let curTimeType='all';
+
+function applyStats(){
+  const d=statData[curTimeType];
+  const s=stores.find(x=>x.id===curStoreId)||stores[0];
+  document.getElementById('statPut').textContent=Math.round(d.put*s.factor);
+  document.getElementById('statVerify').textContent=Math.round(d.verify*s.factor);
+  document.getElementById('statStore').textContent=curStoreId===0?d.store:1;
+}
+
 function showFilterSheet(){document.getElementById('filterModal').classList.add('show');}
 function hideFilterSheet(){document.getElementById('filterModal').classList.remove('show');}
 function closeFilterModal(e){if(e.target.id==='filterModal')hideFilterSheet();}
 function selectFilter(type,label){
-  document.querySelectorAll('.sheet-item').forEach(t=>t.classList.remove('active'));
-  document.querySelector(`.sheet-item[data-type="${type}"]`).classList.add('active');
+  document.querySelectorAll('#filterModal .sheet-item').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`#filterModal .sheet-item[data-type="${type}"]`).classList.add('active');
   document.getElementById('filterText').textContent=label;
-  const d=statData[type];
-  document.getElementById('statPut').textContent=d.put;
-  document.getElementById('statVerify').textContent=d.verify;
-  document.getElementById('statStore').textContent=d.store;
+  curTimeType=type;
   hideFilterSheet();
+  applyStats();
 }
+
+function showStoreSheet(){
+  document.getElementById('storeList').innerHTML=stores.map(s=>`
+    <div class="sheet-item ${s.id===curStoreId?'active':''}" data-sid="${s.id}" onclick="selectStore(${s.id})">
+      <span>${s.name}</span>
+      <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>`).join('');
+  document.getElementById('storeModal').classList.add('show');
+}
+function hideStoreSheet(){document.getElementById('storeModal').classList.remove('show');}
+function closeStoreModal(e){if(e.target.id==='storeModal')hideStoreSheet();}
+function selectStore(id){
+  const s=stores.find(x=>x.id===id);
+  if(!s)return;
+  curStoreId=id;
+  document.getElementById('storeText').textContent=s.name;
+  hideStoreSheet();
+  applyStats();
+}
+applyStats();
 
 let scanMode='';
 const PRIZE_NAME='加5元兑换50元迈极炫槟榔一包';

@@ -117,6 +117,19 @@ let salesmen=[
   {id:5,name:'周强',phone:'135****1144',stores:4,status:'on',ctime:'2024-08-12'},
   {id:6,name:'吴敏',phone:'134****2288',stores:6,status:'off',ctime:'2023-09-18'}
 ];
+/* 合并本地编辑与新增的业务员（编辑页写入 localStorage） */
+try{
+  const edits=JSON.parse(localStorage.getItem('salesman_edits')||'{}');
+  salesmen.forEach(s=>{
+    const e=edits[s.id];
+    if(e){s.name=e.name||s.name;s.phone=e.phone||s.phone;s.status=e.status||s.status;}
+  });
+}catch(e){}
+try{
+  const added=JSON.parse(localStorage.getItem('salesman_added')||'[]');
+  if(Array.isArray(added)&&added.length)salesmen=added.concat(salesmen);
+}catch(e){}
+
 const filterMult={today:1,yesterday:0.85,week:5.5,month:22};
 let delId=null;
 let curKw='';
@@ -172,8 +185,12 @@ function setFilter(type){
 }
 
 function doSearch(){render(document.getElementById('kw').value);}
-function addSalesman(){toast('新增业务员（演示）');}
-function editSalesman(id){toast('编辑业务员：'+salesmen.find(s=>s.id===id).name);}
+function addSalesman(){location.href='salesman-edit.html';}
+function editSalesman(id){
+  const s=salesmen.find(x=>x.id===id);
+  if(!s)return;
+  location.href='salesman-edit.html?id='+id+'&name='+encodeURIComponent(s.name)+'&phone='+encodeURIComponent(s.phone)+'&status='+s.status;
+}
 
 function delSalesman(id){
   const s=salesmen.find(x=>x.id===id);

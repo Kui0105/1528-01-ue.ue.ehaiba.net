@@ -46,6 +46,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .avatar-upload img{width:100%;height:100%;object-fit:cover;border-radius:8px}
 .avatar-upload svg{width:32px;height:32px;color:#ccc}
 
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photo-item{position:relative;aspect-ratio:1/1;border-radius:8px;overflow:hidden;border:.5px solid rgba(0,0,0,.08);background:#fafafa}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-item .del{position:absolute;right:4px;top:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.photo-add{aspect-ratio:1/1;border:1px dashed rgba(0,0,0,.15);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#999;font-size:12px;cursor:pointer;background:#fafafa}
+.photo-add .plus{font-size:22px;line-height:1;color:#ccc}
+.photo-tip{font-size:11px;color:#aaa;margin-top:8px}
+
 .status-row{display:flex;gap:12px}
 .status-row .opt{flex:1;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.12);border-radius:8px;font-size:14px;color:#666;cursor:pointer;background:#fff}
 .status-row .opt.active{border-color:#c9302c;color:#c9302c;background:rgba(201,48,44,.04)}
@@ -112,6 +120,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
         </div>
       </div>
     </div>
+
+    <div class="form-card">
+      <div class="form-row">
+        <label>货架照片</label>
+        <div class="photo-grid" id="photoGrid"></div>
+        <div class="photo-tip">最多上传 6 张，用于记录门店货架陈列情况</div>
+      </div>
+    </div>
   </div>
 
   <div class="footer">
@@ -129,6 +145,7 @@ const salesmen=['刘伟','陈静','赵磊','孙倩','周强','吴敏'];
 const demoStore={id:2,name:'五一广场店',status:'open',addr:'长沙市芙蓉区五一大道 168 号',contact:'王店长',phone:'139****7766',salesman:'陈静',avatar:''};
 let status='open';
 let avatar='';
+let photos=[];
 
 if(editId){
   document.getElementById('pageTitle').textContent='编辑门店';
@@ -139,9 +156,29 @@ if(editId){
   document.getElementById('addr').value=s.addr;
   status=s.status;
   avatar=s.avatar;
+  photos=['https://placehold.co/200x200/f0f0f0/999?text=%E8%B4%A7%E6%9E%B6'];
   document.querySelectorAll('.status-row .opt').forEach(o=>o.classList.toggle('active',o.dataset.val===status));
   if(avatar)updateAvatar(avatar);
 }
+
+/* 货架照片 */
+function renderPhotos(){
+  const grid=document.getElementById('photoGrid');
+  const items=photos.map((src,i)=>`<div class="photo-item"><img src="${src}" alt=""><span class="del" onclick="delPhoto(${i})">×</span></div>`).join('');
+  const addBtn=photos.length>=6?'':'<div class="photo-add" onclick="addPhoto()"><span class="plus">＋</span><span>添加照片</span></div>';
+  grid.innerHTML=items+addBtn;
+}
+function addPhoto(){
+  if(photos.length>=6){toast('最多上传 6 张货架照片');return;}
+  const n=photos.length+1;
+  photos.push('https://placehold.co/200x200/f0f0f0/999?text=%E8%B4%A7%E6%9E%B6'+n);
+  renderPhotos();
+}
+function delPhoto(i){
+  photos.splice(i,1);
+  renderPhotos();
+}
+renderPhotos();
 
 function initSalesman(){
   if(fromParam!=='dealer')return;
