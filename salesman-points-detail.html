@@ -30,15 +30,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .balance .lb{font-size:13px;opacity:.9;margin-bottom:6px}
 .balance .num{font-size:28px;font-weight:600}
 .balance .num small{font-size:13px;font-weight:400;margin-left:4px}
-.balance .tip{font-size:12px;opacity:.85;margin-top:8px}
 
-.tabs{display:flex;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
-.tabs .tab{flex:1;text-align:center;padding:11px 0;font-size:13px;color:#666;cursor:pointer;position:relative}
-.tabs .tab.active{color:#c9302c;font-weight:500}
-.tabs .tab.active::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:24px;height:2px;background:#c9302c;border-radius:2px}
-
-.summary{padding:10px 16px;font-size:12px;color:#999;background:#f5f6f7}
+.filter-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.summary{font-size:12px;color:#999;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .summary b{color:#c9302c;font-weight:600}
+.filter-trigger{display:flex;align-items:center;gap:4px;font-size:13px;color:#666;cursor:pointer;padding:4px 8px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;background:#fff;flex-shrink:0}
+.filter-trigger svg{width:14px;height:14px}
+
+/* 时间段选择弹层 */
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:150;display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex}
+.filter-sheet{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px 0;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.sheet-hd span{font-size:15px;font-weight:500}
+.sheet-hd .close{font-size:22px;color:#999;cursor:pointer;width:30px;text-align:right}
+.sheet-item{padding:14px 16px;font-size:14px;color:#333;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.sheet-item:not(:last-child){border-bottom:.5px solid rgba(0,0,0,.06)}
+.sheet-item.active{color:#c9302c}
+.sheet-item .check{width:18px;height:18px;display:none}
+.sheet-item.active .check{display:block}
 
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 12px}
 
@@ -67,19 +78,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   <div class="balance">
     <div class="lb">当前积分余额</div>
     <div class="num">8,600<small>分</small></div>
-    <div class="tip">业务员积分仅可由管理端发放，不可用于消耗</div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" data-t="all" onclick="setTab('all')">全部</div>
-    <div class="tab" data-t="today" onclick="setTab('today')">今日</div>
-    <div class="tab" data-t="yesterday" onclick="setTab('yesterday')">昨日</div>
-    <div class="tab" data-t="week" onclick="setTab('week')">本周</div>
-    <div class="tab" data-t="month" onclick="setTab('month')">本月</div>
+  <div class="filter-bar">
+    <div class="summary" id="summary"></div>
+    <div class="filter-trigger" onclick="showFilterSheet()">
+      <span id="filterText">全部</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </div>
   </div>
 
-  <div class="summary" id="summary"></div>
   <div class="content" id="content"></div>
+
+  <!-- 时间段选择弹层 -->
+  <div class="modal" id="filterModal" onclick="closeFilterModal(event)">
+    <div class="filter-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-hd">
+        <span>选择时间段</span>
+        <span class="close" onclick="hideFilterSheet()">×</span>
+      </div>
+      <div class="sheet-list">
+        <div class="sheet-item active" data-t="all" onclick="selectFilter('all','全部')">
+          <span>全部</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-t="today" onclick="selectFilter('today','今日')">
+          <span>今日</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-t="yesterday" onclick="selectFilter('yesterday','昨日')">
+          <span>昨日</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-t="week" onclick="selectFilter('week','本周')">
+          <span>本周</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="sheet-item" data-t="month" onclick="selectFilter('month','本月')">
+          <span>本月</span>
+          <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9302c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 </div>
 
@@ -106,7 +150,17 @@ function dateFor(offset){
   d.setDate(d.getDate()-offset);
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 }
-function setTab(t){curTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));render();}
+function showFilterSheet(){document.getElementById('filterModal').classList.add('show');}
+function hideFilterSheet(){document.getElementById('filterModal').classList.remove('show');}
+function closeFilterModal(e){if(e.target.id==='filterModal')hideFilterSheet();}
+function selectFilter(type,label){
+  curTab=type;
+  document.querySelectorAll('.sheet-item').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.sheet-item[data-t="${type}"]`).classList.add('active');
+  document.getElementById('filterText').textContent=label;
+  hideFilterSheet();
+  render();
+}
 function match(r){
   if(curTab==='today')return r.offset===0;
   if(curTab==='yesterday')return r.offset===1;
