@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 物料订单提交</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:76px}
+.section{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:4px 14px;margin-bottom:12px}
+.sec-title{font-size:13px;color:#999;font-weight:500;padding:12px 0 6px}
+.field{display:flex;align-items:center;min-height:48px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.field:last-child{border-bottom:none}
+.field label{width:78px;font-size:14px;color:#333;flex-shrink:0}
+.field input,.field textarea{flex:1;border:none;outline:none;font-size:14px;background:transparent;color:#333;resize:none;padding:12px 0;line-height:1.5;min-width:0}
+.field textarea{font-family:inherit}
+.field input::placeholder,.field textarea::placeholder{color:#bbb}
+.field.click{cursor:pointer}
+.field .fv{flex:1;font-size:14px;color:#bbb;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field .fv.filled{color:#333}
+.field .fa{color:#ccc;font-size:18px;margin-left:4px;flex-shrink:0}
+
+.block{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.block .bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.block .bh .t{font-size:14px;font-weight:500}
+.block .bh .c{font-size:13px;color:#999}
+.oi{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.oi:last-child{border-bottom:none}
+.oi .pic{width:46px;height:46px;border-radius:10px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.oi .main{flex:1;min-width:0}
+.oi .name{font-size:14px;font-weight:500;margin-bottom:4px}
+.oi .sub{font-size:12px;color:#999}
+.oi .right{text-align:right;flex-shrink:0}
+.oi .price{font-size:14px;color:#c9302c;font-weight:600}
+.oi .qty{font-size:12px;color:#999;margin-top:4px}
+
+.row-list{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:4px 14px;margin-bottom:12px}
+.row-list .row{display:flex;justify-content:space-between;align-items:center;min-height:44px;border-bottom:.5px solid rgba(0,0,0,.06)}
+.row-list .row:last-child{border-bottom:none}
+.row-list .row .label{font-size:14px;color:#666}
+.row-list .row .value{font-size:14px;color:#333}
+.row-list .row .value.red{color:#c9302c;font-weight:600}
+
+.remark{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.remark .rh{font-size:14px;font-weight:500;margin-bottom:8px}
+.remark textarea{width:100%;border:none;outline:none;font-size:14px;color:#333;resize:none;line-height:1.5;font-family:inherit}
+.remark textarea::placeholder{color:#bbb}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+
+.submitbar{position:absolute;left:0;right:0;bottom:0;height:60px;background:#fff;border-top:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;padding:0 14px;gap:12px;z-index:50}
+.submitbar .info{flex:1}
+.submitbar .info .t{font-size:13px;color:#666}
+.submitbar .info .s{font-size:15px;color:#c9302c;font-weight:600;margin-top:2px}
+.submitbar .confirm{height:40px;padding:0 26px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
+.submitbar .confirm:active{opacity:.9}
+
+/* 省市区选择弹层 */
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s}
+.mask.show{opacity:1;pointer-events:auto}
+.region-sheet{position:absolute;left:0;right:0;bottom:0;height:300px;background:#fff;z-index:401;border-radius:14px 14px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .25s}
+.region-sheet.show{transform:translateY(0)}
+.rs-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.rs-head .rs-cancel,.rs-head .rs-confirm{font-size:14px;cursor:pointer;padding:4px}
+.rs-head .rs-cancel{color:#999}
+.rs-head .rs-confirm{color:#c9302c;font-weight:500}
+.rs-head .rs-title{font-size:15px;font-weight:500}
+.rs-body{flex:1;display:flex;overflow:hidden}
+.rs-col{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0}
+.rs-col+.rs-col{border-left:.5px solid rgba(0,0,0,.05)}
+.rs-item{text-align:center;font-size:14px;padding:11px 4px;color:#333}
+.rs-item.active{color:#c9302c;font-weight:600;background:rgba(201,48,44,.06)}
+
+/* 二次确认弹窗 */
+.modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-mask.show{opacity:1;pointer-events:auto}
+.modal{width:280px;background:#fff;border-radius:14px;overflow:hidden}
+.modal .m-title{text-align:center;font-size:15px;font-weight:600;padding:18px 16px 6px}
+.modal .m-text{text-align:center;font-size:13px;color:#666;padding:0 20px 18px;line-height:1.6}
+.modal .m-actions{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn{flex:1;text-align:center;padding:13px 0;font-size:15px;cursor:pointer}
+.modal .m-btn.cancel{color:#666;border-right:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn.ok{color:#c9302c;font-weight:500}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:600;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">物料订单提交</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content" id="content">
+    <!-- 收货信息 -->
+    <div class="section">
+      <div class="sec-title">收货信息</div>
+      <div class="field"><label>联系人</label><input id="contact" type="text" placeholder="请输入收货联系人"></div>
+      <div class="field"><label>联系电话</label><input id="phone" type="tel" placeholder="请输入联系电话"></div>
+      <div class="field click" onclick="openRegion()">
+        <label>地区</label>
+        <div class="fv" id="region">请选择省 / 市 / 区</div>
+        <span class="fa">›</span>
+      </div>
+      <div class="field"><label>详细地址</label><input id="address" type="text" placeholder="请输入详细收货地址"></div>
+    </div>
+
+    <!-- 商品信息 -->
+    <div class="block">
+      <div class="bh"><span class="t">商品信息</span><span class="c" id="itemCount">共 0 款</span></div>
+      <div id="items"></div>
+    </div>
+
+    <!-- 费用 -->
+    <div class="row-list">
+      <div class="row"><span class="label">合计数量</span><span class="value" id="totalQty">0 件</span></div>
+      <div class="row"><span class="label">兑换积分</span><span class="value red" id="totalPoints">0</span></div>
+      <div class="row"><span class="label">配送费用</span><span class="value" id="freightVal">¥6.00</span></div>
+      <div class="row"><span class="label">支付金额</span><span class="value red" id="payVal">¥6.00</span></div>
+    </div>
+
+    <!-- 订单备注 -->
+    <div class="remark">
+      <div class="rh">订单备注</div>
+      <textarea id="remark" rows="3" placeholder="选填，可填写特殊要求、配送时间等"></textarea>
+    </div>
+  </div>
+
+  <div class="submitbar">
+    <div class="info">
+      <div class="t">兑换积分 <span id="barPoints">0</span> · 运费 ¥6.00</div>
+      <div class="s" id="barPay">应付 ¥6.00</div>
+    </div>
+    <button class="confirm" onclick="confirmOrder()">提交订单</button>
+  </div>
+
+  <!-- 省市区选择弹层 -->
+  <div class="mask" id="regionMask" onclick="closeRegion()"></div>
+  <div class="region-sheet" id="regionSheet">
+    <div class="rs-head">
+      <span class="rs-cancel" onclick="closeRegion()">取消</span>
+      <span class="rs-title">选择地区</span>
+      <span class="rs-confirm" onclick="confirmRegion()">确定</span>
+    </div>
+    <div class="rs-body">
+      <div class="rs-col" id="colProv"></div>
+      <div class="rs-col" id="colCity"></div>
+      <div class="rs-col" id="colArea"></div>
+    </div>
+  </div>
+
+  <!-- 二次确认弹窗 -->
+  <div class="modal-mask" id="confirmMask">
+    <div class="modal">
+      <div class="m-title">确认提交</div>
+      <div class="m-text">确认提交该物料订单？<br>提交后订单进入待付款状态</div>
+      <div class="m-actions">
+        <div class="m-btn cancel" onclick="closeConfirm()">取消</div>
+        <div class="m-btn ok" onclick="doSubmit()">确认提交</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="region-data.js"></script>
+<script>
+const FREIGHT=6.00;
+let data=null;
+try{data=JSON.parse(localStorage.getItem('dealer_material_order')||'null');}catch(e){data=null;}
+
+function render(){
+  if(!data||!data.items||data.items.length===0){
+    document.getElementById('content').innerHTML='<div class="empty">未获取到兑换物料<br>请返回物料商城重新选择</div>';
+    const sb=document.querySelector('.submitbar');if(sb)sb.style.display='none';
+    return;
+  }
+  document.getElementById('items').innerHTML=data.items.map(it=>`<div class="oi">
+    <div class="pic">${it.emoji}</div>
+    <div class="main">
+      <div class="name">${it.name}</div>
+      <div class="sub">${it.unit} · ${it.points} 积分</div>
+    </div>
+    <div class="right">
+      <div class="price">${(it.points*it.qty).toLocaleString('en-US')} 积分</div>
+      <div class="qty">×${it.qty}</div>
+    </div>
+  </div>`).join('');
+  document.getElementById('itemCount').textContent='共 '+data.items.length+' 款';
+  document.getElementById('totalQty').textContent=data.total+' 件';
+  document.getElementById('totalPoints').textContent=data.points.toLocaleString('en-US');
+  document.getElementById('barPoints').textContent=data.points.toLocaleString('en-US');
+}
+
+/* 省市区选择 */
+let selProv='',selCity='',selArea='';
+function openRegion(){
+  const cur=(document.getElementById('region').textContent||'').trim();
+  selProv='';selCity='';selArea='';
+  if(cur&&cur.indexOf('/')<0){
+    const parts=cur.split(' ');
+    if(REGION[parts[0]])selProv=parts[0];
+    if(selProv&&REGION[selProv][parts[1]])selCity=parts[1];
+    if(selProv&&selCity&&REGION[selProv][selCity].indexOf(parts[2])>=0)selArea=parts[2];
+  }
+  if(!selProv)selProv=Object.keys(REGION)[0];
+  if(!selCity)selCity=Object.keys(REGION[selProv])[0];
+  if(!selArea)selArea=REGION[selProv][selCity][0];
+  renderRegion();
+  document.getElementById('regionMask').classList.add('show');
+  document.getElementById('regionSheet').classList.add('show');
+}
+function renderRegion(){
+  const provs=Object.keys(REGION);
+  document.getElementById('colProv').innerHTML=provs.map(p=>`<div class="rs-item ${p===selProv?'active':''}" onclick="pickProv('${p}')">${p}</div>`).join('');
+  const cities=Object.keys(REGION[selProv]);
+  document.getElementById('colCity').innerHTML=cities.map(c=>`<div class="rs-item ${c===selCity?'active':''}" onclick="pickCity('${c}')">${c}</div>`).join('');
+  const areas=REGION[selProv][selCity];
+  document.getElementById('colArea').innerHTML=areas.map(a=>`<div class="rs-item ${a===selArea?'active':''}" onclick="pickArea('${a}')">${a}</div>`).join('');
+  ['colProv','colCity','colArea'].forEach(scrollActive);
+}
+function pickProv(p){selProv=p;selCity=Object.keys(REGION[selProv])[0];selArea=REGION[selProv][selCity][0];renderRegion();}
+function pickCity(c){selCity=c;selArea=REGION[selProv][selCity][0];renderRegion();}
+function pickArea(a){selArea=a;renderRegion();}
+function scrollActive(col){
+  const el=document.getElementById(col);const act=el.querySelector('.active');
+  if(act)el.scrollTop=act.offsetTop-el.clientHeight/2+act.clientHeight/2;
+}
+function closeRegion(){document.getElementById('regionMask').classList.remove('show');document.getElementById('regionSheet').classList.remove('show');}
+function confirmRegion(){
+  const fv=document.getElementById('region');
+  fv.textContent=selProv+' '+selCity+' '+selArea;
+  fv.classList.add('filled');
+  closeRegion();
+}
+
+/* 提交 + 二次确认 */
+function confirmOrder(){
+  const region=(document.getElementById('region').textContent||'').trim();
+  const contact=(document.getElementById('contact').value||'').trim();
+  const phone=(document.getElementById('phone').value||'').trim();
+  const address=(document.getElementById('address').value||'').trim();
+  if(!region||region.indexOf('/')>=0){toast('请选择收货地区');return;}
+  if(!contact||!phone||!address){toast('请填写完整的收货信息');return;}
+  document.getElementById('confirmMask').classList.add('show');
+}
+function closeConfirm(){document.getElementById('confirmMask').classList.remove('show');}
+function doSubmit(){
+  const region=(document.getElementById('region').textContent||'').trim();
+  const contact=(document.getElementById('contact').value||'').trim();
+  const phone=(document.getElementById('phone').value||'').trim();
+  const address=(document.getElementById('address').value||'').trim();
+  const remark=(document.getElementById('remark').value||'').trim();
+  const now=new Date();const p=n=>String(n).padStart(2,'0');
+  const order={
+    no:'WL'+now.getFullYear()+p(now.getMonth()+1)+p(now.getDate())+p(now.getHours())+p(now.getMinutes())+p(now.getSeconds()),
+    date:now.getFullYear()+'-'+p(now.getMonth()+1)+'-'+p(now.getDate()),
+    time:now.getFullYear()+'-'+p(now.getMonth()+1)+'-'+p(now.getDate())+' '+p(now.getHours())+':'+p(now.getMinutes())+':'+p(now.getSeconds()),
+    status:'waitPay',
+    items:data.items,
+    name:data.items[0].name+(data.items.length>1?(' 等'+data.items.length+'款'):''),
+    total:data.total,points:data.points,
+    freight:FREIGHT,pay:FREIGHT,remark:remark,
+    region:region,contact:contact,phone:phone,address:address
+  };
+  let list=[];
+  try{list=JSON.parse(localStorage.getItem('dealer_material_orders')||'[]');}catch(e){list=[];}
+  if(!Array.isArray(list))list=[];
+  list.unshift(order);
+  localStorage.setItem('dealer_material_orders',JSON.stringify(list));
+  localStorage.removeItem('dealer_material_order');
+  closeConfirm();
+  toast('提交成功，订单已进入待付款');
+  setTimeout(()=>{location.href='dealer-material-orders.html';},900);
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>

@@ -37,10 +37,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
-.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px}
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer}
 .card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .card .no{font-size:13px;color:#999}
 .card .status{font-size:12px;padding:2px 8px;border-radius:4px}
+.card .status.waitPay{color:#c9302c;background:rgba(201,48,44,.1)}
 .card .status.waitShip{color:#d48806;background:rgba(212,136,6,.1)}
 .card .status.waitReceive{color:#1677ff;background:rgba(22,119,255,.1)}
 .card .status.done{color:#2a9d4f;background:rgba(42,157,79,.1)}
@@ -54,7 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .card .sum .amt{color:#c9302c;font-weight:600}
 .card .date{font-size:12px;color:#999;margin-top:6px}
 .card .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
-.card .acts .btn{height:32px;padding:0 16px;border-radius:999px;font-size:13px;cursor:pointer;background:#fff;border:.5px solid rgba(0,0,0,.15);color:#666}
+.card .acts .btn{height:32px;padding:0 16px;border-radius:999px;font-size:13px;cursor:pointer;background:#fff;border:.5px solid rgba(0,0,0,.15);color:#666;display:flex;align-items:center;justify-content:center;line-height:1}
 .card .acts .btn.primary{background:#c9302c;border-color:#c9302c;color:#fff}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
@@ -90,6 +91,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
   <div class="tabs">
     <div class="tab active" data-s="all" onclick="setTab('all')">全部</div>
+    <div class="tab" data-s="waitPay" onclick="setTab('waitPay')">待付款</div>
     <div class="tab" data-s="waitShip" onclick="setTab('waitShip')">待发货</div>
     <div class="tab" data-s="waitReceive" onclick="setTab('waitReceive')">待收货</div>
     <div class="tab" data-s="done" onclick="setTab('done')">已完成</div>
@@ -114,12 +116,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 
 <script>
 const defaultOrders=[
-  {no:'WL20260902001',date:'2026-09-02',status:'waitShip',items:[{emoji:'🪧',name:'迈极炫陈列展架',unit:'个',points:1200,qty:2}]},
-  {no:'WL20260829003',date:'2026-08-29',status:'waitReceive',items:[{emoji:'🛍️',name:'促销礼品袋',unit:'个',points:80,qty:5}]},
-  {no:'WL20260825007',date:'2026-08-25',status:'waitReceive',items:[{emoji:'🖼️',name:'门店灯箱海报',unit:'张',points:860,qty:2}]},
-  {no:'WL20260821005',date:'2026-08-21',status:'done',items:[{emoji:'🥤',name:'定制保温杯',unit:'个',points:980,qty:2}]},
-  {no:'WL20260817002',date:'2026-08-17',status:'done',items:[{emoji:'📄',name:'产品宣传单页',unit:'份',points:120,qty:5}]},
-  {no:'WL20260812004',date:'2026-08-12',status:'closed',items:[{emoji:'📢',name:'促销立牌（大）',unit:'个',points:420,qty:1}]}
+  {no:'WL20260903001',date:'2026-09-03',time:'2026-09-03 09:12:33',status:'waitPay',
+   items:[{emoji:'🪧',name:'迈极炫陈列展架',unit:'个',points:1200,qty:2}],
+   region:'湖南省 长沙市 天心区',contact:'刘伟',phone:'138****6688',address:'芙蓉中路三段 168 号兴盛商贸大厦 6 楼',freight:6,pay:6,remark:'请工作日送达'},
+  {no:'WL20260901005',date:'2026-09-01',time:'2026-09-01 10:05:42',status:'waitShip',
+   items:[{emoji:'🏷️',name:'门店价签套装',unit:'套',points:260,qty:10}],
+   region:'湖南省 长沙市 雨花区',contact:'刘伟',phone:'138****6688',address:'万家丽中路 88 号仓库 A 区',freight:6,pay:6,remark:''},
+  {no:'WL20260829003',date:'2026-08-29',time:'2026-08-29 11:18:30',status:'waitReceive',
+   items:[{emoji:'🛍️',name:'促销礼品袋',unit:'个',points:80,qty:5}],
+   region:'湖南省 长沙市 开福区',contact:'陈静',phone:'139****2233',address:'湘江中路 256 号门店',freight:6,pay:6,remark:'请放前台'},
+  {no:'WL20260825007',date:'2026-08-25',time:'2026-08-25 14:55:16',status:'waitReceive',
+   items:[{emoji:'🖼️',name:'门店灯箱海报',unit:'张',points:860,qty:2}],
+   region:'湖南省 长沙市 岳麓区',contact:'陈静',phone:'139****2233',address:'麓谷大道 66 号配送点',freight:6,pay:6,remark:''},
+  {no:'WL20260821005',date:'2026-08-21',time:'2026-08-21 10:12:08',status:'done',
+   items:[{emoji:'🥤',name:'定制保温杯',unit:'个',points:980,qty:2}],
+   region:'湖南省 长沙市 岳麓区',contact:'陈静',phone:'139****2233',address:'麓谷大道 66 号配送点',freight:6,pay:6,remark:''},
+  {no:'WL20260812004',date:'2026-08-12',time:'2026-08-12 16:40:19',status:'closed',
+   items:[{emoji:'📢',name:'促销立牌（大）',unit:'个',points:420,qty:1}],
+   region:'湖南省 长沙市 望城区',contact:'赵磊',phone:'137****9012',address:'望城大道 12 号门店',freight:6,pay:6,remark:'活动已结束，取消订单'}
 ];
 let orders=defaultOrders.slice();
 try{
@@ -137,7 +151,7 @@ try{
   const ov=JSON.parse(localStorage.getItem('dealer_material_order_status')||'{}');
   orders.forEach(o=>{ if(ov[o.no]) o.status=ov[o.no]; });
 }catch(e){}
-const statusMap={waitShip:'待发货',waitReceive:'待收货',done:'已完成',closed:'已关闭'};
+const statusMap={waitPay:'待付款',waitShip:'待发货',waitReceive:'待收货',done:'已完成',closed:'已关闭'};
 let curTab='all';
 
 function setTab(s){curTab=s;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.s===s));render();}
@@ -153,17 +167,23 @@ function render(kw){
   box.innerHTML=list.map(o=>{
     const rows=o.items.map(it=>`<div class="oi"><span class="pic">${it.emoji}</span><span class="n">${it.name}</span><span class="u">${it.unit}</span><span class="q">${it.points} 积分 ×${it.qty}</span></div>`).join('');
     let acts='';
-    if(o.status==='waitReceive')acts='<div class="acts"><div class="btn primary" onclick="confirmReceive(\''+o.no+'\')">确认收货</div></div>';
-    else if(o.status==='waitShip')acts='<div class="acts"><div class="btn" onclick="confirmCancel(\''+o.no+'\')">取消订单</div></div>';
-    else acts='<div class="acts"><div class="btn" onclick="location.href=\'dealer-material-mall.html\'">再次兑换</div></div>';
-    return `<div class="card">
+    if(o.status==='waitPay'){
+      acts='<div class="acts" onclick="event.stopPropagation()"><div class="btn" onclick="confirmCancel(\''+o.no+'\')">取消订单</div><div class="btn primary" onclick="doPay(\''+o.no+'\')">立即支付</div></div>';
+    }else if(o.status==='waitReceive'){
+      acts='<div class="acts" onclick="event.stopPropagation()"><div class="btn" onclick="goDetail(\''+o.no+'\')">查看详情</div><div class="btn primary" onclick="confirmReceive(\''+o.no+'\')">确认收货</div></div>';
+    }else if(o.status==='waitShip'){
+      acts='<div class="acts" onclick="event.stopPropagation()"><div class="btn" onclick="goDetail(\''+o.no+'\')">查看详情</div></div>';
+    }else{
+      acts='<div class="acts" onclick="event.stopPropagation()"><div class="btn" onclick="goDetail(\''+o.no+'\')">查看详情</div><div class="btn" onclick="location.href=\'dealer-material-mall.html\'">再次兑换</div></div>';
+    }
+    return `<div class="card" onclick="goDetail('${o.no}')">
       <div class="top">
         <span class="no">${o.no}</span>
         <span class="status ${o.status}">${statusMap[o.status]}</span>
       </div>
       ${rows}
       <div class="sum"><span>合计 ${o.total} 件</span><span class="amt">${o.points.toLocaleString('en-US')} 积分</span></div>
-      <div class="date">下单时间 ${o.date}</div>
+      <div class="date">下单时间 ${o.date} · 运费 ¥${(o.pay||0).toFixed(2)}</div>
       ${acts}
     </div>`;
   }).join('');
@@ -195,8 +215,10 @@ function confirmReceive(no){
   showModal('确认收货','确认已收到该物料订单的物料？',()=>{saveStatus(no,'done');toast('已确认收货，订单变更为已完成');});
 }
 function confirmCancel(no){
-  showModal('取消订单','取消后订单将变更为已关闭，消耗的积分将退回',()=>{saveStatus(no,'closed');toast('订单已取消，变更为已关闭');});
+  showModal('取消订单','取消后订单将变更为已关闭，兑换积分将退回',()=>{saveStatus(no,'closed');toast('订单已取消，变更为已关闭');});
 }
+function goDetail(no){location.href='dealer-material-order-detail.html?no='+no;}
+function doPay(no){toast('调用微信支付订单 '+no+' 的运费');}
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}

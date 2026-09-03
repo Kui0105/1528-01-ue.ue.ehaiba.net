@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 物料订单详情</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:80px}
+
+.status-head{text-align:center;padding:20px 0;background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;border-radius:10px;margin-bottom:10px}
+.status-head.ng{background:linear-gradient(135deg,#b9b9b9,#cfcfcf)}
+.status-head .big{font-size:20px;font-weight:600;margin-bottom:6px}
+.status-head .sub{font-size:13px;opacity:.92}
+
+.card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:10px;padding:14px;margin-bottom:10px}
+.section-title{font-size:14px;font-weight:500;color:#333;margin-bottom:10px}
+.addr-row{display:flex;align-items:flex-start;gap:10px}
+.addr-row .pin{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.addr-row .info{font-size:14px;line-height:1.5}
+.addr-row .info .name{margin-bottom:4px}
+.addr-row .info .addr{color:#666;font-size:13px}
+
+.oi{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.oi:last-of-type{border-bottom:none}
+.oi .pic{width:46px;height:46px;border-radius:10px;background:#fff7f7;color:#c9302c;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.oi .main{flex:1;min-width:0}
+.oi .name{font-size:14px;font-weight:500;margin-bottom:4px}
+.oi .sub{font-size:12px;color:#999}
+.oi .right{text-align:right;flex-shrink:0}
+.oi .price{font-size:14px;color:#c9302c;font-weight:600}
+.oi .qty{font-size:12px;color:#999;margin-top:4px}
+
+.row-list .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid rgba(0,0,0,.06)}
+.row-list .row:last-child{border-bottom:none}
+.row-list .row .label{font-size:13px;color:#666}
+.row-list .row .value{font-size:13px;color:#333}
+.row-list .row .value.red{color:#c9302c;font-weight:600}
+
+.footer{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:.5px solid rgba(0,0,0,.08);padding:10px 12px;display:flex;justify-content:flex-end;gap:8px;z-index:20}
+.footer .btn{height:34px;padding:0 18px;border-radius:999px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#fff;border:.5px solid rgba(0,0,0,.15);color:#666}
+.footer .btn.primary{background:#c9302c;border-color:#c9302c;color:#fff}
+
+/* 确认弹窗 */
+.modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-mask.show{opacity:1;pointer-events:auto}
+.modal{width:280px;background:#fff;border-radius:14px;overflow:hidden}
+.modal .m-title{text-align:center;font-size:15px;font-weight:600;padding:18px 16px 6px}
+.modal .m-text{text-align:center;font-size:13px;color:#666;padding:0 20px 18px;line-height:1.6}
+.modal .m-actions{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn{flex:1;text-align:center;padding:13px 0;font-size:15px;cursor:pointer}
+.modal .m-btn.cancel{color:#666;border-right:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn.ok{color:#c9302c;font-weight:500}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:600;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">物料订单详情</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="content">
+    <div class="status-head" id="statusHead">
+      <div class="big" id="statusBig">待付款</div>
+      <div class="sub" id="statusSub">请在自动取消前完成支付</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">收货地址</div>
+      <div class="addr-row">
+        <div class="pin">📍</div>
+        <div class="info">
+          <div class="name"><span id="recvName">-</span> <span style="color:#999;margin-left:8px" id="recvPhone">-</span></div>
+          <div class="addr" id="recvAddr">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">商品信息</div>
+      <div id="goodsList"></div>
+      <div class="row-list" style="margin-top:6px">
+        <div class="row"><span class="label">兑换积分</span><span class="value red" id="pointsVal">0</span></div>
+        <div class="row"><span class="label">配送费用</span><span class="value" id="freightVal">¥6.00</span></div>
+        <div class="row"><span class="label">支付金额</span><span class="value red" id="payVal">¥6.00</span></div>
+      </div>
+    </div>
+
+    <div class="card row-list" style="padding:4px 14px">
+      <div class="row"><span class="label">订单编号</span><span class="value" id="orderNo">-</span></div>
+      <div class="row"><span class="label">下单时间</span><span class="value" id="orderTime">-</span></div>
+      <div class="row"><span class="label">订单状态</span><span class="value" id="orderStatus">-</span></div>
+      <div class="row"><span class="label">订单备注</span><span class="value" id="orderRemark">-</span></div>
+    </div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+
+  <div class="modal-mask" id="confirmMask">
+    <div class="modal">
+      <div class="m-title" id="mTitle">提示</div>
+      <div class="m-text" id="mText"></div>
+      <div class="m-actions">
+        <div class="m-btn cancel" onclick="hideModal()">取消</div>
+        <div class="m-btn ok" onclick="confirmAction()">确定</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const statusMap={
+  waitPay:{label:'待付款',sub:'请在自动取消前完成支付运费',cls:''},
+  waitShip:{label:'待发货',sub:'物料正在备货中，请耐心等待',cls:''},
+  waitReceive:{label:'待收货',sub:'物料已发出，请注意查收',cls:''},
+  done:{label:'已完成',sub:'订单已完成，欢迎再次兑换',cls:''},
+  closed:{label:'已关闭',sub:'订单已关闭，兑换积分已退回',cls:'ng'}
+};
+const defaultOrders=[
+  {no:'WL20260903001',date:'2026-09-03',time:'2026-09-03 09:12:33',status:'waitPay',
+   items:[{emoji:'🪧',name:'迈极炫陈列展架',unit:'个',points:1200,qty:2}],
+   region:'湖南省 长沙市 天心区',contact:'刘伟',phone:'138****6688',address:'芙蓉中路三段 168 号兴盛商贸大厦 6 楼',freight:6,pay:6,remark:'请工作日送达'},
+  {no:'WL20260901005',date:'2026-09-01',time:'2026-09-01 10:05:42',status:'waitShip',
+   items:[{emoji:'🏷️',name:'门店价签套装',unit:'套',points:260,qty:10}],
+   region:'湖南省 长沙市 雨花区',contact:'刘伟',phone:'138****6688',address:'万家丽中路 88 号仓库 A 区',freight:6,pay:6,remark:''},
+  {no:'WL20260829003',date:'2026-08-29',time:'2026-08-29 11:18:30',status:'waitReceive',
+   items:[{emoji:'🛍️',name:'促销礼品袋',unit:'个',points:80,qty:5}],
+   region:'湖南省 长沙市 开福区',contact:'陈静',phone:'139****2233',address:'湘江中路 256 号门店',freight:6,pay:6,remark:'请放前台'},
+  {no:'WL20260825007',date:'2026-08-25',time:'2026-08-25 14:55:16',status:'waitReceive',
+   items:[{emoji:'🖼️',name:'门店灯箱海报',unit:'张',points:860,qty:2}],
+   region:'湖南省 长沙市 岳麓区',contact:'陈静',phone:'139****2233',address:'麓谷大道 66 号配送点',freight:6,pay:6,remark:''},
+  {no:'WL20260821005',date:'2026-08-21',time:'2026-08-21 10:12:08',status:'done',
+   items:[{emoji:'🥤',name:'定制保温杯',unit:'个',points:980,qty:2}],
+   region:'湖南省 长沙市 岳麓区',contact:'陈静',phone:'139****2233',address:'麓谷大道 66 号配送点',freight:6,pay:6,remark:''},
+  {no:'WL20260812004',date:'2026-08-12',time:'2026-08-12 16:40:19',status:'closed',
+   items:[{emoji:'📢',name:'促销立牌（大）',unit:'个',points:420,qty:1}],
+   region:'湖南省 长沙市 望城区',contact:'赵磊',phone:'137****9012',address:'望城大道 12 号门店',freight:6,pay:6,remark:'活动已结束，取消订单'}
+];
+
+let orders=defaultOrders.slice();
+try{
+  const extra=JSON.parse(localStorage.getItem('dealer_material_orders')||'[]');
+  if(Array.isArray(extra)&&extra.length)orders=extra.concat(orders);
+}catch(e){}
+orders.forEach(o=>{
+  o.total=o.items.reduce((s,it)=>s+(it.qty||0),0);
+  o.points=o.items.reduce((s,it)=>s+(it.qty||0)*(it.points||0),0);
+});
+try{
+  const ov=JSON.parse(localStorage.getItem('dealer_material_order_status')||'{}');
+  orders.forEach(o=>{ if(ov[o.no]) o.status=ov[o.no]; });
+}catch(e){}
+
+const no=new URLSearchParams(location.search).get('no')||'';
+let o=orders.find(x=>x.no===no)||orders[0];
+
+function render(){
+  const s=statusMap[o.status];
+  const head=document.getElementById('statusHead');
+  head.className='status-head'+(s.cls?' '+s.cls:'');
+  document.getElementById('statusBig').textContent=s.label;
+  document.getElementById('statusSub').textContent=s.sub;
+  document.getElementById('recvName').textContent=o.contact||'-';
+  document.getElementById('recvPhone').textContent=o.phone||'-';
+  document.getElementById('recvAddr').textContent=((o.region||'')+' '+(o.address||'')).trim()||'-';
+  document.getElementById('goodsList').innerHTML=o.items.map(it=>`<div class="oi">
+    <div class="pic">${it.emoji}</div>
+    <div class="main">
+      <div class="name">${it.name}</div>
+      <div class="sub">${it.unit} · ${it.points} 积分</div>
+    </div>
+    <div class="right">
+      <div class="price">${(it.points*it.qty).toLocaleString('en-US')} 积分</div>
+      <div class="qty">×${it.qty}</div>
+    </div>
+  </div>`).join('');
+  document.getElementById('pointsVal').textContent=o.points.toLocaleString('en-US');
+  document.getElementById('freightVal').textContent='¥'+(o.freight||0).toFixed(2);
+  document.getElementById('payVal').textContent='¥'+(o.pay||0).toFixed(2);
+  document.getElementById('orderNo').textContent=o.no;
+  document.getElementById('orderTime').textContent=o.time||o.date;
+  document.getElementById('orderStatus').textContent=s.label;
+  document.getElementById('orderRemark').textContent=o.remark||'无';
+
+  const f=document.getElementById('footer');
+  if(o.status==='waitPay'){
+    f.style.display='flex';
+    f.innerHTML='<div class="btn" onclick="askCancel()">取消订单</div><div class="btn primary" onclick="doPay()">立即支付</div>';
+  }else if(o.status==='waitShip'){
+    f.style.display='none';
+    f.innerHTML='';
+  }else if(o.status==='waitReceive'){
+    f.style.display='flex';
+    f.innerHTML='<div class="btn primary" onclick="askReceive()">确认收货</div>';
+  }else{
+    f.style.display='flex';
+    f.innerHTML='<div class="btn primary" onclick="location.href=\'dealer-material-mall.html\'">再次兑换</div>';
+  }
+}
+
+let modalAction='';
+function askCancel(){modalAction='cancel';document.getElementById('mTitle').textContent='取消订单';document.getElementById('mText').textContent='确认取消该订单？取消后积分将立即退回。';document.getElementById('confirmMask').classList.add('show');}
+function askReceive(){modalAction='receive';document.getElementById('mTitle').textContent='确认收货';document.getElementById('mText').textContent='确认已收到物料？确认后订单将标记为已完成。';document.getElementById('confirmMask').classList.add('show');}
+function hideModal(){document.getElementById('confirmMask').classList.remove('show');}
+function confirmAction(){
+  hideModal();
+  if(modalAction==='cancel'){saveStatus('closed');toast('订单已取消，积分已退回');}
+  if(modalAction==='receive'){saveStatus('done');toast('确认收货成功');}
+}
+function doPay(){toast('调用微信支付运费 ¥'+(o.pay||0).toFixed(2));}
+function saveStatus(status){
+  try{
+    const ov=JSON.parse(localStorage.getItem('dealer_material_order_status')||'{}');
+    ov[o.no]=status;
+    localStorage.setItem('dealer_material_order_status',JSON.stringify(ov));
+  }catch(e){}
+  o.status=status;
+  render();
+}
+
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>

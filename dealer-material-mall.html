@@ -26,12 +26,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;padding-bottom:76px}
 
-/* 积分余额条 */
-.point-bar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,#fff5f5,#fff);border:.5px solid rgba(201,48,44,.15);border-radius:10px;padding:12px 14px;margin-bottom:12px}
-.point-bar .lb{font-size:13px;color:#666}
-.point-bar .val{font-size:20px;font-weight:600;color:#c9302c}
-.point-bar .val small{font-size:12px;font-weight:400;margin-left:3px}
-
 .search{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .search-box{display:flex;align-items:center;gap:8px;flex:1;background:#fff;border:.5px solid rgba(0,0,0,.1);border-radius:999px;padding:0 14px;height:38px;min-width:0}
 .search-box svg{width:16px;height:16px;color:#999;flex-shrink:0}
@@ -66,6 +60,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .cartbar .submit{height:40px;padding:0 22px;background:#c9302c;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:500;cursor:pointer}
 .cartbar .submit:disabled{background:#ddd;cursor:not-allowed}
 
+/* 二次确认弹窗 */
+.modal-mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-mask.show{opacity:1;pointer-events:auto}
+.modal{width:280px;background:#fff;border-radius:14px;overflow:hidden}
+.modal .m-title{text-align:center;font-size:15px;font-weight:600;padding:18px 16px 6px}
+.modal .m-text{text-align:center;font-size:13px;color:#666;padding:0 20px 18px;line-height:1.6}
+.modal .m-actions{display:flex;border-top:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn{flex:1;text-align:center;padding:13px 0;font-size:15px;cursor:pointer}
+.modal .m-btn.cancel{color:#666;border-right:.5px solid rgba(0,0,0,.08)}
+.modal .m-btn.ok{color:#c9302c;font-weight:500}
+
 .toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
@@ -80,11 +85,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   </div>
 
   <div class="content">
-    <div class="point-bar">
-      <div class="lb">可用积分</div>
-      <div class="val">12,860<small>分</small></div>
-    </div>
-
     <div class="search">
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
@@ -108,7 +108,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <div class="t">已选 <span id="cartTotal">0</span> 件</div>
       <div class="s" id="cartPoints">合计 0 积分</div>
     </div>
-    <button class="submit" id="submitBtn" disabled onclick="submitExchange()">立即兑换</button>
+    <button class="submit" id="submitBtn" disabled onclick="confirmExchange()">立即兑换</button>
+  </div>
+
+  <!-- 二次确认弹窗 -->
+  <div class="modal-mask" id="confirmMask">
+    <div class="modal">
+      <div class="m-title">确认兑换</div>
+      <div class="m-text" id="confirmText">确认兑换所选物料？</div>
+      <div class="m-actions">
+        <div class="m-btn cancel" onclick="closeConfirm()">取消</div>
+        <div class="m-btn ok" onclick="submitExchange()">确认兑换</div>
+      </div>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -188,21 +200,24 @@ function updateCart(){
   document.getElementById('cartPoints').textContent='合计 '+points.toLocaleString('en-US')+' 积分';
   document.getElementById('submitBtn').disabled=total===0;
 }
-function submitExchange(){
+function buildSelection(){
   const items=[];let total=0,points=0;
   materials.forEach(m=>{const q=cart[m.id]||0;if(q>0){items.push({emoji:m.emoji,name:m.name,unit:m.unit,points:m.points,qty:q});total+=q;points+=q*m.points;}});
-  if(items.length===0)return;
-  const now=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  const no='WL'+now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds());
-  const order={no:no,date:`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`,status:'waitShip',items:items,total:total,points:points};
-  try{
-    const list=JSON.parse(localStorage.getItem('dealer_material_orders')||'[]');
-    list.unshift(order);
-    localStorage.setItem('dealer_material_orders',JSON.stringify(list));
-  }catch(e){}
-  toast('兑换成功，已生成物料订单');
-  setTimeout(()=>{location.href='dealer-material-orders.html';},900);
+  return {items:items,total:total,points:points};
+}
+function confirmExchange(){
+  const sel=buildSelection();
+  if(sel.items.length===0)return;
+  document.getElementById('confirmText').innerHTML='确认兑换所选物料？<br>共 '+sel.total+' 件 · 合计 '+sel.points.toLocaleString('en-US')+' 积分<br>确认后将进入订单提交页';
+  document.getElementById('confirmMask').classList.add('show');
+}
+function closeConfirm(){document.getElementById('confirmMask').classList.remove('show');}
+function submitExchange(){
+  const sel=buildSelection();
+  if(sel.items.length===0){closeConfirm();return;}
+  localStorage.setItem('dealer_material_order',JSON.stringify(sel));
+  closeConfirm();
+  location.href='dealer-material-order-create.html';
 }
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
