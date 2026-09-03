@@ -31,32 +31,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .balance .num{font-size:28px;font-weight:600}
 .balance .num small{font-size:13px;font-weight:400;margin-left:4px}
 
-.filter-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
-.summary{font-size:12px;color:#999;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 时间段选择（开始/结束外置） */
+.filter-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.date-box{flex:1;min-width:0;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:6px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;background:#fafafa}
+.date-box.active{border-color:#c9302c;background:#fff5f5}
+.date-box .lb{font-size:11px;color:#999}
+.date-box .val{font-size:13px;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.date-box .val.empty{color:#bbb}
+.filter-bar .sep{font-size:12px;color:#999;flex-shrink:0}
+.filter-bar .reset{font-size:13px;color:#c9302c;flex-shrink:0;cursor:pointer;padding:4px 2px}
+
+.summary{padding:10px 12px;font-size:12px;color:#999;background:#f5f6f7;flex-shrink:0}
 .summary b{color:#c9302c;font-weight:600}
-.filter-trigger{display:flex;align-items:center;gap:4px;font-size:13px;color:#666;cursor:pointer;padding:4px 8px;border:.5px solid rgba(0,0,0,.12);border-radius:6px;background:#fff;flex-shrink:0}
-.filter-trigger svg{width:14px;height:14px}
 
-/* 时间段选择弹层 */
-.modal{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:150;display:none;align-items:flex-end;justify-content:center}
-.modal.show{display:flex}
-.filter-sheet{width:100%;max-width:420px;background:#fff;border-radius:16px 16px 0 0;padding:16px 0;animation:slideUp .22s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-hd{display:flex;justify-content:space-between;align-items:center;padding:0 16px 12px;border-bottom:.5px solid rgba(0,0,0,.08)}
-.sheet-hd span{font-size:15px;font-weight:500}
-.sheet-hd .close{font-size:22px;color:#999;cursor:pointer;width:30px;text-align:right}
-.range-body{padding:16px 16px 4px}
-.range-field{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.range-field label{width:66px;font-size:14px;color:#333;flex-shrink:0}
-.range-field input{flex:1;min-width:0;height:40px;border:.5px solid rgba(0,0,0,.12);border-radius:8px;padding:0 12px;font-size:14px;color:#333;background:#fafafa;outline:none;font-family:inherit}
-.range-field input:focus{border-color:#c9302c}
-.range-tip{font-size:12px;color:#aaa;margin-bottom:14px;line-height:1.5}
-.range-ops{display:flex;gap:10px;padding:4px 16px 16px}
-.range-ops .btn{flex:1;height:42px;border-radius:10px;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.range-ops .reset{background:#f5f6f7;color:#666}
-.range-ops .ok{background:#c9302c;color:#fff}
-
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 12px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
 
 .rec{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
 .rec .left{flex:1;min-width:0}
@@ -67,7 +55,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .rec .bal{font-size:11px;color:#999}
 
 .empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
-.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+
+/* 年月日选择弹层 */
+.mask{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:400;opacity:0;pointer-events:none;transition:opacity .25s}
+.mask.show{opacity:1;pointer-events:auto}
+.picker-sheet{position:absolute;left:0;right:0;bottom:0;height:300px;background:#fff;z-index:401;border-radius:14px 14px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .25s}
+.picker-sheet.show{transform:translateY(0)}
+.rs-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:.5px solid rgba(0,0,0,.08)}
+.rs-head .rs-cancel,.rs-head .rs-confirm{font-size:14px;cursor:pointer;padding:4px}
+.rs-head .rs-cancel{color:#999}
+.rs-head .rs-confirm{color:#c9302c;font-weight:500}
+.rs-head .rs-title{font-size:15px;font-weight:500}
+.rs-body{flex:1;display:flex;overflow:hidden}
+.rs-col{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0}
+.rs-col+.rs-col{border-left:.5px solid rgba(0,0,0,.05)}
+.rs-item{text-align:center;font-size:14px;padding:11px 4px;color:#333}
+.rs-item.active{color:#c9302c;font-weight:600;background:rgba(201,48,44,.06)}
+
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:600;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 </style>
 </head>
@@ -86,39 +91,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
   </div>
 
   <div class="filter-bar">
-    <div class="summary" id="summary"></div>
-    <div class="filter-trigger" onclick="showFilterSheet()">
-      <span id="filterText">全部时间</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
+    <div class="date-box" id="startBox" onclick="openPicker('start')">
+      <span class="lb">开始时间</span>
+      <span class="val empty" id="startText">全部</span>
     </div>
+    <span class="sep">至</span>
+    <div class="date-box" id="endBox" onclick="openPicker('end')">
+      <span class="lb">结束时间</span>
+      <span class="val empty" id="endText">全部</span>
+    </div>
+    <span class="reset" onclick="resetRange()">重置</span>
   </div>
 
+  <div class="summary" id="summary"></div>
   <div class="content" id="content"></div>
 
-  <!-- 时间段选择弹层 -->
-  <div class="modal" id="filterModal" onclick="closeFilterModal(event)">
-    <div class="filter-sheet" onclick="event.stopPropagation()">
-      <div class="sheet-hd">
-        <span>选择时间段</span>
-        <span class="close" onclick="hideFilterSheet()">×</span>
-      </div>
-      <div class="range-body">
-        <div class="range-field">
-          <label>开始日期</label>
-          <input type="date" id="startDate">
-        </div>
-        <div class="range-field">
-          <label>结束日期</label>
-          <input type="date" id="endDate">
-        </div>
-        <div class="range-tip">可只选开始或结束日期查询单边时间段，留空则查询全部</div>
-        <div class="range-ops">
-          <div class="btn reset" onclick="resetRange()">重置</div>
-          <div class="btn ok" onclick="applyRange()">确定</div>
-        </div>
-      </div>
+  <!-- 年月日选择弹层 -->
+  <div class="mask" id="pickerMask" onclick="closePicker()"></div>
+  <div class="picker-sheet" id="pickerSheet">
+    <div class="rs-head">
+      <span class="rs-cancel" onclick="closePicker()">取消</span>
+      <span class="rs-title" id="pickerTitle">选择开始时间</span>
+      <span class="rs-confirm" onclick="confirmPicker()">确定</span>
+    </div>
+    <div class="rs-body">
+      <div class="rs-col" id="colYear"></div>
+      <div class="rs-col" id="colMonth"></div>
+      <div class="rs-col" id="colDay"></div>
     </div>
   </div>
 
@@ -140,38 +139,16 @@ const records=[
   {offset:20,time:'15:22:46',reason:'推荐门店奖励积分',delta:1000,balance:2400},
   {offset:45,time:'13:18:02',reason:'活动奖励积分',delta:1400,balance:1400}
 ];
-let startDate='',endDate='';
 
+let startDate='',endDate='';
 function pad(n){return String(n).padStart(2,'0');}
 function dateFor(offset){
   const d=new Date();
   d.setDate(d.getDate()-offset);
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 }
-function showFilterSheet(){document.getElementById('filterModal').classList.add('show');}
-function hideFilterSheet(){document.getElementById('filterModal').classList.remove('show');}
-function closeFilterModal(e){if(e.target.id==='filterModal')hideFilterSheet();}
-function applyRange(){
-  const s=document.getElementById('startDate').value||'';
-  const e=document.getElementById('endDate').value||'';
-  if(s&&e&&s>e){toast('开始日期不能晚于结束日期');return;}
-  startDate=s;endDate=e;
-  hideFilterSheet();
-  render();
-}
-function resetRange(){
-  document.getElementById('startDate').value='';
-  document.getElementById('endDate').value='';
-  startDate='';endDate='';
-  hideFilterSheet();
-  render();
-}
-function filterText(){
-  if(startDate&&endDate)return startDate.slice(5)+' ~ '+endDate.slice(5);
-  if(startDate)return startDate.slice(5)+' 起';
-  if(endDate)return '截至 '+endDate.slice(5);
-  return '全部时间';
-}
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+
 function match(r){
   const d=dateFor(r.offset);
   if(startDate&&d<startDate)return false;
@@ -182,11 +159,19 @@ function render(){
   const box=document.getElementById('content');
   const list=records.filter(match);
   const sum=list.reduce((s,r)=>s+r.delta,0);
-  document.getElementById('filterText').textContent=filterText();
-  const rangeTxt=(startDate||endDate)
-    ? ((startDate||'不限')+' 至 '+(endDate||'不限')+' · ')
-    : '';
+
+  const st=document.getElementById('startText');
+  const et=document.getElementById('endText');
+  st.textContent=startDate||'全部';
+  et.textContent=endDate||'全部';
+  st.classList.toggle('empty',!startDate);
+  et.classList.toggle('empty',!endDate);
+  document.getElementById('startBox').classList.toggle('active',!!startDate);
+  document.getElementById('endBox').classList.toggle('active',!!endDate);
+
+  const rangeTxt=(startDate||endDate)?((startDate||'不限')+' 至 '+(endDate||'不限')+' · '):'';
   document.getElementById('summary').innerHTML=rangeTxt+'共 '+list.length+' 笔 · 累计增加 <b>'+sum.toLocaleString('en-US')+'</b> 积分';
+
   if(list.length===0){box.innerHTML='<div class="empty">该时间段暂无积分变动记录</div>';return;}
   box.innerHTML=list.map(r=>`
     <div class="rec">
@@ -200,6 +185,61 @@ function render(){
       </div>
     </div>`).join('');
 }
+
+/* 年月日选择 */
+let pickerTarget='start';
+let selY=0,selM=0,selD=0;
+function openPicker(target){
+  pickerTarget=target;
+  document.getElementById('pickerTitle').textContent=target==='start'?'选择开始时间':'选择结束时间';
+  const cur=target==='start'?startDate:endDate;
+  const base=cur?new Date(cur):new Date();
+  selY=base.getFullYear();selM=base.getMonth()+1;selD=base.getDate();
+  renderPicker();
+  document.getElementById('pickerMask').classList.add('show');
+  document.getElementById('pickerSheet').classList.add('show');
+}
+function renderPicker(){
+  const nowYear=new Date().getFullYear();
+  const years=[];
+  for(let y=nowYear-1;y<=nowYear;y++)years.push(y);
+  if(years.indexOf(selY)<0)selY=years[years.length-1];
+  document.getElementById('colYear').innerHTML=years.map(y=>`<div class="rs-item ${y===selY?'active':''}" onclick="pickYear(${y})">${y}年</div>`).join('');
+  const months=[];
+  for(let m=1;m<=12;m++)months.push(m);
+  document.getElementById('colMonth').innerHTML=months.map(m=>`<div class="rs-item ${m===selM?'active':''}" onclick="pickMonth(${m})">${pad(m)}月</div>`).join('');
+  const max=daysInMonth(selY,selM);
+  if(selD>max)selD=max;
+  const days=[];
+  for(let d=1;d<=max;d++)days.push(d);
+  document.getElementById('colDay').innerHTML=days.map(d=>`<div class="rs-item ${d===selD?'active':''}" onclick="pickDay(${d})">${pad(d)}日</div>`).join('');
+  ['colYear','colMonth','colDay'].forEach(scrollActive);
+}
+function pickYear(y){selY=y;renderPicker();}
+function pickMonth(m){selM=m;renderPicker();}
+function pickDay(d){selD=d;renderPicker();}
+function scrollActive(col){
+  const el=document.getElementById(col);const act=el.querySelector('.active');
+  if(act)el.scrollTop=act.offsetTop-el.clientHeight/2+act.clientHeight/2;
+}
+function closePicker(){
+  document.getElementById('pickerMask').classList.remove('show');
+  document.getElementById('pickerSheet').classList.remove('show');
+}
+function confirmPicker(){
+  const val=selY+'-'+pad(selM)+'-'+pad(selD);
+  if(pickerTarget==='start'){
+    if(endDate&&val>endDate){toast('开始时间不能晚于结束时间');return;}
+    startDate=val;
+  }else{
+    if(startDate&&val<startDate){toast('结束时间不能早于开始时间');return;}
+    endDate=val;
+  }
+  closePicker();
+  render();
+}
+function resetRange(){startDate='';endDate='';render();}
+
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
 render();
