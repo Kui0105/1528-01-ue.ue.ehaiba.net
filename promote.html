@@ -35,6 +35,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .user-card .info .phone{font-size:13px;color:#666;margin-bottom:4px}
 .user-card .info .dealer{font-size:13px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* 积分余额 */
+.point-card{display:flex;align-items:center;justify-content:space-between;padding:16px 14px;cursor:pointer}
+.point-card .lb{font-size:13px;color:#666;margin-bottom:6px}
+.point-card .val{font-size:22px;font-weight:600;color:#c9302c}
+.point-card .val small{font-size:12px;font-weight:400;margin-left:3px}
+.point-card .note{font-size:11px;color:#aaa;margin-top:6px}
+.point-card .right{display:flex;align-items:center;gap:4px;font-size:13px;color:#999;flex-shrink:0}
+.point-card .right .fa{font-size:18px;color:#ccc}
+
 .stat-card{padding:14px}
 .stat-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .stat-title{font-size:15px;font-weight:500}
@@ -118,6 +127,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
         <div class="name">业务员：张三</div>
         <div class="phone">138****8888</div>
         <div class="dealer">经销商：长沙总经销</div>
+      </div>
+    </div>
+
+    <div class="card point-card" onclick="location.href='salesman-points-detail.html'">
+      <div class="left">
+        <div class="lb">积分余额</div>
+        <div class="val">8,600<small>分</small></div>
+        <div class="note">积分仅可由管理端发放，不可用于消耗</div>
+      </div>
+      <div class="right">
+        <span>积分明细</span>
+        <span class="fa">›</span>
       </div>
     </div>
 

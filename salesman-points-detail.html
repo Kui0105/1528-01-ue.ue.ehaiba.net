@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>迈极炫 · 业务员积分明细</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:#eceef1;color:#1a1a1a;-webkit-font-smoothing:antialiased}
+.mp{position:relative;width:100%;max-width:420px;margin:0 auto;height:100%;min-height:100vh;display:flex;flex-direction:column;background:#f5f6f7;overflow:hidden}
+.statusbar{height:28px;background:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 14px;font-size:13px;font-weight:500;flex-shrink:0}
+.statusbar .right{display:flex;align-items:center;gap:5px;font-size:12px}
+.sb-ico{width:15px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-ico::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat{width:22px;height:11px;border:1px solid #1a1a1a;border-radius:2px;position:relative}
+.sb-bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:5px;background:#1a1a1a;border-radius:1px}
+.sb-bat::before{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:14px;background:#1a1a1a;border-radius:1px}
+.navbar{height:44px;background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;position:relative;flex-shrink:0}
+.navbar .back{position:absolute;left:6px;top:50%;transform:translateY(-50%);font-size:22px;color:#1a1a1a;width:40px;height:44px;display:flex;align-items:center;cursor:pointer}
+.navbar .title{width:100%;text-align:center;font-size:16px;font-weight:500}
+.capsule{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:87px;height:30px;border:.5px solid rgba(0,0,0,.12);border-radius:15px;display:flex;align-items:center;background:#fff}
+.capsule .c-left,.capsule .c-right{flex:1;display:flex;align-items:center;justify-content:center}
+.capsule .c-left{font-size:11px;letter-spacing:-1px}
+.capsule .c-right .dot{width:13px;height:13px;border:1.4px solid #1a1a1a;border-radius:50%}
+.capsule .divider{width:.5px;height:18px;background:rgba(0,0,0,.12)}
+
+/* 余额头 */
+.balance{background:linear-gradient(135deg,#c9302c,#e8645f);color:#fff;padding:18px 16px;flex-shrink:0}
+.balance .lb{font-size:13px;opacity:.9;margin-bottom:6px}
+.balance .num{font-size:28px;font-weight:600}
+.balance .num small{font-size:13px;font-weight:400;margin-left:4px}
+.balance .tip{font-size:12px;opacity:.85;margin-top:8px}
+
+.tabs{display:flex;background:#fff;border-bottom:.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.tabs .tab{flex:1;text-align:center;padding:11px 0;font-size:13px;color:#666;cursor:pointer;position:relative}
+.tabs .tab.active{color:#c9302c;font-weight:500}
+.tabs .tab.active::after{content:'';position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:24px;height:2px;background:#c9302c;border-radius:2px}
+
+.summary{padding:10px 16px;font-size:12px;color:#999;background:#f5f6f7}
+.summary b{color:#c9302c;font-weight:600}
+
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px 12px}
+
+.rec{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.rec .left{flex:1;min-width:0}
+.rec .reason{font-size:14px;font-weight:500;margin-bottom:6px;line-height:1.4}
+.rec .time{font-size:12px;color:#999}
+.rec .right{text-align:right;flex-shrink:0}
+.rec .delta{font-size:16px;font-weight:600;color:#c9302c;margin-bottom:4px}
+.rec .bal{font-size:11px;color:#999}
+
+.empty{text-align:center;padding:80px 24px;color:#999;font-size:13px}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:rgba(0,0,0,.78);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;opacity:0;pointer-events:none;transition:all .2s;max-width:80%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+<div class="mp">
+  <div class="statusbar"><span>10:25</span><span class="right"><span class="sb-ico"></span><span class="sb-bat"></span></span></div>
+  <div class="navbar">
+    <span class="back" onclick="history.back()">‹</span>
+    <span class="title">积分明细</span>
+    <span class="capsule"><span class="c-left">•••</span><span class="divider"></span><span class="c-right"><span class="dot"></span></span></span>
+  </div>
+
+  <div class="balance">
+    <div class="lb">当前积分余额</div>
+    <div class="num">8,600<small>分</small></div>
+    <div class="tip">业务员积分仅可由管理端发放，不可用于消耗</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-t="all" onclick="setTab('all')">全部</div>
+    <div class="tab" data-t="today" onclick="setTab('today')">今日</div>
+    <div class="tab" data-t="yesterday" onclick="setTab('yesterday')">昨日</div>
+    <div class="tab" data-t="week" onclick="setTab('week')">本周</div>
+    <div class="tab" data-t="month" onclick="setTab('month')">本月</div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+  <div class="content" id="content"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* 业务员积分明细：仅有管理端/奖励发放（增加），无扣减记录
+   offset 为距今天数，日期在渲染时按当前日期动态计算 */
+const records=[
+  {offset:0,time:'15:20:11',reason:'管理端发放积分',delta:500,balance:8600},
+  {offset:0,time:'09:12:33',reason:'铺货达标奖励积分',delta:300,balance:8100},
+  {offset:1,time:'17:42:08',reason:'推荐门店奖励积分',delta:800,balance:7800},
+  {offset:2,time:'11:06:52',reason:'活动奖励积分',delta:600,balance:7000},
+  {offset:3,time:'16:31:20',reason:'管理端发放积分',delta:1200,balance:6400},
+  {offset:5,time:'10:48:07',reason:'任务完成奖励积分',delta:400,balance:5200},
+  {offset:6,time:'14:05:39',reason:'铺货达标奖励积分',delta:900,balance:4800},
+  {offset:12,time:'09:55:14',reason:'管理端发放积分',delta:1500,balance:3900},
+  {offset:20,time:'15:22:46',reason:'推荐门店奖励积分',delta:1000,balance:2400},
+  {offset:45,time:'13:18:02',reason:'活动奖励积分',delta:1400,balance:1400}
+];
+let curTab='all';
+
+function pad(n){return String(n).padStart(2,'0');}
+function dateFor(offset){
+  const d=new Date();
+  d.setDate(d.getDate()-offset);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+function setTab(t){curTab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));render();}
+function match(r){
+  if(curTab==='today')return r.offset===0;
+  if(curTab==='yesterday')return r.offset===1;
+  if(curTab==='week')return r.offset<=6;
+  if(curTab==='month')return r.offset<=30;
+  return true;
+}
+function render(){
+  const box=document.getElementById('content');
+  const list=records.filter(match);
+  const sum=list.reduce((s,r)=>s+r.delta,0);
+  document.getElementById('summary').innerHTML='共 '+list.length+' 笔 · 累计增加 <b>'+sum.toLocaleString('en-US')+'</b> 积分';
+  if(list.length===0){box.innerHTML='<div class="empty">该时间段暂无积分变动记录</div>';return;}
+  box.innerHTML=list.map(r=>`
+    <div class="rec">
+      <div class="left">
+        <div class="reason">${r.reason}</div>
+        <div class="time">${dateFor(r.offset)} ${r.time}</div>
+      </div>
+      <div class="right">
+        <div class="delta">+${r.delta.toLocaleString('en-US')}</div>
+        <div class="bal">余额 ${r.balance.toLocaleString('en-US')}</div>
+      </div>
+    </div>`).join('');
+}
+let tt=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1800);}
+render();
+</script>
+</body>
+</html>
