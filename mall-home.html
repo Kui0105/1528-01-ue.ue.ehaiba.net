@@ -94,9 +94,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 /* tabbar */
 .tabbar{position:absolute;bottom:0;left:0;right:0;height:56px;background:#fff;border-top:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;z-index:20}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
-.tab-item .ic{font-size:20px;color:#999}
+.tab-item .ic{font-size:20px;color:#999;position:relative}
 .tab-item .txt{font-size:11px;color:#999}
 .tab-item.active .ic,.tab-item.active .txt{color:#c9302c}
+.tab-item .dot{position:absolute;top:-2px;right:-6px;min-width:14px;height:14px;padding:0 3px;background:#c9302c;color:#fff;border-radius:7px;font-size:9px;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff}
 
 .scan-fab{position:absolute;right:16px;bottom:72px;width:52px;height:52px;border-radius:50%;background:#c9302c;color:#fff;border:.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30}
 .scan-fab svg{width:26px;height:26px;stroke:#fff}
@@ -167,7 +168,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
       <div class="txt">首页</div>
     </div>
     <div class="tab-item" onclick="location.href='message.html'">
-      <div class="ic">💬</div>
+      <div class="ic">💬<span class="dot" id="msgDot"></span></div>
       <div class="txt">消息</div>
     </div>
     <div class="tab-item" onclick="location.href='profile.html'">
@@ -190,6 +191,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 <script>
 const myPoints=1280;
 document.getElementById('headerPoints').textContent=myPoints.toLocaleString();
+
+(function loadMsgDot(){
+  const count=parseInt(localStorage.getItem('mjx_msg_unread')||'0',10);
+  const dot=document.getElementById('msgDot');
+  if(dot) dot.textContent=count>99?'99+':(count>0?count:'');
+})();
 
 const goods=[
   {name:'迈极炫定制打火机',points:500,orig:'¥39.90',ex:128},

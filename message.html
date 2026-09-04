@@ -112,13 +112,20 @@ const orderMsgs=[
 ];
 
 const warnMsgs=[
-  {id:1,store:'天河路旗舰店',goods:'迈极炫定制打火机',stock:3,threshold:10,total:120,time:'10分钟前'},
-  {id:2,store:'珠江新城专卖店',goods:'迈极炫帆布袋',stock:5,threshold:20,total:80,time:'1小时前'},
-  {id:3,store:'番禺广场体验店',goods:'便携收纳盒',stock:2,threshold:15,total:60,time:'昨天 16:45'},
-  {id:4,store:'白云万达专柜',goods:'品牌毛巾套装',stock:8,threshold:30,total:150,time:'08-25 09:30'}
+  {id:1,store:'天河路旗舰店',goods:'迈极炫定制打火机',stock:3,threshold:10,total:120,time:'10分钟前',unread:true},
+  {id:2,store:'珠江新城专卖店',goods:'迈极炫帆布袋',stock:5,threshold:20,total:80,time:'1小时前',unread:true},
+  {id:3,store:'番禺广场体验店',goods:'便携收纳盒',stock:2,threshold:15,total:60,time:'昨天 16:45',unread:false},
+  {id:4,store:'白云万达专柜',goods:'品牌毛巾套装',stock:8,threshold:30,total:150,time:'08-25 09:30',unread:false}
 ];
 
 let current='order';
+
+function updateBadge(){
+  const count=orderMsgs.filter(m=>m.unread).length+warnMsgs.filter(m=>m.unread).length;
+  localStorage.setItem('mjx_msg_unread',count);
+  const homeDot=document.querySelector('.tabbar .tab-item .dot');
+  if(homeDot) homeDot.textContent=count>99?'99+':(count||'');
+}
 
 function setTab(type){
   current=type;
@@ -138,7 +145,7 @@ function renderOrder(c){
     return;
   }
   c.innerHTML=orderMsgs.map(m=>`
-    <div class="msg-card" onclick="goOrder('${m.type}',${m.id})">
+    <div class="msg-card" onclick="goOrder('${m.type}',${m.id},this)">
       <div class="head">
         <div class="title">${m.title}</div>
         ${m.unread?'<span class="badge"></span>':''}
@@ -160,7 +167,7 @@ function renderWarn(c){
   c.innerHTML=warnMsgs.map(m=>{
     const pct=Math.min(100,Math.round(m.stock/m.total*100));
     return `
-    <div class="msg-card warn-card" onclick="goWarn(${m.id})">
+    <div class="msg-card warn-card" onclick="goWarn(${m.id},this)">
       <div class="head">
         <div>
           <div class="store">${m.store}</div>
@@ -177,16 +184,23 @@ function renderWarn(c){
   `}).join('');
 }
 
-function goOrder(type,id){
+function goOrder(type,id,el){
+  const m=orderMsgs.find(x=>x.id===id);
+  if(m && m.unread){m.unread=false;updateBadge();if(el) el.querySelector('.badge')?.remove();}
   if(type==='pay') location.href='orders.html?tab=pay';
   else if(type==='paid') location.href='orders.html?tab=ship';
   else if(type==='ship') location.href='orders.html?tab=receive';
 }
-function goWarn(id){toast('跳转门店库存补货页面');}
+function goWarn(id,el){
+  const m=warnMsgs.find(x=>x.id===id);
+  if(m && m.unread){m.unread=false;updateBadge();if(el){const tag=el.querySelector('.tag.warn');if(tag){tag.textContent='已查看';tag.style.color='#999';tag.style.background='rgba(0,0,0,.06)';}}}
+  toast('跳转门店库存补货页面');
+}
 
 let tt=null;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
 
+updateBadge();
 render();
 </script>
 </body>
