@@ -164,24 +164,16 @@ function renderWarn(c){
     c.innerHTML=`<div class="empty-state"><div class="ic">📭</div><h3>暂无预警消息</h3><p>门店库存预警将显示在这里</p></div>`;
     return;
   }
-  c.innerHTML=warnMsgs.map(m=>{
-    const pct=Math.min(100,Math.round(m.stock/m.total*100));
-    return `
+  c.innerHTML=warnMsgs.map(m=>`
     <div class="msg-card warn-card" onclick="goWarn(${m.id},this)">
       <div class="head">
-        <div>
-          <div class="store">${m.store}</div>
-          <div class="info"><b>库存预警</b>：${m.goods} 库存不足，请及时补充库存</div>
-        </div>
-        <span class="tag warn">库存不足</span>
+        <div class="store">${m.store}</div>
+        ${m.unread?'<span class="badge"></span>':''}
       </div>
-      <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
-      <div class="footer">
-        <span>当前库存 ${m.stock} / 预警阈值 ${m.threshold}</span>
-        <span class="action">去补货 ›</span>
-      </div>
+      <div class="desc"><b>库存预警</b>：${m.goods} 库存不足，请及时补充库存</div>
+      <div class="meta"><span>${m.time}</span></div>
     </div>
-  `}).join('');
+  `).join('');
 }
 
 function goOrder(type,id,el){
@@ -193,8 +185,7 @@ function goOrder(type,id,el){
 }
 function goWarn(id,el){
   const m=warnMsgs.find(x=>x.id===id);
-  if(m && m.unread){m.unread=false;updateBadge();if(el){const tag=el.querySelector('.tag.warn');if(tag){tag.textContent='已查看';tag.style.color='#999';tag.style.background='rgba(0,0,0,.06)';}}}
-  toast('跳转门店库存补货页面');
+  if(m && m.unread){m.unread=false;updateBadge();if(el) el.querySelector('.badge')?.remove();}
 }
 
 let tt=null;
